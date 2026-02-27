@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@media (min-width: 600px) {
+  body {
+    overflow-y: hidden;
+  }
+}
+
+:root {
+  background-color: #121212;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
+  width: 100%;
+  min-height: 100vh;
+}
+
+img {
+  filter: saturate(1);
+}
+
+.dkd {
+  background-color: #6a6a6a21;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
