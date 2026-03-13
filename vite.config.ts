@@ -22,6 +22,7 @@ export default defineConfig({
         short_name: 'H-Mizik',
         description: 'Streaming mizik ayisyen offline',
         theme_color: '#121212',
+        display_override: ['window-controls-overlay', 'standalone'],
         background_color: '#121212',
         display: 'standalone',
         orientation: 'portrait', 

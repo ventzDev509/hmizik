@@ -1,112 +1,133 @@
 @import "tailwindcss";
+
+/* 1. KONFIGIRASYON RASIN (Force Black Everywhere) */
+:root {
+  background-color: #121212;
+}
+
+html {
+  /* Sa fòse zòn deyò viewport la (notch, home bar) rete nwa */
+  background-color: #121212 !important;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  /* Anpeche rale kawotchou (rubber banding) blan an sou iOS */
+  overscroll-behavior: none;
+}
+
+body {
+  background-color: #121212 !important;
+  color: #f4f4f5; /* zinc-100 */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  /* Fix pou wotè reyèl sou mobil (evite ba navigatè a koupe l) */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  
+  /* Jesyon Safe Area pou iPhone ak Android modern */
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+  
+  overscroll-behavior-y: none;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  background-color: inherit;
+  /* Nou kite l an hidden pou desktop si nesesè, men auto pou mobil */
+  overflow-x: hidden;
+}
+
+/* 2. FIX POU DESKTOP (> 600px) */
 @media (min-width: 600px) {
   body {
     overflow-y: hidden;
   }
 }
 
-html, body {
-  /* Sa ap fòse background nan kouvri zòn navigasyon anba a */
-  background-color: #121212;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  /* Pou anpeche rale kawotchou (rubber banding) blan an */
-  overscroll-behavior: none;
-}
-
-
-
-#root {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  background-color: inherit; /* Li pran koulè body a otomatikman */
-}
-
-body {
-  /* Sa ap asire ke menm si gen yon rale (overscroll), li rete nwa */
-  background-color: #121212;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  padding-bottom: env(safe-area-inset-bottom);
-  /* Pou evite espas gri anba a sou iOS/Android */
-  padding-bottom: env(safe-area-inset-bottom);
-  overscroll-behavior-y: none;
-}
-
-header,
-nav {
-  border-top: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-:root {
-  background-color: #121212;
-}
-
-#root {
-  margin: 0;
-  padding: 0;
-  overflow-y: hidden;
-  width: 100%;
-  min-height: 100vh;
-}
-
-img {
-  filter: saturate(1);
-}
-
-.dkd {
-  background-color: #6a6a6a21;
-}
-
+/* 3. SCROLLBAR (Hidden but functional) */
 ::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  width: 0px;
+  height: 0px;
   display: none;
 }
 
-/* Nan CSS ou */
-.btn-primary {
-  @apply bg-orange-500 text-white font-black uppercase text-xs rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50;
+/* 4. ELEMENT RESET & TOUCH UI */
+button, div, a, input {
+  -webkit-tap-highlight-color: transparent;
+  outline: none !important;
 }
 
-.btn-secondary {
-  @apply bg-transparent text-zinc-500 font-bold py-4 hover:text-zinc-300 transition-colors;
-}
-
-button,
-div,
-a {
+* {
+  box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* 1. Retire tout style defo navigatè a sou tout bouton */
 button {
   background-color: transparent;
   border: none;
-  outline: none;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
-
   font-family: inherit;
 }
 
-/* 2. Retire ti lonbraj gri ki parèt lè w klike sou mobil (Tap Highlight) */
-* {
-  -webkit-tap-highlight-color: transparent;
-  border-color: transparent !important;
-}
-
-/* 3. Asire w bouton ki disabled yo pa chanje koulè an gri */
 button:disabled {
   cursor: not-allowed;
-  filter: grayscale(0);
-  /* Anpeche l vin gri otomatikman */
+  filter: grayscale(0); /* Anpeche chanjman koulè defo */
 }
 
+/* 5. COMPONENTS & UTILITIES */
+
+/* Bouton prensipal H-Mizik */
+.btn-primary {
+  @apply bg-orange-500 text-white font-black uppercase text-xs rounded-2xl 
+         flex items-center justify-center gap-2 transition-all 
+         active:scale-95 disabled:opacity-50 px-6 py-3;
+}
+
+.btn-secondary {
+  @apply bg-transparent text-zinc-500 font-bold py-4 
+         hover:text-zinc-300 transition-colors;
+}
+
+/* Klas pou vè polie (Glassmorphism) nan Nav yo */
+.glass-nav {
+  @apply backdrop-blur-xl bg-black/20 border-white/5;
+}
+
+/* Pou imaj yo pa parèt twò blèm */
+img {
+  filter: saturate(1.1);
+  object-fit: cover;
+}
+
+.dkd {
+  background-color: rgba(106, 106, 106, 0.13);
+}
+
+/* 6. ANIMASYON EQUALIZER (Pou paj Offline a) */
+@keyframes eq-1 { 0%, 100% { height: 4px; } 50% { height: 12px; } }
+@keyframes eq-2 { 0%, 100% { height: 10px; } 50% { height: 4px; } }
+@keyframes eq-3 { 0%, 100% { height: 6px; } 50% { height: 14px; } }
+
+.animate-eq-1 { animation: eq-1 0.6s infinite ease-in-out; }
+.animate-eq-2 { animation: eq-2 0.8s infinite ease-in-out; }
+.animate-eq-3 { animation: eq-3 0.7s infinite ease-in-out; }
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-bounce-slow {
+  animation: bounce-slow 4s infinite ease-in-out;
+}
