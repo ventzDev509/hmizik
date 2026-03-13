@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAudio } from '../../../provider/PlayerContext';
 import { useOfflineTracks } from '../hooks/useOfflineTracks';
 import { Play, WifiOff, Music, MoreHorizontal, Download, ChevronLeft, Trash2 } from 'lucide-react';
-
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import BottomMenu from '../menu/BottomMenu';
+import Equalizer from '../../buffer/Equalizer';
+
+
 
 const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -33,25 +35,14 @@ const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
 
 const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
     const allCachedUrls = useOfflineTracks();
-    const { playSong } = useAudio();
+    const { playSong, currentSong } = useAudio(); // Nou pran currentSong pou konnen kisa k ap jwe
     const navigate = useNavigate();
 
-    // --- META THEME COLOR LOGIC ---
     useEffect(() => {
-        // Nou mete koulè oranj fonse a (#4a1d05) pou l match ak kòmansman gradient la
         const themeColor = document.querySelector('meta[name="theme-color"]');
         const originalColor = themeColor ? themeColor.getAttribute('content') : '#121212';
         
-        if (themeColor) {
-            themeColor.setAttribute('content', '#4a1d05');
-        } else {
-            const meta = document.createElement('meta');
-            meta.name = "theme-color";
-            meta.content = "#4a1d05";
-            document.head.appendChild(meta);
-        }
-
-        // Remete koulè orijinal la lè w kite paj la
+        if (themeColor) themeColor.setAttribute('content', '#4a1d05');
         return () => {
             const resetColor = document.querySelector('meta[name="theme-color"]');
             if (resetColor) resetColor.setAttribute('content', originalColor || '#121212');
@@ -76,7 +67,6 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#4a1d05] via-[#1a0b02] to-[#121212] text-zinc-100 font-sans relative">
             
-            {/* --- STICKY NAV --- */}
             <div className="sticky top-0 z-50 px-4 py-4 flex items-center justify-between backdrop-blur-xl bg-black/10">
                 <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full active:scale-90 transition-all border border-white/5">
                     <ChevronLeft size={24} />
@@ -91,8 +81,12 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
             </div>
 
             <div className="px-5 pt-10">
-                <div className="relative mx-auto w-40 h-40 flex items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-orange-500 to-orange-700 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10">
-                    <Download size={70} className="text-white animate-bounce-slow" />
+                {/* --- HEADER AVÈK EQUALIZER VIZYÈL --- */}
+                <div className="relative mx-auto w-44 h-44 flex items-center justify-center">
+                   
+                    <div className="relative w-40 h-40 flex items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-orange-500 to-orange-700 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 z-10">
+                        <Download size={70} className="text-white animate-bounce-slow" />
+                    </div>
                 </div>
 
                 <div className="text-center mt-8 mb-10">
@@ -122,25 +116,37 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                     ) : (
                         musicTracks.map((url, index) => {
                             const metadata = offlineData[url] || {};
+                            const isPlaying = currentSong?.audioUrl === url; // Tcheke si se mizik sa k ap jwe
+
                             return (
                                 <div 
                                     key={index}
-                                    className="flex items-center gap-4 p-3 rounded-2xl bg-black/20 backdrop-blur-sm border border-white/5 active:bg-white/10 transition-all group"
+                                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all group ${
+                                        isPlaying ? 'bg-orange-500/10 border-orange-500/20' : 'bg-black/20 border-white/5'
+                                    } border backdrop-blur-sm active:bg-white/10`}
                                     onClick={() => {
                                         playSong({ id: `off-${index}`, title: metadata.trackTitle, artist: "H-Mizik Offline", coverUrl: metadata.coverUrl, audioUrl: url }, []);
                                     }}
                                 >
-                                    <div className="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
+                                    <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
                                         <OfflineImage url={metadata.coverUrl} fallback={<Music size={18} className="m-auto mt-4 text-zinc-700" />} />
+                                        {/* Overlay si mizik la ap jwe */}
+                                        {isPlaying && (
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                <Equalizer />
+                                            </div>
+                                        )}
                                     </div>
                                     
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-[15px] font-bold truncate text-white group-active:text-orange-300">
+                                        <h4 className={`text-[15px] font-bold truncate ${isPlaying ? 'text-orange-400' : 'text-white'}`}>
                                             {metadata.trackTitle || "Mizik san non"}
                                         </h4>
                                         <div className="flex items-center gap-1.5 mt-0.5">
-                                            <Download size={10} className="text-orange-400" />
-                                            <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Sove nèt</p>
+                                            {/* {isPlaying ? <EqualizerIcon /> : <Download size={10} className="text-orange-400" />} */}
+                                            <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">
+                                                {isPlaying ? 'Ap jwe...' : 'Sove nèt'}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -151,7 +157,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                                         >
                                             <Trash2 size={18} />
                                         </button>
-                                        <button className="p-2 text-zinc-500">
+                                        <button className="p-2 text-zinc-600">
                                             <MoreHorizontal size={20} />
                                         </button>
                                     </div>
@@ -174,6 +180,15 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                 .animate-bounce-slow {
                     animation: bounce-slow 4s infinite ease-in-out;
                 }
+
+                /* Keyframes pou Equalizer Bars */
+                @keyframes eq-1 { 0%, 100% { height: 4px; } 50% { height: 12px; } }
+                @keyframes eq-2 { 0%, 100% { height: 10px; } 50% { height: 4px; } }
+                @keyframes eq-3 { 0%, 100% { height: 6px; } 50% { height: 14px; } }
+
+                .animate-eq-1 { animation: eq-1 0.6s infinite ease-in-out; }
+                .animate-eq-2 { animation: eq-2 0.8s infinite ease-in-out; }
+                .animate-eq-3 { animation: eq-3 0.7s infinite ease-in-out; }
             `}</style>
         </div>
     );
