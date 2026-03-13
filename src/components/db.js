@@ -38,7 +38,7 @@ export const Song=[
         username:"Dèf",
         title:"Dèf Fondamantal - Lakay",
         image:`${LINImage}s.png`,
-        url:`${LINKSONG}Dèf Fondamantal - Lakay (Videyo Ofisyèl)(M4A_128K).mp3`,
+        url:``,
         desciption:"Lorem ipsum dolor sit amet",
         color:"#FF4081",
         likes:{
@@ -51,7 +51,7 @@ export const Song=[
         username:"Dèf",
         title:"Kafou",
         image:`${LINImage}m.png`,
-        url:`${LINKSONG}Dèf Fondamantal - Kafou feat. Krispek (Odyo Ofisyèl)(M4A_128K).mp3`,
+        url:``,
         desciption:"Lorem ipsum dolor sit amet",
         color:"#00ff40",
         likes:{
@@ -63,7 +63,7 @@ export const Song=[
         username:"Dèf",
         title:"Dèf Fondamantal",
         image:`${LINImage}willG.jpg`,
-        url:`${LINKSONG}Dèf Fondamantal - Defèt (Odyo Ofisyèl)(M4A_128K).mp3`,
+        url:``,
         desciption:"Lorem ipsum dolor sit amet",
         color:"#00b7ff",
         likes:{
@@ -76,7 +76,7 @@ export const Song=[
         username:"Durkheim",
         title:"Durkheim - ET SI",
         image:`${LINImage}toby.jpg`,
-        url:`${LINKSONG}Powèt Revòlte - Abysses (audio)(M4A_128K).mp3`,
+        url:``,
         desciption:"Lorem ipsum dolor sit amet",
         color:"#ffffffc0",
         likes:{
@@ -89,7 +89,7 @@ export const Song=[
         username:"Dèf",
         title:"Pèleren Solitè",
         image:`${LINImage}bak.jpg`,
-        url:`${LINKSONG}Dèf Fondamantal - P.S Pèleren Solitè (Odyo Ofisyèl)(M4A_128K).mp3`,
+        url:``,
         desciption:"Lorem ipsum dolor sit amet",
         color:"#ff0000",
         likes:{
