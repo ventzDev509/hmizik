@@ -5,12 +5,7 @@ import im1 from "../assets/t2.webp";
 import im2 from "../assets/baky.webp";
 import im3 from "../assets/t.webp";
 import im4 from "../assets/toby.webp";
-import s1 from "../assets/music/Men Zobeki.mp3"
-import s6 from "../assets/music/Men Zobeki.mp3"
-import s5 from "../assets/music/Jackito - Je l'aime a mourir (128k).mp3"
-import s2 from "../assets/music/Rayhans - Sometimes (Vertical visualizer) (128k)_1748452209632.m4a"
-import s3 from "../assets/music/J'aime Ce Troubadour (128k)_1738763298236.m4a"
-import s4 from "../assets/music/MEDJY - LAPATRI AN DANJE (Official Lyrics Video) (128k)_1747771095917.m4a"
+
 // Type pour structurer une musique
 export interface Music {
   id: number;
@@ -40,61 +35,17 @@ export const playlists: Music[] = [
     artist: "Various Artists",
     description: "Ambiance douce et détendue.",
     cover: im,
-    src: s1,
+    src: "",
     type: "playlist",
   },
-  {
-    id: 2,
-    title: "Top France",
-    artist: "Aya Nakamura, Gazo, Jul",
-    description: "Les meilleurs hits français du moment.",
-    cover: im1,
-    src: s2,
-    type: "playlist",
-  },
-  {
-    id: 3,
-    title: "Caribbean Vibes",
-    artist: "DJ Mix",
-    description: "Un mélange de sons tropicaux et afro.",
-    cover: im2,
-    src: s3,
-    type: "playlist",
-  },
-  {
-    id: 4,
-    title: "Caribbean Vibes",
-    artist: "DJ Mix",
-    description: "Un mélange de sons tropicaux et afro.",
-    cover: im3,
-    src: s4,
-    type: "playlist",
-  },
-  {
-    id: 5,
-    title: "Caribbean Vibes",
-    artist: "DJ Mix",
-    description: "Un mélange de sons tropicaux et afro.",
-    cover: im4,
-    src: s5,
-    type: "playlist",
-  },
-  {
-    id: 6,
-    title: "Caribbean Vibes",
-    artist: "DJ Mix",
-    description: "Un mélange de sons tropicaux et afro.",
-    cover: im1,
-    src: s6,
-    type: "playlist",
-  },
+ 
 ];
 export const TRACKS: Track[] = [
-  { id: 1, title: "M'vle Avèw", artist: "Baky", album: "M'vle Avèw", duration: "3:13", cover: im ,src:s1},
-  { id: 2, title: "Riviè", artist: "Teddy Hashtag", album: "Riviè EP", duration: "2:45", cover:im1 ,src:s2},
-  { id: 3, title: "Nuit De Ville", artist: "Troubleboy", album: "City Vibes", duration: "4:02", cover:im2 ,src:s3},
-  { id: 4, title: "Zouk Flow", artist: "Hitmaker", album: "Summer 20", duration: "3:28", cover: im3 ,src:s4},
-  { id: 5, title: "Bèl Jou", artist: "Baky", album: "M'vle Avèw", duration: "3:01", cover: im4,src:s5},
+  { id: 1, title: "M'vle Avèw", artist: "Baky", album: "M'vle Avèw", duration: "3:13", cover: im ,src:""},
+  { id: 2, title: "Riviè", artist: "Teddy Hashtag", album: "Riviè EP", duration: "2:45", cover:im1 ,src:""},
+  { id: 3, title: "Nuit De Ville", artist: "Troubleboy", album: "City Vibes", duration: "4:02", cover:im2 ,src:''},
+  { id: 4, title: "Zouk Flow", artist: "Hitmaker", album: "Summer 20", duration: "3:28", cover: im3 ,src:""},
+  { id: 5, title: "Bèl Jou", artist: "Baky", album: "M'vle Avèw", duration: "3:01", cover: im4,src:""},
   // ajoute autant de pistes que tu veux
 ];
 // Radios
