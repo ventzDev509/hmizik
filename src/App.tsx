@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react"; // Nou ajoute useState ak useEffect
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css"
 import Home from "./components/Home/Home";
@@ -23,15 +22,36 @@ import PlaylistDetailPage from "./components/Mobile/PlaylistDetailPage/PlaylistD
 import OfflineMusic from "./components/Mobile/OfflineMusic/OfflineMusic";
 
 function App() {
+  // 1. Nou kreye yon eta pou detekte si moun lan online
+  const [isOnline, setIsOnline] = useState(window.navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const routes = [
     {
-      path: "/", element:
-
-        <>{
-          !isMobile ? <Home /> : <HomeMobile />
-        }</>
-      , withBottomNav: true
+      path: "/", 
+      element: (
+        <>
+          {/* 2. Si li offline, nou montre OfflineMusic dirèkteman sou "/" */}
+          {!isOnline && isMobile ? (
+            <OfflineMusic isRedirected={true} />
+          ) : (
+            !isMobile ? <Home /> : <HomeMobile />
+          )}
+        </>
+      ), 
+      withBottomNav: true 
     },
 
     { path: "/playlist", element: <PlayList />, withBottomNav: true },
@@ -103,13 +123,11 @@ function App() {
         <div className=""><>{isMobile ? <OfflineMusic /> : ""}</></div>
       </>, withBottomNav: true
     },
-    //ajoute mizik
     {
       path: "/nouvoson", element: <>
         <div className=""><>{isMobile ? <AddMusicMobile /> : ""}</></div>
       </>, withBottomNav: true
     },
-
   ];
 
   return (
@@ -121,7 +139,12 @@ function App() {
             path={path}
             element={
               <div className={`${withBottomNav ? " pb-20" : ""}`}>
-                {React.cloneElement(element)}
+                {/* 3. Si li offline epi l ap eseye ale nan yon lòt paj ki pa "/", nou ka fòse l wè OfflineMusic tou */}
+                {!isOnline && isMobile && path !== "/" ? (
+                   <OfflineMusic isRedirected={true} />
+                ) : (
+                  React.cloneElement(element)
+                )}
               </div>
             }
           />

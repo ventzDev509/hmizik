@@ -1,24 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useAudio } from '../../../provider/PlayerContext';
 import { useOfflineTracks } from '../hooks/useOfflineTracks';
-import { Play, WifiOff, Music, Trash2 } from 'lucide-react';
-import BottomMPlayerMobile from '../menu/BottomPlayerMobile';
+import { Play, WifiOff, Music, MoreHorizontal, Download, ChevronLeft, Trash2 } from 'lucide-react';
+
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-interface OfflineMusicProps {
-    isRedirected?: boolean;
-}
-// --- TI KONPONAN POU MONTRÉ IMAJ KI NAN KACH LA ---
+import BottomMenu from '../menu/BottomMenu';
+
 const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         let objectUrl: string | null = null;
-        const loadImageFromCache = async () => {
-            if (!url) {
-                setLoading(false);
-                return;
-            }
+        const loadImage = async () => {
+            if (!url) return;
             try {
                 const cache = await caches.open('music-cache');
                 const response = await cache.match(url);
@@ -27,142 +21,160 @@ const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
                     objectUrl = URL.createObjectURL(blob);
                     setImageSrc(objectUrl);
                 }
-            } catch (error) {
-                console.error("Erè imaj kach:", error);
-            } finally {
-                setLoading(false);
-            }
+            } catch (e) { console.error(e); }
         };
-        loadImageFromCache();
-        return () => {
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-        };
+        loadImage();
+        return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
     }, [url]);
 
-    if (loading) return <div className="animate-pulse bg-zinc-800 w-full h-full" />;
     if (!imageSrc) return fallback;
     return <img src={imageSrc} alt="" className="w-full h-full object-cover" />;
 };
 
-// --- PAJ PRINCIPAL LA ---
-const OfflineMusic = ({ isRedirected = false }: OfflineMusicProps) => {
+const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
     const allCachedUrls = useOfflineTracks();
     const { playSong } = useAudio();
+    const navigate = useNavigate();
+
+    // --- META THEME COLOR LOGIC ---
+    useEffect(() => {
+        // Nou mete koulè oranj fonse a (#4a1d05) pou l match ak kòmansman gradient la
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        const originalColor = themeColor ? themeColor.getAttribute('content') : '#121212';
+        
+        if (themeColor) {
+            themeColor.setAttribute('content', '#4a1d05');
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = "theme-color";
+            meta.content = "#4a1d05";
+            document.head.appendChild(meta);
+        }
+
+        // Remete koulè orijinal la lè w kite paj la
+        return () => {
+            const resetColor = document.querySelector('meta[name="theme-color"]');
+            if (resetColor) resetColor.setAttribute('content', originalColor || '#121212');
+        };
+    }, []);
 
     const musicTracks = allCachedUrls.filter(url => url.includes('/tracks/'));
     const offlineData = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
 
     const handleDelete = async (audioUrl: string) => {
-        if (window.confirm("Èske ou vle retire mizik sa a?")) {
-            try {
-                const cache = await caches.open('music-cache');
-                const metadata = offlineData[audioUrl];
-                await cache.delete(audioUrl);
-                if (metadata?.coverUrl) await cache.delete(metadata.coverUrl);
-                const newMetadata = { ...offlineData };
-                delete newMetadata[audioUrl];
-                localStorage.setItem('offline_metadata', JSON.stringify(newMetadata));
-                toast.success("Mizik la efase");
-                window.location.reload();
-            } catch (error) {
-                toast.error("Erè lè n ap efase");
-            }
+        if (window.confirm("Retire mizik sa a?")) {
+            const cache = await caches.open('music-cache');
+            await cache.delete(audioUrl);
+            const newMetadata = { ...offlineData };
+            delete newMetadata[audioUrl];
+            localStorage.setItem('offline_metadata', JSON.stringify(newMetadata));
+            toast.success("Mizik retire");
+            window.location.reload();
         }
     };
 
     return (
-        /* 1. Nou chanje 'fixed inset-0' pou 'min-h-screen'. 
-           Sa ap pèmèt Fullscreen Player a (ki gen z-50 oswa plis) kouvri paj la nòmalman.
-        */
-        <div className="min-h-screen bg-black text-white">
-            {isRedirected && (
-                <div className="p-4 bg-orange-500/20 border border-orange-500/30 rounded-xl mb-6">
-                    <p className="text-orange-400 font-bold text-sm">Mòd Offline</p>
-                    <p className="text-orange-200/70 text-xs">Ou ka sèlman koute mizik ou te sove yo.</p>
+        <div className="min-h-screen bg-gradient-to-b from-[#4a1d05] via-[#1a0b02] to-[#121212] text-zinc-100 font-sans relative">
+            
+            {/* --- STICKY NAV --- */}
+            <div className="sticky top-0 z-50 px-4 py-4 flex items-center justify-between backdrop-blur-xl bg-black/10">
+                <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full active:scale-90 transition-all border border-white/5">
+                    <ChevronLeft size={24} />
+                </button>
+                <div className="flex flex-col items-center">
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-orange-300/60 font-bold">H-Mizik</span>
+                    <span className="text-sm font-black text-white">OFFLINE</span>
                 </div>
-            )}
-            <div className="p-5 pb-44">
+                <div className="w-10 h-10 flex items-center justify-center">
+                    {isRedirected && <WifiOff size={18} className="text-orange-500" />}
+                </div>
+            </div>
 
-                <header className="flex items-center gap-3 mb-8">
-                    <div className="p-2 bg-orange-500 rounded-lg flex-shrink-0">
-                       {isRedirected && <WifiOff size={24} className="text-white" /> } 
-                    </div>
-                    <div className="min-w-0">
-                        <h1 className="text-2xl font-bold truncate">Bibliyotèk Offline</h1>
-                        <p className="text-xs text-zinc-500">{musicTracks.length} mizik ki sove</p>
-                    </div>
-                </header>
+            <div className="px-5 pt-10">
+                <div className="relative mx-auto w-40 h-40 flex items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-orange-500 to-orange-700 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10">
+                    <Download size={70} className="text-white animate-bounce-slow" />
+                </div>
 
-                {musicTracks.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center mt-20 opacity-30 text-center">
-                        <Music size={60} className="mb-4" />
-                        <p>Pa gen mizik offline ankò.</p>
-                    </div>
-                ) : (
-                    <div className="flex flex-col gap-3 w-full">
-                        {musicTracks.map((url, index) => {
+                <div className="text-center mt-8 mb-10">
+                    <h1 className="text-4xl font-black text-white tracking-tighter">Bibliyotèk</h1>
+                    <p className="text-orange-200/50 font-medium text-sm mt-1">{musicTracks.length} mizik ki disponib san koneksyon</p>
+                    
+                    <button 
+                        onClick={() => {
+                            if (musicTracks.length > 0) {
+                                const first = musicTracks[0];
+                                const meta = offlineData[first];
+                                playSong({ id: 'off-0', title: meta.trackTitle, artist: "Atis Offline", coverUrl: meta.coverUrl, audioUrl: first }, []);
+                            }
+                        }}
+                        className="mt-6 px-10 py-3.5 bg-orange-600 hover:bg-orange-500 text-white rounded-full font-bold flex items-center gap-3 mx-auto shadow-2xl transition-all active:scale-95"
+                    >
+                        <Play size={20} fill="white" />
+                        Jwe Tout
+                    </button>
+                </div>
+
+                <div className="space-y-2 pb-44 relative z-10">
+                    {musicTracks.length === 0 ? (
+                        <div className="text-center py-20 opacity-30 italic bg-black/20 rounded-3xl border border-dashed border-white/5">
+                            Pa gen anyen isit la...
+                        </div>
+                    ) : (
+                        musicTracks.map((url, index) => {
                             const metadata = offlineData[url] || {};
-                            const trackTitle = metadata.trackTitle || "Mizik san non";
-                            const coverUrl = metadata.coverUrl || "";
-
                             return (
-                                <div
+                                <div 
                                     key={index}
-                                    className="flex items-center w-full p-3 bg-zinc-900/50 border border-zinc-800 rounded-2xl gap-3 overflow-hidden"
+                                    className="flex items-center gap-4 p-3 rounded-2xl bg-black/20 backdrop-blur-sm border border-white/5 active:bg-white/10 transition-all group"
+                                    onClick={() => {
+                                        playSong({ id: `off-${index}`, title: metadata.trackTitle, artist: "H-Mizik Offline", coverUrl: metadata.coverUrl, audioUrl: url }, []);
+                                    }}
                                 >
-                                    <div className="w-12 h-12 bg-zinc-800 rounded-xl overflow-hidden flex-shrink-0 border border-white/5">
-                                        <OfflineImage
-                                            url={coverUrl}
-                                            fallback={<Music className="text-zinc-600 m-auto mt-3" size={20} />}
-                                        />
+                                    <div className="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
+                                        <OfflineImage url={metadata.coverUrl} fallback={<Music size={18} className="m-auto mt-4 text-zinc-700" />} />
                                     </div>
-
+                                    
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="font-bold text-sm text-zinc-100 truncate text-left">
-                                            {trackTitle}
+                                        <h4 className="text-[15px] font-bold truncate text-white group-active:text-orange-300">
+                                            {metadata.trackTitle || "Mizik san non"}
                                         </h4>
-                                        <p className="text-[10px] text-green-500 font-medium uppercase mt-0.5 text-left">
-                                            Offline
-                                        </p>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                            <Download size={10} className="text-orange-400" />
+                                            <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Sove nèt</p>
+                                        </div>
                                     </div>
 
-                                    <div className="flex items-center gap-1 flex-shrink-0">
-                                        <button
-                                            onClick={() => handleDelete(url)}
-                                            className="p-2 text-zinc-500 active:text-red-500"
+                                    <div className="flex items-center gap-1">
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); handleDelete(url); }}
+                                            className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
                                         >
                                             <Trash2 size={18} />
                                         </button>
-
-                                        <button
-                                            className="w-9 h-9 bg-orange-500 text-black rounded-full flex items-center justify-center active:scale-90"
-                                            onClick={() => {
-                                                const songObj = {
-                                                    id: `off-${index}`,
-                                                    title: trackTitle,
-                                                    artist: "Atis Offline",
-                                                    coverUrl: coverUrl,
-                                                    audioUrl: url,
-                                                };
-                                                playSong(songObj, []);
-                                            }}
-                                        >
-                                            <Play size={18} fill="currentColor" className="ml-0.5" />
+                                        <button className="p-2 text-zinc-500">
+                                            <MoreHorizontal size={20} />
                                         </button>
                                     </div>
                                 </div>
                             );
-                        })}
-                    </div>
-                )}
+                        })
+                    )}
+                </div>
             </div>
 
-            {/* 2. Player a bezwen yon z-index trè wo pou Fullscreen li ka kouvri tout bagay.
-               Si 'BottomMPlayerMobile' la gen pwòp z-index li, nou asire n li pa bloke.
-            */}
-            <div className="fixed bottom-0 left-0 w-full z-[100]">
-                <BottomMPlayerMobile />
+            <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 bg-gradient-to-t from-[#121212] via-[#121212]/80 to-transparent pt-12">
+                <BottomMenu />
             </div>
+
+            <style>{`
+                @keyframes bounce-slow {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-12px); }
+                }
+                .animate-bounce-slow {
+                    animation: bounce-slow 4s infinite ease-in-out;
+                }
+            `}</style>
         </div>
     );
 };
