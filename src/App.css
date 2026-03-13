@@ -5,6 +5,24 @@
   }
 }
 
+body {
+  /* Sa ap asire ke menm si gen yon rale (overscroll), li rete nwa */
+  background-color: #121212;
+  margin: 0;
+  padding: 0;
+
+  /* Pou evite espas gri anba a sou iOS/Android */
+  padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior-y: none;
+}
+
+header,
+nav {
+  border-top: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 :root {
   background-color: #121212;
 }
@@ -29,4 +47,44 @@ img {
   width: 0;
   height: 0;
   display: none;
+}
+
+/* Nan CSS ou */
+.btn-primary {
+  @apply bg-orange-500 text-white font-black uppercase text-xs rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply bg-transparent text-zinc-500 font-bold py-4 hover:text-zinc-300 transition-colors;
+}
+
+button,
+div,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 1. Retire tout style defo navigatè a sou tout bouton */
+button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+
+  font-family: inherit;
+}
+
+/* 2. Retire ti lonbraj gri ki parèt lè w klike sou mobil (Tap Highlight) */
+* {
+  -webkit-tap-highlight-color: transparent;
+  border-color: transparent !important;
+}
+
+/* 3. Asire w bouton ki disabled yo pa chanje koulè an gri */
+button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0);
+  /* Anpeche l vin gri otomatikman */
 }

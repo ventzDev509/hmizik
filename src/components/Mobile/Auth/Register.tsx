@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const { register, login, magicLink, loginWithGoogle } = useAuth();
 
-  const [isLogin, setIsLogin] = useState<boolean>(true); // Toggle ant Login ak Register
+  const [isLogin, setIsLogin] = useState<boolean>(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,6 +16,8 @@ const Auth: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [magicLoading, setMagicLoading] = useState<boolean>(false);
+
+  const isProcessing = loading || magicLoading;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,13 +28,11 @@ const Auth: React.FC = () => {
     setLoading(true);
     try {
       if (isLogin) {
-        // Lojik Login (asire w fonksyon login lan egziste nan context la)
         await login({
           email: formData.email,
           password: formData.password
         });
       } else {
-        // Lojik Register
         await register(formData);
       }
     } catch (error) {
@@ -53,25 +54,52 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className=" flex items-center justify-center   px-4 font-sans py-20">
+    <div className="relative min-h-screen flex items-center justify-center px-4 font-sans py-20 bg-black overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+
+      {/* --- LOADER OVERLAY (Orange Theme) --- */}
+      <AnimatePresence>
+        {isProcessing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="bg-[#121212] p-8 rounded-[2.5rem] border border-white/10 flex flex-col items-center shadow-2xl"
+            >
+              <div className="relative">
+                <Loader2 className="animate-spin text-orange-600 mb-4" size={45} />
+                <div className="absolute inset-0 blur-xl bg-orange-600/20 animate-pulse"></div>
+              </div>
+              <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] text-center">
+                Otorizasyon ap fèt...
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div
         layout
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-[#121212] p-4 rounded-xl shadow-2xl border border-[#3836360a]"
+        className="w-full max-w-md bg-[#121212] p-8 rounded-3xl shadow-2xl border border-white/5"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <motion.h1
             layout
-            className="text-[#1DB954] text-4xl font-black tracking-tighter mb-2 italic"
+            className="text-orange-600 text-5xl font-black tracking-tighter mb-2 italic"
           >
             H-MIZIK
           </motion.h1>
-          <p className="text-gray-400 text-sm font-medium">
-            {isLogin ? 'Bon retou! Konekte pou w tande mizik.' : 'Dekouvri mizik ki fè kè w kontan.'}
+          <div className="h-1 w-12 bg-orange-600 mx-auto rounded-full mb-4" />
+          <p className="text-gray-400 text-sm font-medium px-4">
+            {isLogin ? 'Bon retou! Konekte pou w tande mizik.' : 'Kreye yon kont pou w dekouvri tout talan yo.'}
           </p>
         </div>
 
@@ -84,12 +112,12 @@ const Auth: React.FC = () => {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className="block text-xs font-bold text-gray-400 uppercase mb-2 ml-1">Kijan w rele?</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1 tracking-widest">Non Konplè</label>
                 <input
                   type="text"
                   name="name"
-                  placeholder="Non konplè"
-                  className="w-full bg-[#282828] text-white px-4 py-3 rounded-md border border-transparent focus:border-[#1DB954] focus:ring-0 outline-none transition-all placeholder:text-gray-500"
+                  placeholder="Non ak Siyati"
+                  className="w-full bg-[#1e1e1e] text-white px-4 py-4 rounded-2xl border border-white/5 focus:border-orange-600 focus:ring-0 outline-none transition-all placeholder:text-gray-600 font-bold shadow-inner"
                   value={formData.name}
                   onChange={handleChange}
                   required={!isLogin}
@@ -99,12 +127,12 @@ const Auth: React.FC = () => {
           </AnimatePresence>
 
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase mb-2 ml-1">Ki imèl ou?</label>
+            <label className="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1 tracking-widest">Adrès Imèl</label>
             <input
               type="email"
               name="email"
               placeholder="email@egzanp.com"
-              className="w-full bg-[#282828] text-white px-4 py-3 rounded-md border border-transparent focus:border-[#1DB954] focus:ring-0 outline-none transition-all placeholder:text-gray-500"
+              className="w-full bg-[#1e1e1e] text-white px-4 py-4 rounded-2xl border border-white/5 focus:border-orange-600 focus:ring-0 outline-none transition-all placeholder:text-gray-600 font-bold shadow-inner"
               value={formData.email}
               onChange={handleChange}
               required
@@ -112,14 +140,14 @@ const Auth: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase mb-2 ml-1">
-              {isLogin ? 'Modpas ou' : 'Chwazi yon modpas'}
+            <label className="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1 tracking-widest">
+              {isLogin ? 'Modpas' : 'Kreye yon Modpas'}
             </label>
             <input
               type="password"
               name="password"
-              placeholder="Omwen 8 karaktè"
-              className="w-full bg-[#282828] text-white px-4 py-3 rounded-md border border-transparent focus:border-[#1DB954] focus:ring-0 outline-none transition-all placeholder:text-gray-500"
+              placeholder="••••••••"
+              className="w-full bg-[#1e1e1e] text-white px-4 py-4 rounded-2xl border border-white/5 focus:border-orange-600 focus:ring-0 outline-none transition-all placeholder:text-gray-600 font-bold shadow-inner"
               value={formData.password}
               onChange={handleChange}
               required
@@ -128,53 +156,54 @@ const Auth: React.FC = () => {
           </div>
 
           <motion.button
-            style={{color:"#fff",backgroundColor:"#000"}}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            disabled={loading || magicLoading}
-            className="w-full bg-[#1DB954] hover:bg-[#1ed760] text-black font-bold py-3 rounded-full mt-2 transition-all disabled:opacity-50 flex items-center justify-center uppercase tracking-wider"
+            disabled={isProcessing}
+            style={{ backgroundColor: "#ea580c" }} // orange-600 hex
+            className="w-full text-white font-black py-4 rounded-2xl mt-4 transition-all disabled:opacity-50 flex items-center justify-center uppercase tracking-[0.2em] text-xs shadow-lg shadow-orange-600/20"
           >
-            {loading ? 'Y AP TRAVAY...' : (isLogin ? 'KONEKTE' : 'ENSRI')}
+            {isLogin ? 'KONEKTE' : 'ENSRI'}
           </motion.button>
         </form>
 
-        <div className="relative flex py-6 items-center">
-          <div className="flex-grow border-t border-[#282828]"></div>
-          <span className="flex-shrink mx-4 text-gray-500 text-[10px] font-bold tracking-widest uppercase">Oubyen</span>
-          <div className="flex-grow border-t border-[#282828]"></div>
+        <div className="relative flex py-8 items-center">
+          <div className="flex-grow border-t border-white/5"></div>
+          <span className="flex-shrink mx-4 text-gray-600 text-[10px] font-black tracking-widest uppercase">Oubyen</span>
+          <div className="flex-grow border-t border-white/5"></div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <button
-           style={{color:"#fff",backgroundColor:"#000"}}
+            style={{ backgroundColor: "#1e1e1e" }}
             type="button"
+            disabled={isProcessing}
             onClick={loginWithGoogle}
-            className="w-full flex items-center justify-center gap-3 bg-transparent hover:bg-[#282828] text-white font-bold py-3 px-4 rounded-full border border-gray-600 transition-all transform hover:scale-[1.01]"
+            className="w-full flex items-center justify-center gap-3 text-white font-bold py-4 px-4 rounded-2xl border border-white/5 transition-all transform hover:bg-[#252525] active:scale-95 disabled:opacity-50 shadow-md text-sm"
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
             Kontinye ak Google
           </button>
 
           <button
-           style={{color:"#fff",backgroundColor:"#000"}}
+            style={{ backgroundColor: "#1e1e1e" }}
             type="button"
-            disabled={magicLoading || loading}
+            disabled={isProcessing}
             onClick={handleMagicLinkSubmit}
-            className="w-full flex items-center justify-center gap-3 bg-transparent hover:bg-[#282828] text-white font-bold py-3 px-4 rounded-full border border-gray-600 transition-all transform hover:scale-[1.01] disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 text-white font-bold py-4 px-4 rounded-2xl border border-white/5 transition-all transform hover:bg-[#252525] active:scale-95 disabled:opacity-50 shadow-md text-sm"
           >
-            {magicLoading ? 'Voye...' : 'Konekte ak yon Magic Link'}
+            Konekte ak yon Magic Link
           </button>
         </div>
 
-        <div className="mt-8 text-center border-t border-[#282828] pt-6">
-          <p className="text-gray-400 text-sm">
+        <div className="mt-10 text-center border-t border-white/5 pt-8">
+          <p className="text-gray-500 text-sm font-medium">
             {isLogin ? "Ou pa gen kont?" : "Ou gen yon kont deja?"}{' '}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-[#1DB954] hover:underline font-bold transition-all"
+              className="text-orange-600 hover:text-orange-500 font-black transition-all ml-1 uppercase text-xs tracking-wider"
             >
-              {isLogin ? 'Enskri isit la.' : 'Konekte isit la.'}
+              {isLogin ? 'Enskri' : 'Konekte'}
             </button>
           </p>
         </div>

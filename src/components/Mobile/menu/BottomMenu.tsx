@@ -56,7 +56,7 @@ const BottomMenu: React.FC = () => {
                             label="Premium" icon={Music2}
                             active={activeTab === 'premium'}
                             onClick={() => {setActiveTab('premium')
-                                navigate("/register")
+                                navigate("/auth")
                             }}
                         />
                     </div>

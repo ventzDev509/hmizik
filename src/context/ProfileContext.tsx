@@ -5,12 +5,18 @@ import toast from 'react-hot-toast';
 
 interface ProfileData {
     id: string;
-    username: string | null;
+    userId: string;
+    username: string;
     bio: string | null;
-    socialLinks: string[] | null;
     avatarUrl: string | null;
     bannerUrl: string | null;
+    location: string | null;
+    isArtist: boolean;
+    verified: boolean;
+    socialLinks: string[];
+    updatedAt: string;
     user: {
+        id:string;
         name: string;
         email: string;
     };
@@ -26,7 +32,7 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user } = useAuth(); // Nou bezwen Auth pou n konnen si moun lan konekte
+    const { user } = useAuth(); 
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -36,6 +42,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setLoading(true);
             // Rele endpoint GET /profiles/me nou te kreye nan NestJS la
             const { data } = await api.get('/profiles/me');
+           
             setProfile(data);
         } catch (error) {
             console.error("Erè chaje pwofil:", error);

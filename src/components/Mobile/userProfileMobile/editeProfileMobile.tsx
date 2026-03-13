@@ -8,7 +8,7 @@ import userImg from "../../../assets/OIP.webp";
 import banner from "../../../assets/banner.jpg";
 import BottomMenu from '../menu/BottomMenu';
 
-// Contexts
+// Contexts & Utils
 import { useProfile } from '../../../context/ProfileContext';
 import { compressImage } from '../../utils/compressor';
 
@@ -20,8 +20,8 @@ const EditProfileMobile: React.FC = () => {
     const [formData, setFormData] = useState({
         name: "",
         bio: "",
-        avatarUrl: "", // Sa ap sèvi pou preview vizyèl la sèlman
-        bannerUrl: "", // Sa ap sèvi pou preview vizyèl la sèlman
+        avatarUrl: "", // Preview vizyèl
+        bannerUrl: "", // Preview vizyèl
         socialLinks: [""]
     });
 
@@ -45,7 +45,7 @@ const EditProfileMobile: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Jere chanjman foto yo (Preview lokal + idantifye input la)
+    // Jere chanjman foto yo (Preview lokal)
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>, type: 'avatarUrl' | 'bannerUrl') => {
         const file = e.target.files?.[0];
         if (file) {
@@ -77,7 +77,7 @@ const EditProfileMobile: React.FC = () => {
         setFormData(prev => ({ ...prev, socialLinks: newLinks.length ? newLinks : [""] }));
     };
 
-    // --- FONKSYON POU SOVE (FormData pou Supabase) ---
+    // --- FONKSYON POU SOVE ---
     const handleSave = async () => {
         if (!formData.name.trim()) return toast.error("Non an obligatwa");
 
@@ -88,25 +88,26 @@ const EditProfileMobile: React.FC = () => {
         dataToSend.append('bio', formData.bio);
         dataToSend.append('socialLinks', JSON.stringify(formData.socialLinks.filter(l => l.trim() !== "")));
 
-        // Rekipere fichye orijinal yo
+        // Rekipere fichye orijinal yo nan input yo
         const avatarInput = document.getElementById('avatarInput') as HTMLInputElement;
         const bannerInput = document.getElementById('bannerInput') as HTMLInputElement;
 
-        // KONPRESYON AVANT UPLOAD
-        if (avatarInput?.files?.[0]) {
-            const compressedAvatar = await compressImage(avatarInput.files[0]);
-            dataToSend.append('avatar', compressedAvatar, 'avatar.jpg');
-        }
-
-        if (bannerInput?.files?.[0]) {
-            const compressedBanner = await compressImage(bannerInput.files[0]);
-            dataToSend.append('banner', compressedBanner, 'banner.jpg');
-        }
-
         try {
+            // KONPRESYON AVANT UPLOAD
+            if (avatarInput?.files?.[0]) {
+                const compressedAvatar = await compressImage(avatarInput.files[0]);
+                dataToSend.append('avatar', compressedAvatar, 'avatar.jpg');
+            }
+
+            if (bannerInput?.files?.[0]) {
+                const compressedBanner = await compressImage(bannerInput.files[0]);
+                dataToSend.append('banner', compressedBanner, 'banner.jpg');
+            }
+
             await updateProfile(dataToSend);
-            toast.success('Pwofil sove ak siksè (optimisé)!');
+            toast.success('Pwofil sove ak siksè!');
         } catch (error) {
+            console.error(error);
             toast.error('Erè nan upload la');
         } finally {
             setIsSaving(false);
@@ -122,32 +123,50 @@ const EditProfileMobile: React.FC = () => {
     return (
         <AnimatePresence>
             <motion.div
-                initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+                initial={{ y: "100%" }} 
+                animate={{ y: 0 }} 
+                exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
                 className="fixed inset-0 bg-[#121212] flex flex-col z-[99999]"
             >
+                {/* --- LOADER OVERLAY --- */}
+                {isSaving && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 z-[100] bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center"
+                    >
+                        <div className="bg-zinc-900 p-8 rounded-3xl border border-white/10 flex flex-col items-center shadow-2xl">
+                            <div className="relative">
+                                <Loader2 className="animate-spin text-orange-500 mb-4" size={40} />
+                                <div className="absolute inset-0 blur-lg bg-orange-500/20 animate-pulse"></div>
+                            </div>
+                            <p className="text-white text-[10px] font-black uppercase tracking-[0.2em]">Ap Anrejistre...</p>
+                        </div>
+                    </motion.div>
+                )}
+
                 {/* 1. TOP NAV BAR */}
                 <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 bg-[#121212]/80 backdrop-blur-md sticky top-0 z-50">
                     <h2 className="text-sm font-black uppercase tracking-widest text-white">Edite Pwofil</h2>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className={`text-sm font-black uppercase ${isSaving ? 'text-zinc-600' : 'text-orange-500 active:scale-90'}`}
+                        className={`text-sm font-black uppercase transition-all ${isSaving ? 'text-zinc-600' : 'text-orange-500 active:scale-90'}`}
                     >
-                        {isSaving ? 'Ap sove...' : 'Sove'}
+                        Sove
                     </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto no-scrollbar">
-
                     {/* 2. BANNER SECTION */}
                     <div className="relative h-44 bg-zinc-900 overflow-hidden">
                         <img
-                            src={formData.bannerUrl || banner}
+                            src={formData.bannerUrl}
                             className="w-full h-full object-cover opacity-60"
                             alt="Banner"
                         />
-                        <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer bg-black/20">
+                        <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer bg-black/20 hover:bg-black/40 transition-all">
                             <Camera size={24} className="text-white/70 mb-1" />
                             <span className="text-[10px] font-bold uppercase text-white/70">Chanje Foto Kouvèti</span>
                             <input
@@ -165,13 +184,13 @@ const EditProfileMobile: React.FC = () => {
                         <div className="relative w-32 h-32">
                             <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#121212] bg-zinc-800 shadow-2xl">
                                 <img
-                                    src={formData.avatarUrl || userImg}
+                                    src={formData.avatarUrl}
                                     className="w-full h-full object-cover brightness-75"
                                     alt="Avatar"
                                 />
                             </div>
-                            <label className="absolute inset-0 flex items-center justify-center cursor-pointer hover:bg-black/20 rounded-full transition-all">
-                                <Camera size={28} className="text-white" />
+                            <label className="absolute inset-0 flex items-center justify-center cursor-pointer hover:bg-black/30 rounded-full transition-all group">
+                                <Camera size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <input
                                     id="avatarInput"
                                     type="file"
@@ -185,6 +204,7 @@ const EditProfileMobile: React.FC = () => {
 
                     {/* 4. TOUT INPUT YO */}
                     <div className="px-6 space-y-8 pb-40">
+                        {/* Name Input */}
                         <div className="space-y-1">
                             <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Non ki pou parèt</label>
                             <input
@@ -196,6 +216,7 @@ const EditProfileMobile: React.FC = () => {
                             />
                         </div>
 
+                        {/* Bio Input */}
                         <div className="space-y-1">
                             <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Biyografi (Apropo)</label>
                             <textarea
@@ -204,25 +225,30 @@ const EditProfileMobile: React.FC = () => {
                                 onChange={handleChange}
                                 rows={3}
                                 placeholder="Pale de tèt ou..."
-                                className="w-full bg-zinc-900 border border-white/5 rounded-lg py-3 px-4 text-white outline-none resize-none text-sm"
+                                className="w-full bg-zinc-900 border border-white/5 rounded-lg py-3 px-4 text-white outline-none resize-none text-sm focus:border-orange-500/50"
                             />
                             <div className="text-[10px] text-right text-zinc-600">{formData.bio.length}/150</div>
                         </div>
 
-                        {/* SOCIAL LINKS */}
+                        {/* Social Links Section */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-orange-500">Lyen Sosyal</h3>
                                 <button
                                     onClick={addSocialLink}
-                                    className="flex items-center gap-1 text-[10px] font-bold bg-orange-500/10 text-orange-500 px-3 py-1.5 rounded-full border border-orange-500/20"
+                                    className="flex items-center gap-1 text-[10px] font-bold bg-orange-500/10 text-orange-500 px-3 py-1.5 rounded-full border border-orange-500/20 active:scale-95 transition-transform"
                                 >
                                     <Plus size={12} /> AJOUTE LYEN
                                 </button>
                             </div>
 
                             {formData.socialLinks.map((link, index) => (
-                                <div key={index} className="flex items-center gap-2 group">
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    key={index} 
+                                    className="flex items-center gap-2"
+                                >
                                     <div className="flex-1 flex items-center gap-3 bg-zinc-900/50 p-1 rounded-xl border border-white/5">
                                         <div className="w-10 h-10 flex items-center justify-center text-zinc-500 bg-white/5 rounded-lg">
                                             <Globe size={18} />
@@ -243,7 +269,7 @@ const EditProfileMobile: React.FC = () => {
                                             <Trash2 size={18} />
                                         </button>
                                     )}
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                     </div>

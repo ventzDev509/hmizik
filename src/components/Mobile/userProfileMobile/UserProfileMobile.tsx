@@ -1,220 +1,322 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-    ChevronLeft, Settings,
-    Share2, Grid, ListMusic,
-    Play
+    ChevronLeft, Settings, Share2, Plus, CheckCircle,
+    MapPin, Link as LinkIcon, Loader2, Play, MoreVertical,
+    Music, Headphones, Instagram as InstagramIcon, Facebook, Youtube, Twitter
 } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import BottomMenu from '../menu/BottomMenu';
-import userImg from "../../../assets/baky.webp";
-import banner from "../../../assets/banner.jpg";
-import { useImageColors } from "../../utils/GetColor";
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
+// Context Imports
+import { useProfile } from '../../../context/ProfileContext';
+import { useTracks } from '../../../context/TrackContext';
+
+// Components
+import BottomMenu from '../menu/BottomMenu';
+import { useImageColors } from "../../utils/GetColor";
+
 const UserProfile = () => {
-    const { bgColor, imgRef } = useImageColors(userImg);
+    const navigate = useNavigate();
+    const { profile, loading: profileLoading } = useProfile();
+    const { tracks, fetchUserTracks, hasMore, loading: tracksLoading, incrementPlay } = useTracks();
+
     const [activeTab, setActiveTab] = useState('uploads');
-    const [isScrolled, setIsScrolled] = useState(false);
-    const navigate=useNavigate()
-    // Done tès pou "Recently Played"
-    const recentlyPlayed = [
-        { id: 101, title: "Lavi a", artist: "Bèl Mizik", cover: "https://picsum.photos/seed/12/200/200" },
-        { id: 102, title: "Vibe", artist: "DJ Mix", cover: "https://picsum.photos/seed/15/200/200" },
-        { id: 103, title: "Kè m", artist: "Atis Lokal", cover: "https://picsum.photos/seed/22/200/200" },
-        { id: 104, title: "Plizyè", artist: "Konpa", cover: "https://picsum.photos/seed/33/200/200" },
-        { id: 105, title: "Zetwal", artist: "Atis X", cover: "https://picsum.photos/seed/44/200/200" },
-    ];
+    const [_, setPage] = useState(1);
 
+    const { bgColor, imgRef } = useImageColors(profile?.avatarUrl ?? undefined);
     const { scrollY } = useScroll();
-
-    // Animasyon pou Header a lè w ap scroll
     const navOpacity = useTransform(scrollY, [80, 150], [0, 1]);
     const headerScale = useTransform(scrollY, [0, 100], [1, 0.95]);
 
+    // 1. DEKODE JSON SOCIAL LINKS YO (RANJE POU EVITE CHIF)
+    const socialLinks = useMemo(() => {
+        if (!profile?.socialLinks) return {};
+        try {
+            const parsed = typeof profile.socialLinks === 'string'
+                ? JSON.parse(profile.socialLinks)
+                : profile.socialLinks;
+            return parsed || {};
+        } catch (e) {
+            console.error("Erè nan Parse SocialLinks JSON", e);
+            return {};
+        }
+    }, [profile?.socialLinks]);
+
+    // 2. FETCH MIZIK YO (ASIRE SA AP MACHE)
     useEffect(() => {
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', bgColor);
+        if (profile?.user?.id) {
+            fetchUserTracks(profile.user.id, 1);
+            setPage(1);
         }
 
-        const unsubscribe = scrollY.on("change", (latest) => {
-            setIsScrolled(latest > 120);
-        });
+    }, [profile?.user?.id]);
+    useEffect(() => {
+        // 1. Changer le theme-color du navigateur
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', bgColor || '#1e1e1e');
+        }
+    }, [bgColor])
+    // 3. INFINITE SCROLL
+    const handleScroll = useCallback(() => {
+        if (
+            window.innerHeight + document.documentElement.scrollTop >=
+            document.documentElement.offsetHeight - 100 &&
+            hasMore && !tracksLoading
+        ) {
+            setPage((prev) => {
+                const nextPage = prev + 1;
+                if (profile?.user?.id) {
+                    fetchUserTracks(profile.user.id, nextPage);
+                }
+                return nextPage;
+            });
+        }
+    }, [hasMore, tracksLoading, profile?.user?.id, fetchUserTracks]);
 
-        return () => {
-            unsubscribe();
-            if (metaThemeColor) metaThemeColor.setAttribute('content', '#121212');
-        };
-    }, [bgColor, isScrolled, scrollY]);
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [handleScroll]);
+
+    const formatDuration = (seconds: number | undefined | null) => {
+        if (!seconds) return "0:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const getPlatformIcon = (platform: string) => {
+        const p = platform.toLowerCase();
+        if (p.includes('instagram')) return <InstagramIcon size={14} />;
+        if (p.includes('facebook')) return <Facebook size={14} />;
+        if (p.includes('youtube')) return <Youtube size={14} />;
+        if (p.includes('tiktok')) return <Music size={14} />;
+        if (p.includes('twitter') || p.includes('x')) return <Twitter size={14} />;
+        return <LinkIcon size={14} />;
+    };
+
+    if (profileLoading) {
+        return (
+            <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="text-orange-600 animate-spin" size={40} />
+                <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Chaje pwofil...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#121212] text-white font-sans relative overflow-x-hidden">
 
-            {/* 1. TOP NAVIGATION (K ap parèt nan scroll) */}
+            {/* NAVIGATION BAR */}
             <motion.nav
-                style={{ backgroundColor: bgColor || '#1e1e1e', opacity: navOpacity }}
+                style={{ backgroundColor: bgColor || '#121212', opacity: navOpacity }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-4 border-b border-white/5"
             >
                 <div className="flex items-center gap-4">
-                    <ChevronLeft size={24} className="cursor-pointer" />
-                    <h2 className="text-sm font-black truncate max-w-[150px]">Mizik Ayisyen Fan</h2>
+                    <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
+                    <h2 className="text-xs font-black truncate max-w-[150px] uppercase tracking-tighter italic">
+                        {profile?.user.name}
+                    </h2>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Share2 size={20} />
-                    <Settings onClick={()=>navigate("/settings")} size={20} />
+                    <Share2 size={18} className="text-zinc-400" />
+                    <Settings size={18} onClick={() => navigate("/settings")} className="text-zinc-400 cursor-pointer" />
                 </div>
             </motion.nav>
 
-            {/* 2. DYNAMIC BACKGROUND HEADER */}
-            {/* 2. DYNAMIC BACKGROUND HEADER (RANPLI) */}
-            <div className="relative h-64 w-full overflow-hidden">
-                {/* Imaj Banner la (Ou ka itilize menm userImg la oswa yon lòt imaj) */}
-                <motion.img
-                    src={banner}
+            {/* HEADER / BANNER */}
+            <div className="relative h-64 w-full">
+                <img
                     ref={imgRef}
-                    className="absolute inset-0 w-full h-full object-cover opacity-30 blur-[2px]"
-                    style={{ scale: 1.2 }} // Yon ti zoom pou l ranpli bor yo
+                    src={profile?.bannerUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=2070&auto=format&fit=crop"}
+                    className="absolute inset-0 w-full h-full object-cover"
                     alt="banner"
                 />
-
-                {/* Gradyan an k ap vin sou imaj la pou fè l fonn */}
-                <div
-                    className="absolute inset-0 z-10 transition-colors duration-1000 ease-in-out"
-                    style={{
-                        background: `linear-gradient(to bottom, 
-                ${bgColor}66 0%, 
-                ${bgColor}AA 40%, 
-                #121212 100%)`
-                    }}
-                />
-
-                {/* Yon kouch "Mesh" oswa "Noise" (Opsyonèl pou stil Audiomack) */}
-                {/* <div className="absolute inset-0 z-[11] opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" /> */}
-
-                {/* Bouton Share ak Settings */}
-                {!isScrolled && (
-                    <div className="absolute top-6 right-6 z-20 flex gap-5">
-                        <div className="bg-black/20 p-2 rounded-full backdrop-blur-md">
-                            <Share2 size={20} className="text-white active:scale-90 transition" />
-                        </div>
-                        <div className="bg-black/20 p-2 rounded-full backdrop-blur-md">
-                            <Settings size={20} className="text-white active:scale-90 transition" />
-                        </div>
-                    </div>
-                )}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#121212]/60 to-[#121212]" />
             </div>
 
-            <main className="relative z-10 -mt-16 px-6">
-                {/* 3. USER PROFILE INFO */}
+            <main className="relative z-10 -mt-24 px-6">
+                {/* PWOFIL INFO */}
                 <motion.div style={{ scale: headerScale }} className="flex flex-col">
-                    <div className="w-28 h-28 rounded-full border-[5px] border-[#121212] overflow-hidden shadow-2xl mb-4 bg-zinc-800">
+                    <div className="relative w-32 h-32 mb-6">
                         <img
-
-                            src={userImg}
-                            className="w-full h-full object-cover"
+                            src={profile?.avatarUrl || "/default-avatar.png"}
+                            className="w-full h-full rounded-full border-[6px] border-[#121212] object-cover shadow-2xl rotate-2"
                             alt="avatar"
                         />
-                    </div>
-                    <h1 className="text-3xl font-black tracking-tighter">Mizik Ayisyen Fan</h1>
-                    <p className="text-sm text-zinc-500 font-bold mb-5">@mizik_haiti_2024</p>
-
-                    {/* STATS AREA */}
-                    <div className="flex gap-8 mb-6">
-                        <div className="flex flex-col">
-                            <span className="text-lg font-black tracking-tight">1.2K</span>
-                            <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Followers</span>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-lg font-black tracking-tight">450</span>
-                            <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Following</span>
-                        </div>
+                        {profile?.verified && (
+                            <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1.5 border-[4px] border-[#121212]">
+                                <CheckCircle size={16} className="text-white fill-current" />
+                            </div>
+                        )}
                     </div>
 
-                    <div onClick={()=>navigate("/editeProfile")} className="w-full py-3 text-center bg-zinc-800/80 hover:bg-zinc-700 rounded-lg text-sm font-black active:scale-[0.97] transition-all">
-                        Edit Profile
+                    <div className="flex items-center gap-2 mb-1">
+                        <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">{profile?.user.name}</h1>
+                        {profile?.isArtist && (
+                            <span className="bg-orange-600 text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-widest">ATIS</span>
+                        )}
                     </div>
+
+                    <p className="text-orange-600 font-bold text-xs mb-4">@{profile?.username}</p>
+
+                    {/* LOCATION & SOCIAL LINKS DINAMIK */}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6">
+                        {profile?.location && (
+                            <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-400 shadow-sm">
+                                <MapPin size={12} className="text-orange-600" />
+                                <span className="text-[9px] font-black uppercase tracking-widest leading-none">{profile.location}</span>
+                            </div>
+                        )}
+
+                        {socialLinks && Object.entries(socialLinks).map(([key, url]) => {
+                            if (!url || typeof url !== 'string' || url.trim() === "") return null;
+
+                            let platformName = key;
+                            if (!isNaN(Number(key))) {
+                                if (url.includes('instagram.com')) platformName = 'instagram';
+                                else if (url.includes('facebook.com')) platformName = 'facebook';
+                                else if (url.includes('youtube.com')) platformName = 'youtube';
+                                else if (url.includes('tiktok.com')) platformName = 'tiktok';
+                                else platformName = 'link';
+                            }
+
+                            return (
+                                <motion.a
+                                    key={key}
+                                    whileHover={{ y: -2, backgroundColor: "rgba(255,255,255,0.08)" }}
+                                    whileTap={{ scale: 0.95 }}
+                                    href={url.startsWith('http') ? url : `https://${platformName}.com/${url}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-300 hover:text-white transition-all shadow-sm"
+                                >
+                                    <span className="text-orange-600 flex items-center justify-center">
+                                        {getPlatformIcon(platformName)}
+                                    </span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest leading-none">
+                                        {platformName}
+                                    </span>
+                                </motion.a>
+                            );
+                        })}
+
+                    </div>
+
+                    <p className="text-sm text-zinc-400 leading-relaxed mb-8 italic line-clamp-2">
+                        {profile?.bio || "Mizisyen H-MIZIK. Byenveni sou paj mwen."}
+                    </p>
+
+                    <button
+                        style={{ backgroundColor: "#27272a" }}
+                        onClick={() => navigate("/editeProfile")}
+                        className="w-full py-4 bg-zinc-900 border border-white/10 hover:bg-zinc-800 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95 shadow-lg"
+                    >
+                        MODIFYE PWOFIL
+                    </button>
                 </motion.div>
-               
-                {/* 4. RECENTLY PLAYED (Horizontal Scroll) */}
-                <div className="mt-10">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-400">Recently Played</h3>
-                        <span className="text-[10px] font-bold text-orange-500 uppercase tracking-tighter cursor-pointer">See All</span>
-                    </div>
 
-                    <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6">
-                        {recentlyPlayed.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                whileTap={{ scale: 0.94 }}
-                                className="flex-shrink-0 w-32"
-                            >
-                                <div className="w-32 h-32 rounded-xl overflow-hidden shadow-lg mb-2 relative group">
-                                    <img
-                                        src={item.cover}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Play size={24} className="fill-white text-white" />
-                                    </div>
-                                </div>
-                                <h4 className="text-[12px] font-bold truncate text-white/90">{item.title}</h4>
-                                <p className="text-[10px] text-zinc-500 font-bold truncate">{item.artist}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* 5. TABS NAVIGATION (Sticky) */}
-                <div className={`sticky top-14 z-50 bg-[#121212] mt-6 flex border-b border-zinc-800/50 transition-all ${isScrolled ? 'pt-2' : ''}`}>
-                    {['uploads', 'playlists', 're-ups'].map((tab) => (
-                        <div
+                {/* TABS SELECTION */}
+                <div className="sticky top-14 z-40 bg-[#121212] border mt-10 flex  border-white/5">
+                    {['uploads', 'playlists', 'likes'].map((tab) => (
+                        <button
+                            style={{ outline: "none", border: "none", backgroundColor: "#121212" }}
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab
-                                ? 'text-orange-500 border-b-2 border-orange-500'
-                                : 'text-zinc-500 hover:text-zinc-300'
+                            className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all outline-none border-none ${activeTab === tab ? 'text-orange-600 border-b-2 border-orange-600' : 'text-zinc-600'
                                 }`}
                         >
-                            {tab}
-                        </div>
+                            {tab === 'uploads' ? 'Mizik' : tab === 'playlists' ? 'Playlists' : 'Favori'}
+                        </button>
                     ))}
                 </div>
 
-                {/* 6. TAB CONTENT AREA */}
-                <div className="py-8 pb-40 min-h-[40vh]">
-                    {activeTab === 'uploads' && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex flex-col items-center justify-center py-16 text-zinc-600"
-                        >
-                            <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mb-4">
-                                <Grid size={32} />
-                            </div>
-                            <p className="text-sm font-bold tracking-tight">No uploads yet</p>
-                            <p className="text-xs font-medium opacity-60">Your shared tracks will appear here.</p>
-                        </motion.div>
-                    )}
+                {/* LIST KONTNI */}
+                <div className="py-8 pb-32">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'uploads' ? (
+                            <motion.div
+                                key="tracks"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-3"
+                            >
+                                {tracks && tracks.length > 0 ? (
+                                    tracks.map((track) => (
+                                        <motion.div
+                                            key={track.id}
+                                            onClick={() => incrementPlay(track.id)}
+                                            className="flex items-center gap-4 bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-all group cursor-pointer border border-white/[0.02]"
+                                        >
+                                            <div className="relative w-14 h-14 flex-shrink-0">
+                                                <img
+                                                    src={track.coverUrl || "/default-music.png"}
+                                                    className="w-full h-full object-cover rounded-xl shadow-lg"
+                                                    alt={track.title}
+                                                />
+                                                <div className="absolute inset-0 bg-orange-600/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                                                    <Play size={20} className="fill-white text-white" />
+                                                </div>
+                                            </div>
 
-                    {activeTab === 'playlists' && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="grid grid-cols-2 gap-5"
-                        >
-                            <div className="group cursor-pointer">
-                                <div className="aspect-square bg-zinc-900 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-white/5 group-active:scale-95 transition-transform">
-                                    <ListMusic size={40} className="text-zinc-800" />
-                                </div>
-                                <h4 className="text-xs font-black truncate">My Favorites</h4>
-                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tighter">24 tracks</p>
-                            </div>
-                        </motion.div>
-                    )}
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-sm font-black truncate uppercase italic tracking-tight">{track.title}</h4>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <span className="text-[9px] text-orange-600 font-black uppercase tracking-widest">{track.genre}</span>
+                                                    <div className="flex items-center gap-1 text-[9px] text-zinc-500 font-bold uppercase">
+                                                        <Headphones size={10} /> {track.playCount?.toLocaleString() || 0}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[10px] font-mono text-zinc-500">{formatDuration(track.duration)}</span>
+                                                <button className="p-2 hover:bg-white/5 rounded-full">
+                                                    <MoreVertical size={16} className="text-zinc-500" />
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))
+                                ) : !tracksLoading && (
+                                    <div className="flex flex-col items-center justify-center py-20 opacity-20">
+                                        <Music size={40} />
+                                        <p className="text-[10px] font-black mt-4 uppercase tracking-[0.25em]">Poko gen anyen</p>
+                                    </div>
+                                )}
+                                {tracksLoading && (
+                                    <div className="flex justify-center py-6">
+                                        <Loader2 className="text-orange-600 animate-spin" size={24} />
+                                    </div>
+                                )}
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="empty"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex flex-col items-center justify-center py-20 opacity-20"
+                            >
+                                <Music size={40} />
+                                <p className="text-[10px] font-black mt-4 uppercase tracking-[0.25em]">Paj sa a poko pare</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </main>
+
+            {/* FLOATING ACTION BUTTON */}
+            {profile?.isArtist && (
+                <motion.button
+                    style={{ backgroundColor: "oklch(64.6% 0.222 41.116) " }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => navigate("/nouvoson")}
+                    className="fixed bottom-44 right-6 w-16 h-16 bg-orange-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-orange-600/10 z-[90] border-2 border-white/10 text-white"
+                >
+                    <Plus size={32} strokeWidth={3} />
+                </motion.button>
+            )}
 
             <BottomMenu />
         </div>

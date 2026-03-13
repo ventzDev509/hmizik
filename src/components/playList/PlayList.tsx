@@ -79,7 +79,7 @@ export default function PlayList() {
                             <div className="flex gap-8 items-end">
                                 {/* Cover */}
                                 <div className="w-52 h-52 rounded-lg overflow-hidden shadow-xl flex-shrink-0">
-                                    <img ref={imgRef} src={currentSong?.cover} alt={PLAYLIST.title} className="w-full h-full object-cover" />
+                                    <img ref={imgRef} src={currentSong?.coverUrl} alt={PLAYLIST.title} className="w-full h-full object-cover" />
                                 </div>
 
                                 {/* Title & meta */}

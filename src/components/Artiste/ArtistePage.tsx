@@ -72,7 +72,7 @@ export default function ArtistePage() {
                         <div
                             className="absolute inset-0 blur-4xl opacity-60 bg-gradient-to-b from-gray-900 to-black"
                             style={{
-                                backgroundImage: currentSong?.cover,
+                                backgroundImage: currentSong?.coverUrl,
                                 backgroundColor: bgColor,
                             }}
 
@@ -84,10 +84,10 @@ export default function ArtistePage() {
                             <div className="flex gap-8 items-end">
                                 {/* Cover */}
                                 <div className="w-50 h-50 absolute top-56 rounded-full   overflow-hidden shadow-xl flex-shrink-0">
-                                    <img  src={currentSong?.cover} alt={PLAYLIST.title} className="w-full h-full object-cover" />
+                                    <img  src={currentSong?.coverUrl} alt={PLAYLIST.title} className="w-full h-full object-cover" />
                                 </div>
                                 <div style={{ visibility: "hidden" }} className="w-50 h-50 mr-10  top-60 rounded-full   overflow-hidden shadow-xl flex-shrink-0">
-                                    <img  src={currentSong?.cover} alt={PLAYLIST.title} className="w-full h-full object-cover" />
+                                    <img  src={currentSong?.coverUrl} alt={PLAYLIST.title} className="w-full h-full object-cover" />
                                 </div>
 
                                 {/* Title & meta */}

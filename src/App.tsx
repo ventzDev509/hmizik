@@ -17,6 +17,10 @@ import SearchPageMobile from "./components/Mobile/SearchPageMobile/SearchPageMob
 import LibraryPage from "./components/Mobile/Library/Library";
 import NotificationPage from "./components/Mobile/notification/Notificationpage";
 import Register from "./components/Mobile/Auth/Register";
+import AddMusicMobile from "./components/Mobile/AddSong/AddMusicMobile";
+import LikedSongsPage from "./components/Mobile/LikeSong/LikeSong";
+import PlaylistDetailPage from "./components/Mobile/PlaylistDetailPage/PlaylistDetailPage";
+import OfflineMusic from "./components/Mobile/OfflineMusic/OfflineMusic";
 
 function App() {
 
@@ -45,17 +49,17 @@ function App() {
     },
     {
       path: "/search", element: <>
-        <div className=""><>{isMobile?<SearchPageMobile/>:""}</></div>
+        <div className=""><>{isMobile ? <SearchPageMobile /> : ""}</></div>
       </>, withBottomNav: true
     },
     {
       path: "/library", element: <>
-        <div className=""><>{isMobile?<LibraryPage/>:""}</></div>
+        <div className=""><>{isMobile ? <LibraryPage /> : ""}</></div>
       </>, withBottomNav: true
     },
     {
       path: "/notifications", element: <>
-        <div className=""><>{isMobile?<NotificationPage/>:""}</></div>
+        <div className=""><>{isMobile ? <NotificationPage /> : ""}</></div>
       </>, withBottomNav: true
     },
     {
@@ -79,10 +83,30 @@ function App() {
         </></div>
       </>, withBottomNav: true
     },
-
-{
-      path: "/register", element: <>
-        <div className=""><>{isMobile?<Register/>:""}</></div>
+    {
+      path: "/sawrenmen", element: <>
+        <div className=""><>{isMobile ? <LikedSongsPage /> : ""}</></div>
+      </>, withBottomNav: true
+    },
+    {
+      path: "/auth", element: <>
+        <div className=""><>{isMobile ? <Register /> : ""}</></div>
+      </>, withBottomNav: true
+    },
+    {
+      path: "/playlist/:id", element: <>
+        <div className=""><>{isMobile ? <PlaylistDetailPage /> : ""}</></div>
+      </>, withBottomNav: true
+    },
+    {
+      path: "/telechaje", element: <>
+        <div className=""><>{isMobile ? <OfflineMusic /> : ""}</></div>
+      </>, withBottomNav: true
+    },
+    //ajoute mizik
+    {
+      path: "/nouvoson", element: <>
+        <div className=""><>{isMobile ? <AddMusicMobile /> : ""}</></div>
       </>, withBottomNav: true
     },
 

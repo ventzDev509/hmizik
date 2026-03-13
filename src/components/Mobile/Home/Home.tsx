@@ -7,10 +7,9 @@ import api from "../../../api/axios";
 import { useAuth } from "../../../context/AuthContext";
 
 
-
-
 function HomeMobile() {
     const { setUser } = useAuth()
+  
     useEffect(() => {
         const handleUrlToken = async () => {
             // 1. Nou chèche paramèt yo nan URL la
@@ -30,17 +29,20 @@ function HomeMobile() {
                     // window.location.href = '/dashboard';
                 } catch (error) {
                     console.error("Token an pa valid:", error);
-                    localStorage.removeItem('h_mizik_token');
+                    // localStorage.removeItem('h_mizik_token');
                 }
             }
         };
 
         handleUrlToken();
     }, []);
+    
     return <>
         <TopMenu />
+           
         <div className="h-[100vh] overflow-y-scroll ">
             <Main />
+         
         </div>
 
         {/* <BottomMPlayerMobile /> */}

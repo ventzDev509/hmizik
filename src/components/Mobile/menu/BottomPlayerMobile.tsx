@@ -1,82 +1,108 @@
-import React, { useState } from 'react';
-import { Play, Pause, MonitorSpeaker, Heart } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
-import PlayerPage from '../Songpage/SongPage';
-import img  from "../../../assets/toby.webp"
+import React, { useState, useMemo } from 'react';
+import { Play, Pause, MonitorSpeaker, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import PlayerPage from '../Player/Player';
+import { useAudio } from '../../../provider/PlayerContext';
+
 const BottomMPlayerMobile: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   
-  const [currentSong] = useState({
-    id: "1",
-    title: "Mizik Fle", // Tit mizik la
-    artist: "Atis Klasik", // Non atis la
-    cover: img, // Imaj album lan
-    album: "H-Mizik Hits",
-    duration: "3:45",
-    color: "#5d3fd3" // Ou ka mete yon koulè default si useImageColors poko chaje
-  });
+  const { 
+    currentSong, 
+    isPlaying, 
+    togglePlay, 
+    isBuffering, 
+    currentTime, 
+    duration 
+  } = useAudio();
+
+  const progressPercent = useMemo(() => {
+    if (!duration) return 0;
+    return (currentTime / duration) * 100;
+  }, [currentTime, duration]);
+
   return (
-    <div className="fixed bottom-[80px] w-full z-50" onClick={() => setShowPlayer(true)}>
+    <>
+      {/* 1. ANIMASYON POU PARÈT/DISPARÈT MINI PLAYER A */}
       <AnimatePresence>
-        {showPlayer && (
-          <PlayerPage
-            song={currentSong}
-            onClose={() => setShowPlayer(false)}
-          />
+        {currentSong && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }} // Kòmanse anba epi envizib
+            animate={{ y: 0, opacity: 1 }}   // Moute epi parèt
+            exit={{ y: 100, opacity: 0 }}    // Desann epi disparèt si currentSong vin null
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            className="fixed bottom-[80px] left-2 right-2 z-50" 
+            onClick={() => setShowPlayer(true)}
+          >
+            <div className="bg-zinc-900/95 backdrop-blur-lg rounded-xl p-2 flex items-center justify-between shadow-2xl border border-white/10 relative overflow-hidden">
+              
+              {/* Enfòmasyon Chanson */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <img
+                  src={currentSong.coverUrl}
+                  alt={currentSong.title}
+                  className={`h-11 w-11 rounded-lg shadow-md object-cover ${isPlaying ? 'animate-pulse-slow' : ''}`}
+                />
+                <div className="flex flex-col min-w-0">
+                  <h4 className="text-[13px] font-bold text-white truncate italic uppercase tracking-tighter">
+                    {currentSong.title}
+                  </h4>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] text-orange-500 font-bold truncate uppercase tracking-tighter">
+                       {typeof currentSong.artist === 'string' ? currentSong.artist : currentSong.artist?.username}
+                    </span>
+                    <MonitorSpeaker className="w-3 h-3 text-orange-500 ml-1" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Kontwòl */}
+              <div className="flex items-center gap-4 px-2">
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePlay();
+                  }}
+                  className="text-white active:scale-90 transition-transform w-8 h-8 flex items-center justify-center"
+                >
+                  {isBuffering ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+                  ) : isPlaying ? (
+                    <Pause className="w-7 h-7 fill-white" />
+                  ) : (
+                    <Play className="w-7 h-7 fill-white ml-1" />
+                  )}
+                </div>
+              </div>
+
+              {/* Bar Pwogresyon */}
+              <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-white/10">
+                <motion.div
+                  className="h-full bg-orange-500"
+                  style={{ width: `${progressPercent}%` }}
+                  transition={{ type: "tween", ease: "linear" }}
+                />
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
-      {/* Container a ak Glassmorphism oswa koulè solid */}
-      <div className="bg-black rounded-md p-2 flex items-center justify-between shadow-2xl border border-zinc-800/50">
 
-        {/* 1. Enfòmasyon Chanson (Gòch) */}
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <img
-            src={img}
-            alt="Album Art"
-            className="h-11 w-11 rounded-md shadow-md"
-          />
-          <div className="flex flex-col min-w-0">
-            <h4 className="text-[13px] font-bold text-white truncate">
-              Tit Chanson an ki Long Anpil
-            </h4>
-            <div className="flex items-center gap-1">
-              <span className="text-[11px] text-green-500 font-medium">Atis la</span>
-              <span className="text-zinc-400 text-[10px]">•</span>
-              <MonitorSpeaker className="w-3 h-3 text-green-500" />
-            </div>
-          </div>
-        </div>
-
-        {/* 2. Aksyon (Dwa) */}
-        <div className="flex items-center gap-4 px-2">
-          <Heart
-            onClick={() => setIsLiked(!isLiked)}
-            className={`w-6 h-6 transition-colors ${isLiked ? 'fill-green-500 text-green-500' : 'text-zinc-400'}`}
-          />
-
-          <div
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="text-white active:scale-90 transition-transform"
+      {/* 2. GWO PLAYER A (FULL SCREEN) */}
+      <AnimatePresence>
+        {showPlayer && (
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="fixed inset-0 z-[100] bg-black"
           >
-            {isPlaying ? (
-              <Pause className="w-7 h-7 fill-white" />
-            ) : (
-              <Play className="w-7 h-7 fill-white" />
-            )}
-          </div>
-        </div>
-
-        {/* 3. Bar Pwogresyon (Anba nèt nan ti bwat la) */}
-        <div className="absolute bottom-0 left-2 right-2 h-[2px] bg-zinc-600 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-1000"
-            style={{ width: '35%' }}
-          />
-        </div>
-      </div>
-    </div>
+            <PlayerPage onClose={() => setShowPlayer(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

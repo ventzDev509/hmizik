@@ -18,7 +18,7 @@ export default function Home() {
     //   const colors = useSelector((state: RootState) => state.theme.colors);
     const [selectedMusic, setSelectedMusic] = useState<Music | null>(null);
     const { currentSong, } = useAudio();
-    const { bgColor, textColor } = useImageColors(currentSong?.cover);
+    const { bgColor, textColor } = useImageColors(currentSong?.coverUrl);
     return (
         <div className="flex w-full h-screen p-1.5 gap-2 relative bg-black">
             {/* Sidebar */}

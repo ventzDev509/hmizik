@@ -97,7 +97,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 6. FONKSYON GOOGLE (Redireksyon dirèk)
     const loginWithGoogle = () => {
         // Nou itilize baseURL la si nou bezwen l, oswa nou ekri l an dirèk
-        window.location.href = 'http://localhost:3000/users/google';
+        // window.location.href = 'http://localhost:3000/users/google';
+        window.location.href = 'https://hmizikbackend-1.onrender.com/users/google';
     };
 
     // 7. FONKSYON LOGOUT
