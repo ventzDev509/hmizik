@@ -16,7 +16,7 @@ export default defineConfig({
         enabled: true,
         type: 'module'
       },
-      filename: 'manifest.json',
+      filename: 'sw.js',
       manifest: { 
         name: 'H-Mizik Streaming',
         short_name: 'H-Mizik',
