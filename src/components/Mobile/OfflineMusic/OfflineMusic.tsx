@@ -7,59 +7,68 @@ import toast from 'react-hot-toast';
 import BottomMenu from '../menu/BottomMenu';
 import Equalizer from '../../buffer/Equalizer';
 
-// --- KOMPONAN POU IMAJ KI NAN KACH ---
-export const OfflineImage = ({ src, className, ...props }: any) => {
-  const [loaded, setLoaded] = useState(false);
+export const OfflineImage = ({ url, className, fallback, ...props }: any) => {
+    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(false);
 
-  return (
-    <div className={`relative overflow-hidden ${className} bg-zinc-900`}>
-      <img
-        src={src}
-        {...props}
-        // crossOrigin="anonymous" // OBLIGATWA pou Supabase + Cache
-        loading="lazy"
-        className={`
-          ${className} 
+    // Si pa gen URL oswa si gen yon erè chajman, montre fallback la
+    if (!url || error) return fallback;
+
+    return (
+        <div className={`relative overflow-hidden ${className} bg-zinc-900 flex items-center justify-center`}>
+            <img
+                src={url}
+                {...props}
+                crossOrigin="anonymous" // Trè enpòtan pou Supabase offline
+                loading="eager" // Chaje l vit piske li nan kach
+                className={`
+          w-full h-full object-cover
           transition-opacity duration-500
           ${loaded ? 'opacity-100' : 'opacity-0'}
         `}
-        onLoad={() => setLoaded(true)}
-      />
-      
-      {/* Ti animasyon shimmer la pandan l ap chaje */}
-      {!loaded && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
-      )}
-    </div>
-  );
+                onLoad={() => setLoaded(true)}
+                onError={() => setError(true)}
+            />
+
+            {/* Shimmer loading animasyon */}
+            {!loaded && !error && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+            )}
+        </div>
+    );
 };
 
 // --- PAJ OFFLINE PRENSIPAL LA ---
+// ... (enpòtasyon yo rete menm jan)
+
 const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
     const allCachedUrls = useOfflineTracks();
     const { playSong, currentSong } = useAudio();
     const navigate = useNavigate();
 
-    // Filtre pou n pran sèlman URL mizik yo
-    const musicTracks = allCachedUrls.filter(url => url.includes('/tracks/'));
+    // 1. Nou rekipere metadata yo an premye
     const offlineData = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
 
-    // Chanje koulè "Status Bar" telefòn nan
+    // 2. FILTRAJ KI PI STRIK: 
+    // Nou tcheke si se yon track EPIDOT si li gen metadata ki sove nan localStorage
+    const musicTracks = allCachedUrls.filter(url => {
+        const isTrack = url.includes('/tracks/');
+        const hasInfo = !!offlineData[url]; // Sèlman si nou gen tit/imaj pou li
+        return isTrack && hasInfo;
+    });
+
     useEffect(() => {
         const themeColor = document.querySelector('meta[name="theme-color"]');
         const originalColor = themeColor ? themeColor.getAttribute('content') : '#121212';
-        
         if (themeColor) themeColor.setAttribute('content', '#4a1d05');
         return () => {
             if (themeColor) themeColor.setAttribute('content', originalColor || '#121212');
         };
     }, []);
 
-    // --- LOJIK POU JWE AK TOUT QUEUE A (POU NEXT MACHE) ---
     const handlePlayTrack = (index: number) => {
         if (musicTracks.length === 0) return;
 
-        // 1. Prepare "Queue" la (Tout lis la)
         const fullQueue = musicTracks.map((url, i) => {
             const meta = offlineData[url] || {};
             return {
@@ -71,12 +80,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
             };
         });
 
-        // 2. Chwazi chante ki klike a
-        const selectedSong = fullQueue[index];
-
-        // 3. Jwe li epi pase tout queue a bay PlayerContext la
-        // Si PlayerContext ou a byen fèt, l ap jwe queue a nan lòd
-        playSong(selectedSong, fullQueue);
+        playSong(fullQueue[index], fullQueue);
     };
 
     const handleDelete = async (audioUrl: string) => {
@@ -84,13 +88,12 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
             try {
                 const cache = await caches.open('music-cache');
                 await cache.delete(audioUrl);
-                
+
                 const newMetadata = { ...offlineData };
                 delete newMetadata[audioUrl];
                 localStorage.setItem('offline_metadata', JSON.stringify(newMetadata));
-                
+
                 toast.success("Mizik retire");
-                // Nou fòse yon reload pou lis la netwaye
                 window.location.reload();
             } catch (e) {
                 toast.error("Error lè w ap retire mizik la");
@@ -100,8 +103,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#4a1d05] via-[#1a0b02] to-[#121212] text-zinc-100 font-sans relative">
-            
-            {/* Header / Nav */}
+            {/* Header ... */}
             <div className="sticky top-0 z-50 px-4 py-4 flex items-center justify-between backdrop-blur-xl bg-black/10">
                 <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full active:scale-90 transition-all border border-white/5">
                     <ChevronLeft size={24} />
@@ -116,7 +118,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
             </div>
 
             <div className="px-5 pt-10">
-                {/* Visual Header */}
+                {/* Visual Header ... */}
                 <div className="relative mx-auto w-44 h-44 flex items-center justify-center">
                     <div className="relative w-40 h-40 flex items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-orange-500 to-orange-700 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 z-10">
                         <Download size={70} className="text-white animate-bounce-slow" />
@@ -128,8 +130,8 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                     <p className="text-orange-200/50 font-medium text-sm mt-1">
                         {musicTracks.length} chante ki sove sou telefòn lan
                     </p>
-                    
-                    <button 
+
+                    <button
                         onClick={() => handlePlayTrack(0)}
                         className="mt-6 px-10 py-3.5 bg-orange-600 hover:bg-orange-500 text-white rounded-full font-bold flex items-center gap-3 mx-auto shadow-2xl transition-all active:scale-95"
                     >
@@ -146,21 +148,24 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                         </div>
                     ) : (
                         musicTracks.map((url, index) => {
-                            const metadata = offlineData[url] || {};
+                            const metadata = offlineData[url];
+                            // Sekirite: Si metadata a ta manke malgre filtraj la
+                            if (!metadata) return null;
+
                             const isPlaying = currentSong?.audioUrl === url;
 
                             return (
-                                <div 
-                                    key={index}
-                                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all group border ${
-                                        isPlaying ? 'bg-orange-500/10 border-orange-500/20' : 'bg-black/20 border-white/5'
-                                    } backdrop-blur-sm active:bg-white/10`}
+                                <div
+                                    key={url} // Itilize URL kòm kle pito
+                                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all group border ${isPlaying ? 'bg-orange-500/10 border-orange-500/20' : 'bg-black/20 border-white/5'
+                                        } backdrop-blur-sm active:bg-white/10`}
                                     onClick={() => handlePlayTrack(index)}
                                 >
-                                    <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
-                                        <OfflineImage 
-                                            url={metadata.coverUrl} 
-                                            fallback={<Music size={18} className="m-auto mt-4 text-zinc-700" />} 
+                                    <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5 flex items-center justify-center">
+                                        <OfflineImage
+                                            url={metadata.coverUrl}
+                                            className="w-full h-full"
+                                            fallback={<Music size={18} className="text-zinc-700" />}
                                         />
                                         {isPlaying && (
                                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -168,18 +173,18 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     <div className="flex-1 min-w-0">
                                         <h4 className={`text-[15px] font-bold truncate ${isPlaying ? 'text-orange-400' : 'text-white'}`}>
                                             {metadata.trackTitle || "Mizik san non"}
                                         </h4>
                                         <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">
-                                            {isPlaying ? 'Ap jwe kounye a' : 'Sove nan kach'}
+                                            {isPlaying ? 'Ap jwe kounye a' : 'Telechaje'}
                                         </p>
                                     </div>
 
                                     <div className="flex items-center gap-1">
-                                        <button 
+                                        <button
                                             onClick={(e) => { e.stopPropagation(); handleDelete(url); }}
                                             className="p-2 text-zinc-500 hover:text-red-500 transition-colors active:scale-90"
                                         >
@@ -195,13 +200,11 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                     )}
                 </div>
             </div>
-
-            {/* Navigasyon anba */}
+            
             <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 bg-gradient-to-t from-[#121212] via-[#121212]/80 to-transparent pt-12">
                 <BottomMenu />
             </div>
 
-            {/* Animasyon CSS */}
             <style>{`
                 @keyframes bounce-slow {
                     0%, 100% { transform: translateY(0); }
@@ -210,9 +213,17 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                 .animate-bounce-slow {
                     animation: bounce-slow 4s infinite ease-in-out;
                 }
+                @keyframes shimmer {
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(100%); }
+                }
+                .animate-shimmer {
+                    animation: shimmer 1.5s infinite linear;
+                }
             `}</style>
         </div>
     );
 };
 
 export default OfflineMusic;
+

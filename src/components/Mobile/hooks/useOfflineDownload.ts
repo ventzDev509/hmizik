@@ -1,68 +1,72 @@
-import toast from 'react-hot-toast';
+import { useCallback } from 'react';
 
 export const useOfflineDownload = () => {
-    const CACHE_NAME = 'music-cache';
+    
+    const isOffline = useCallback(async (audioUrl: string) => {
+        const cache = await caches.open('music-cache');
+        const match = await cache.match(audioUrl);
+        return !!match;
+    }, []);
 
-    const downloadTrack = async (audioUrl: string, coverUrl: string, trackTitle: string) => {
-        if (!('caches' in window)) return;
-        
-        const toastId = toast.loading(`Telechaje: ${trackTitle}...`);
-
+    const downloadWithProgress = async (
+        url: string, 
+        cover: string, 
+        title: string, 
+        trackId: string, 
+        onProgress: (p: number) => void
+    ) => {
         try {
-            // 1. Nou fè Fetch la ak mode 'cors' pou asire n gen aksè ak data a
-            // Nou itilize Promise.all pou yo telechaje an menm tan
-            const [audioRes, coverRes] = await Promise.all([
-                fetch(audioUrl, { mode: 'cors' }),
-                coverUrl ? fetch(coverUrl, { mode: 'cors' }) : Promise.resolve(null)
-            ]);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("Repons lan pa bon");
 
-            if (!audioRes.ok) throw new Error("Audio telechajman echwe");
+            const contentLength = +(response.headers.get('Content-Length') || 0);
+            const reader = response.body?.getReader();
+            if (!reader) throw new Error("Reader pa disponib");
 
-            // --- ETAP KRITIK: KONVÈTI NAN BLOB POU FÒSE FINI ---
-            // Lè nou fè .blob(), navigatè a DWE fini telechaje chak bit anvan l kontinye
-            const audioBlob = await audioRes.blob();
-            
-            let coverBlob = null;
-            if (coverRes && coverRes.ok) {
-                coverBlob = await coverRes.blob();
+            let loaded = 0;
+            const chunks = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                chunks.push(value);
+                loaded += value.length;
+                
+                if (contentLength > 0) {
+                    const p = Math.round((loaded / contentLength) * 100);
+                    onProgress(p);
+                }
             }
 
-            // 2. Koulye a nou sèten data a la, nou louvri kach la
-            const cache = await caches.open(CACHE_NAME);
-
-            // 3. Kreye nouvo Repons ak bon Header pou kach la pa gen "opaque"
-            const audioToCache = new Response(audioBlob, {
-                headers: { 'Content-Type': 'audio/mpeg', 'Content-Length': audioBlob.size.toString() }
+            const blob = new Blob(chunks);
+            const cacheResponse = new Response(blob, {
+                headers: response.headers
             });
 
-            await cache.put(audioUrl, audioToCache);
+            const cache = await caches.open('music-cache');
+            await cache.put(url, cacheResponse);
 
-            if (coverBlob) {
-                const coverToCache = new Response(coverBlob, {
-                    headers: { 'Content-Type': 'image/jpeg' }
-                });
-                await cache.put(coverUrl, coverToCache);
-            }
+            // Sove Metadata ak trackId
+            const metadata = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
+            metadata[url] = { 
+                trackId, 
+                trackTitle: title, 
+                coverUrl: cover,
+                downloadedAt: new Date().toISOString()
+            };
+            localStorage.setItem('offline_metadata', JSON.stringify(metadata));
 
-            // 4. Sere metadata yo
-            const offlineMap = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
-            offlineMap[audioUrl] = { coverUrl, trackTitle };
-            localStorage.setItem('offline_metadata', JSON.stringify(offlineMap));
+            // Sove imaj la tou nan kach
+            const imgCache = await caches.open('images-cache');
+            const imgRes = await fetch(cover);
+            if (imgRes.ok) await imgCache.put(cover, imgRes);
 
-            toast.success(`${trackTitle} sove nèt!`, { id: toastId });
-            console.log("✅ Mizik ak Foto sere san erè!");
-
-        } catch (e) { 
-            console.error("Download error:", e);
-            toast.error("Echèk telechajman. Tcheke si Supabase CORS pèmèt.", { id: toastId });
+            return true;
+        } catch (error) {
+            throw error;
         }
     };
 
-    const isOffline = async (url: string) => {
-        const cache = await caches.open(CACHE_NAME);
-        const match = await cache.match(url);
-        return !!match;
-    };
-
-    return { downloadTrack, isOffline };
+    return { downloadWithProgress, isOffline };
 };

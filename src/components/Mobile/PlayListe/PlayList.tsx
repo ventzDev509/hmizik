@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreVertical, Play, Heart, Download, ChevronLeft, Pause, Loader2, ListPlus, PlusSquare, CheckCircle2 } from 'lucide-react';
+import { MoreVertical, Play, Heart, ChevronLeft, Pause, Loader2, ListPlus, PlusSquare } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import BottomMenu from '../menu/BottomMenu';
 import { useImageColors } from "../../utils/GetColor";
@@ -9,10 +9,9 @@ import { useAudio } from '../../../provider/PlayerContext';
 import { useLikes } from '../../../context/LikeContext';
 import AddToPlaylistModal from '../Modal/AddToPlaylistModal';
 import Equalizer from '../../buffer/Equalizer';
-// AJOUTE SA
-import { useOfflineDownload } from '../hooks/useOfflineDownload';
 
-// --- TIP POU SONG NAN ---
+import DownloadButton from '../DownloadButton/DownloadButton';
+
 interface Song {
     id: string;
     title: string;
@@ -30,11 +29,6 @@ const PlaylistPage = () => {
 
     const { playSong, isPlaying, currentSong, togglePlay, isBuffering, addToQueue } = useAudio();
     const { isLiked, toggleLike } = useLikes();
-
-    // AJOUTE SA YO
-    const { downloadTrack, isOffline } = useOfflineDownload();
-    const [offlineTracks, setOfflineTracks] = useState<string[]>([]);
-    const [downloadingTracks, setDownloadingTracks] = useState<string[]>([]);
 
     const [showActionModal, setShowActionModal] = useState(false);
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
@@ -57,37 +51,6 @@ const PlaylistPage = () => {
     const imgOpacity = useTransform(scrollY, [0, 200], [1, 0]);
     const imgScale = useTransform(scrollY, [0, 200], [1, 0.8]);
     const navOpacity = useTransform(scrollY, [150, 250], [0, 1]);
-
-    // FONKSYON DOWNLOAD KI GEN LOADING LAN
-    const handleDownloadTrack = async (song: Song) => {
-        if (downloadingTracks.includes(song.id)) return;
-        setDownloadingTracks(prev => [...prev, song.id]);
-        try {
-            // PASSE 3 PARAMÈT YO: Audio, Cover, Title
-            await downloadTrack(song.audioUrl, song.coverUrl, song.title);
-
-            // Mete l nan lis offline a pou icon nan chanje an vè (green)
-            setOfflineTracks(prev => [...prev, song.id]);
-            setOfflineTracks(prev => [...prev, song.id]);
-        } finally {
-            setDownloadingTracks(prev => prev.filter(tId => tId !== song.id));
-        }
-    };
-
-    // TCHEKE STATUS OFFLINE YO LÈ PAJ LA CHACHE
-    useEffect(() => {
-        const checkAllOfflineStatus = async () => {
-            const list = [];
-            const allTracksInPage = selectedTrack ? [selectedTrack, ...suggestions] : suggestions;
-            for (const track of allTracksInPage) {
-                if (await isOffline(track.audioUrl)) {
-                    list.push(track.id);
-                }
-            }
-            setOfflineTracks(list);
-        };
-        checkAllOfflineStatus();
-    }, [selectedTrack, suggestions]);
 
     useEffect(() => {
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
@@ -154,21 +117,20 @@ const PlaylistPage = () => {
                     </div>
                 </motion.div>
 
-                {/* CONTROLS */}
+                {/* CONTROLS AREA */}
                 <div className={`sticky top-16 z-40 flex justify-between items-center px-6 py-4 transition-colors duration-300 ${isScrolled ? 'bg-[#121212]' : 'bg-transparent'}`}>
                     <div className="flex items-center gap-6 text-zinc-400">
                         <motion.div whileTap={{ scale: 0.8 }} onClick={() => { toggleLike(selectedTrack.id); triggerVibration(15); }} className="cursor-pointer p-1">
                             <Heart size={28} className={`transition-all duration-300 ${isMainTrackLiked ? 'fill-orange-500 text-orange-500' : 'hover:text-white'}`} />
                         </motion.div>
 
-                        {/* BOUTON DOWNLOAD NAN HEADER */}
-                        <div onClick={() => handleDownloadTrack(selectedTrack)} className="cursor-pointer">
-                            {downloadingTracks.includes(selectedTrack.id) ? (
-                                <Loader2 size={24} className="text-orange-500 animate-spin" />
-                            ) : (
-                                <Download size={24} className={offlineTracks.includes(selectedTrack.id) ? 'text-green-500' : 'hover:text-white'} />
-                            )}
-                        </div>
+                        {/* BOUTON DOWNLOAD POU MIZIK PRINCIPAL LA */}
+                        <DownloadButton 
+                            trackId={selectedTrack.id}
+                            audioUrl={selectedTrack.audioUrl}
+                            coverUrl={selectedTrack.coverUrl}
+                            title={selectedTrack.title}
+                        />
 
                         <MoreVertical size={24} className="hover:text-white transition cursor-pointer" onClick={(e) => openActionMenu(e, selectedTrack)} />
                     </div>
@@ -178,18 +140,15 @@ const PlaylistPage = () => {
                     </div>
                 </div>
 
-                {/* SUGGESTIONS */}
+                {/* SUGGESTIONS LIST */}
                 <div className="px-4 mt-8 space-y-1 pb-40">
                     <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 italic mb-4 px-2">Menm jan ak sa</h3>
                     {suggestions.map((track, index) => {
                         const isThisTrackActive = currentSong?.id === track.id;
-                        const isThisTrackOffline = offlineTracks.includes(track.id);
-                        const isThisTrackDownloading = downloadingTracks.includes(track.id);
 
                         return (
                             <div key={track.id} className={`flex items-center gap-4 p-2 rounded-xl transition active:bg-white/10 ${isThisTrackActive ? 'bg-white/5' : 'hover:bg-white/5'}`}>
 
-                                {/* 1. NIMEWO OUBYEN EQUALIZER */}
                                 <div className="text-xs text-zinc-500 w-5 flex justify-center font-bold">
                                     {isThisTrackActive && isBuffering ? (
                                         <Loader2 size={14} className="text-orange-500 animate-spin" />
@@ -200,13 +159,8 @@ const PlaylistPage = () => {
                                     )}
                                 </div>
 
-                                {/* 2. COVER IMAGE KI AJOUTE A */}
                                 <div className="relative w-10 h-10 flex-shrink-0 cursor-pointer" onClick={() => isThisTrackActive ? togglePlay() : playSong(track, suggestions)}>
-                                    <img
-                                        src={track.coverUrl}
-                                        alt={track.title}
-                                        className={`w-full h-full object-cover rounded-md shadow-md ${isThisTrackActive ? 'opacity-80' : 'opacity-100'}`}
-                                    />
+                                    <img src={track.coverUrl} alt={track.title} className={`w-full h-full object-cover rounded-md shadow-md ${isThisTrackActive ? 'opacity-80' : 'opacity-100'}`} />
                                     {isThisTrackActive && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-md">
                                             {isPlaying ? <Pause size={14} className="text-white fill-white" /> : <Play size={14} className="text-white fill-white ml-0.5" />}
@@ -214,25 +168,24 @@ const PlaylistPage = () => {
                                     )}
                                 </div>
 
-                                {/* 3. ENFÒMASYON SOU MIZIK LA */}
                                 <div className="flex-1 overflow-hidden cursor-pointer" onClick={() => isThisTrackActive ? togglePlay() : playSong(track, suggestions)}>
-                                    <div className="flex items-center gap-2">
-                                        <h4 className={`text-sm font-bold truncate ${isThisTrackActive ? 'text-orange-500' : 'text-white'}`}>
-                                            {track.title}
-                                        </h4>
-                                        {isThisTrackDownloading ? (
-                                            <Loader2 size={12} className="text-orange-500 animate-spin" />
-                                        ) : isThisTrackOffline && (
-                                            <CheckCircle2 size={12} className="text-green-500" />
-                                        )}
-                                    </div>
+                                    <h4 className={`text-sm font-bold truncate ${isThisTrackActive ? 'text-orange-500' : 'text-white'}`}>
+                                        {track.title}
+                                    </h4>
                                     <p className="text-[11px] text-zinc-400 font-bold truncate uppercase tracking-tighter">
                                         {typeof track.artist === 'string' ? track.artist : track.artist?.username}
                                     </p>
                                 </div>
 
-                                {/* 4. BOUTON AKSYON YO */}
                                 <div className="flex items-center gap-3">
+                                    {/* BOUTON DOWNLOAD POU CHAK MIZIK NAN LIS LA */}
+                                    <DownloadButton 
+                                        trackId={track.id}
+                                        audioUrl={track.audioUrl}
+                                        coverUrl={track.coverUrl}
+                                        title={track.title}
+                                    />
+                                    
                                     <Heart
                                         onClick={(e) => { e.stopPropagation(); toggleLike(track.id); triggerVibration(10); }}
                                         size={18}
@@ -252,7 +205,7 @@ const PlaylistPage = () => {
 
             <BottomMenu />
 
-            {/* --- MODAL --- */}
+            {/* ACTION MODAL */}
             <AnimatePresence>
                 {showActionModal && selectedSongForActions && (
                     <div className="fixed inset-0 z-[200] flex items-end justify-center">
@@ -270,27 +223,6 @@ const PlaylistPage = () => {
                             </div>
 
                             <div className="space-y-4">
-                                {/* BOUTON DOWNLOAD NAN MODAL */}
-                                <button
-                                    disabled={downloadingTracks.includes(selectedSongForActions.id)}
-                                    onClick={() => {
-                                        handleDownloadTrack(selectedSongForActions);
-                                        setShowActionModal(false);
-                                    }}
-                                    className="w-full flex items-center gap-4 p-5 bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-2xl transition-all text-white disabled:opacity-50"
-                                >
-                                    <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
-                                        {downloadingTracks.includes(selectedSongForActions.id) ? (
-                                            <Loader2 size={22} className="text-orange-500 animate-spin" />
-                                        ) : (
-                                            <Download size={22} className="text-orange-500" />
-                                        )}
-                                    </div>
-                                    <span className="font-black text-lg italic uppercase tracking-tighter">
-                                        {downloadingTracks.includes(selectedSongForActions.id) ? "Ap telechaje..." : "Telechaje pou offline"}
-                                    </span>
-                                </button>
-
                                 <button
                                     disabled={isAddingToQueue}
                                     onClick={handleAddToQueue}
