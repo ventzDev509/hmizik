@@ -35,6 +35,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+img {
+  transition: opacity 0.3s ease-in-out;
+  /* Sa anpeche imaj la parèt an blan anvan li chaje */
+  background-color: #121212; 
+}
+
+img:not([src]) {
+  visibility: hidden;
+}
 #root {
   margin: 0;
   padding: 0;

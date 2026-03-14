@@ -8,29 +8,30 @@ import BottomMenu from '../menu/BottomMenu';
 import Equalizer from '../../buffer/Equalizer';
 
 // --- KOMPONAN POU IMAJ KI NAN KACH ---
-const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
+export const OfflineImage = ({ src, className, ...props }: any) => {
+  const [loaded, setLoaded] = useState(false);
 
-    useEffect(() => {
-        let objectUrl: string | null = null;
-        const loadImage = async () => {
-            if (!url) return;
-            try {
-                const cache = await caches.open('music-cache');
-                const response = await cache.match(url);
-                if (response) {
-                    const blob = await response.blob();
-                    objectUrl = URL.createObjectURL(blob);
-                    setImageSrc(objectUrl);
-                }
-            } catch (e) { console.error("Error loading offline image:", e); }
-        };
-        loadImage();
-        return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
-    }, [url]);
-
-    if (!imageSrc) return fallback;
-    return <img src={imageSrc} alt="" className="w-full h-full object-cover" />;
+  return (
+    <div className={`relative overflow-hidden ${className} bg-zinc-900`}>
+      <img
+        src={src}
+        {...props}
+        crossOrigin="anonymous" // OBLIGATWA pou Supabase + Cache
+        loading="lazy"
+        className={`
+          ${className} 
+          transition-opacity duration-500
+          ${loaded ? 'opacity-100' : 'opacity-0'}
+        `}
+        onLoad={() => setLoaded(true)}
+      />
+      
+      {/* Ti animasyon shimmer la pandan l ap chaje */}
+      {!loaded && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+      )}
+    </div>
+  );
 };
 
 // --- PAJ OFFLINE PRENSIPAL LA ---
