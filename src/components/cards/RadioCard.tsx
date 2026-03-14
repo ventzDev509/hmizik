@@ -66,6 +66,7 @@ const navigate=useNavigate()
 
       {/* IMAGE */}
       <img
+      crossOrigin="anonymous"
         ref={imgRef}
         src={image}
         alt={title}

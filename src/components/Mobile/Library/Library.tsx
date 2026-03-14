@@ -185,7 +185,7 @@ const LibraryPage: React.FC = () => {
                                             <Heart size={26} fill="white" />
                                         </div>
                                     ) : item.img ? (
-                                        <img src={item.img} className="w-full h-full object-cover" alt="" />
+                                        <img crossOrigin="anonymous" src={item.img} className="w-full h-full object-cover" alt="" />
                                     ) : (
                                         <div className={`w-full h-full flex items-center justify-center text-2xl font-black text-white/90 ${getRandomColor(item.id)}`}>
                                             {item.title.charAt(0)}

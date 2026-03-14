@@ -140,7 +140,7 @@ const AddMusicMobile: React.FC = () => {
                         className="relative w-64 h-64 bg-zinc-900 rounded-3xl shadow-2xl flex flex-col items-center justify-center overflow-hidden border-2 border-dashed border-white/5 group cursor-pointer"
                     >
                         {coverPreview ? (
-                            <img src={coverPreview} className="w-full h-full object-cover" alt="Preview" />
+                            <img crossOrigin="anonymous" src={coverPreview} className="w-full h-full object-cover" alt="Preview" />
                         ) : (
                             <div className="flex flex-col items-center p-6 text-center">
                                 <div className="p-4 bg-orange-600/10 rounded-full mb-4">

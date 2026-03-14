@@ -95,7 +95,7 @@ const ArtistPageMobile = () => {
                         {popularSongs.map((song, index) => (
                             <div key={song.id} className="flex items-center gap-4 group active:bg-white/5 p-1 rounded-md transition">
                                 <span className="text-xs text-zinc-500 w-4">{index + 1}</span>
-                                <img src={song.cover} className="w-12 h-12 rounded-sm" alt="" />
+                                <img crossOrigin="anonymous" src={song.cover} className="w-12 h-12 rounded-sm" alt="" />
                                 <div className="flex-1 overflow-hidden">
                                     <h4 className="text-sm font-bold truncate">{song.title}</h4>
                                     <p className="text-xs text-zinc-500">{song.plays}</p>

@@ -162,7 +162,7 @@ const LikedSongsPage = () => {
                                         className="relative w-14 h-14 flex-shrink-0 cursor-pointer overflow-hidden group/item"
                                         onClick={() => isThisTrackActive ? togglePlay() : playSong(track, likedTracks)}
                                     >
-                                        <img src={track.coverUrl} className="w-full h-full object-cover rounded-xl shadow-md transition duration-500 group-hover/item:scale-110" alt={track.title} />
+                                        <img crossOrigin="anonymous" src={track.coverUrl} className="w-full h-full object-cover rounded-xl shadow-md transition duration-500 group-hover/item:scale-110" alt={track.title} />
 
                                         {isThisTrackActive && (
                                             <div className="absolute inset-0 bg-orange-950/40 backdrop-blur-[2px] flex items-center justify-center rounded-xl">

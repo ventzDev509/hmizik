@@ -39,6 +39,7 @@ const BottomMPlayerMobile: React.FC = () => {
               {/* Enfòmasyon Chanson */}
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <img
+                crossOrigin="anonymous"
                   src={currentSong.coverUrl}
                   alt={currentSong.title}
                   className={`h-11 w-11 rounded-lg shadow-md object-cover ${isPlaying ? 'animate-pulse-slow' : ''}`}

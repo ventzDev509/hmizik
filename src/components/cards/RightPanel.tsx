@@ -24,6 +24,7 @@ export default function RightPanel({ music, onClose }: RightPanelProps) {
 
           {/* Image */}
           <img
+          crossOrigin="anonymous"
             src={music?.cover}
             alt={music?.title}
             className="w-full h-48 object-cover rounded-lg mb-4"

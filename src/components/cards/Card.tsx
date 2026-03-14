@@ -27,6 +27,7 @@ export default function Card({ id, image, title, subtitle, song, setSelect }: Ca
             {/* Image avec bouton Play */}
             <div className="relative w-full h-40 rounded-lg overflow-hidden">
                 <img
+                crossOrigin="anonymous"
                     onClick={() => navigation("/playlist")}
                     src={image}
                     alt={title}

@@ -35,6 +35,7 @@ const TradingTrack = () => {
                         >
                             <div className="relative w-14 h-14 shrink-0">
                                 <img
+                                crossOrigin="anonymous"
                                     src={track.coverUrl}
                                     alt={track.title}
                                     className="w-full h-full object-cover"

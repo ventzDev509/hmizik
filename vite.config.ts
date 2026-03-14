@@ -50,7 +50,7 @@ export default defineConfig({
           {
             // Lojik espesyal pou Audio (Supabase oswa lòt)
             urlPattern: ({ request }) => request.destination === 'audio',
-            handler: 'CacheFirst',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'music-cache',
               expiration: {
@@ -58,13 +58,13 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jou
               },
               cacheableResponse: {
-                statuses: [0, 200] 
+                statuses: [0, 200]
               },
               plugins: [
                 {
                   // Ranje erè TS pou handlerDidError (retounen undefined olye de null)
-                  handlerDidError: async () => { 
-                    return undefined; 
+                  handlerDidError: async () => {
+                    return undefined;
                   },
                   // Asire ke kach la toujou retounen yon repons valid
                   cachedResponseWillBeUsed: async ({ cachedResponse }) => {
@@ -75,15 +75,18 @@ export default defineConfig({
             },
           },
           {
-            // Lojik pou Imaj (Covers)
             urlPattern: ({ request }) => request.destination === 'image',
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
-              cacheName: 'image-cache',
-              expiration: {
-                maxEntries: 50,
-              }
-            }
+              cacheName: 'images-cache',
+              fetchOptions: {
+                mode: 'cors', // Fòse mòd CORS
+                credentials: 'omit',
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
           }
         ],
       },

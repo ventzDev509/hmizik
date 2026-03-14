@@ -12,6 +12,7 @@ function CardTwo() {
               {/* CONTAINER IMAJ LA */}
               <div className="relative w-full aspect-square mb-3 overflow-hidden rounded-md shadow-[0_8px_16px_rgba(0,0,0,0.4)]">
                 <img
+                crossOrigin="anonymous"
                   src={`https://picsum.photos/seed/${i + 50}/300/300`}
                   alt="Album Cover"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

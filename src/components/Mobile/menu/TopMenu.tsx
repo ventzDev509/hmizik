@@ -48,6 +48,7 @@ const TopMenu: React.FC = () => {
               <div className="w-full h-full bg-zinc-800 animate-pulse" />
             ) : profile?.avatarUrl ? (
               <img
+              crossOrigin="anonymous"
                 src={profile.avatarUrl}
                 alt={displayName}
                 className="w-full h-full object-cover"

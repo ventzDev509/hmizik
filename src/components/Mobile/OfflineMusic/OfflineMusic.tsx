@@ -16,7 +16,7 @@ export const OfflineImage = ({ src, className, ...props }: any) => {
       <img
         src={src}
         {...props}
-        crossOrigin="anonymous" // OBLIGATWA pou Supabase + Cache
+        // crossOrigin="anonymous" // OBLIGATWA pou Supabase + Cache
         loading="lazy"
         className={`
           ${className} 

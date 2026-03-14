@@ -70,7 +70,7 @@ const QueueModal = ({  onClose }: { isOpen: boolean, onClose: () => void }) => {
                 className="flex items-center gap-4 bg-white/[0.03] p-4 rounded-2xl border border-white/5"
               >
                 <div className="relative flex-shrink-0">
-                  <img src={currentSong.coverUrl} className="w-16 h-16 rounded-xl object-cover" alt="" />
+                  <img crossOrigin="anonymous" src={currentSong.coverUrl} className="w-16 h-16 rounded-xl object-cover" alt="" />
                   {/* Equalizer nan plas zoranj la */}
                   <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
                     {isPlaying ? <Equalizer /> : <div className="w-1 h-3 bg-white/50 rounded-full" />}

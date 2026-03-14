@@ -40,6 +40,7 @@ function Main() {
                   className="w-24 h-24 rounded-full mb-2 overflow-hidden shadow-2xl border border-white/5 cursor-pointer active:scale-95 transition-transform"
                 >
                   <img
+                  crossOrigin="anonymous"
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${track.artist.username}`}
                     alt="Artist Avatar"
                     className="w-full h-full object-cover bg-[#282828]"
