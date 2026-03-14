@@ -25,9 +25,10 @@ const BottomMenu: React.FC = () => {
                    - Nou mete yon background nwa solid pou kouvri tout zòn anba a nèt.
                 */}
                 <nav
-                    className="bg-[#121212]/95 backdrop-blur-md border-t border-white/10 pt-4 px-2"
+                    className="bg-[#121212] border-t border-white/10 pt-4 px-2"
                     style={{
-                        paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)'
+                        /* Sa ap pouse bouton yo moute yon ti kras pou yo pa sou tèt liy jès la */
+                        paddingBottom: 'calc(env(safe-area-inset-bottom) + 10px)'
                     }}
                 >
                     <div className="flex justify-center items-center max-w-lg gap-16 mx-auto">

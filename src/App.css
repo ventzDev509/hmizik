@@ -5,35 +5,13 @@
   background-color: #121212;
 }
 
-html {
- background-color: #121212 !important;
-  /* Sa enpòtan pou navigatè mobil yo */
-  color-scheme: dark;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  /* Anpeche rale kawotchou (rubber banding) blan an sou iOS */
-  overscroll-behavior: none;
-}
-
-body {
+html, body {
+  /* Sa asire ke menm anba jès yo, se nwa ki genyen */
   background-color: #121212 !important;
-  color: #f4f4f5;
-  /* zinc-100 */
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  /* Fix pou wotè reyèl sou mobil (evite ba navigatè a koupe l) */
-  /* min-height: 100vh; */
-  /* min-height: -webkit-fill-available; */
-
-  min-height: 100dvh;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  overscroll-behavior-y: none;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Sa fòse sistèm nan konprann app a se nwa li ye */
+  color-scheme: dark; 
+  height: 100%;
+  overflow: hidden;
 }
 
 img {
