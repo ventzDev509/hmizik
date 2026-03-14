@@ -11,22 +11,20 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      // Sa a enpòtan pou tès nan dev
       devOptions: {
         enabled: true,
         type: 'module'
       },
       filename: 'sw.js',
-      manifest: { 
+      manifest: {
         name: 'H-Mizik Streaming',
         short_name: 'H-Mizik',
         description: 'Streaming mizik ayisyen offline',
         theme_color: '#121212',
-        display_override: ['window-controls-overlay', 'standalone'],
         background_color: '#121212',
         display: 'standalone',
-        orientation: 'portrait', 
-        
+        display_override: ['window-controls-overlay', 'standalone'],
+        orientation: 'portrait',
         scope: '/',
         start_url: '/',
         icons: [
@@ -44,27 +42,49 @@ export default defineConfig({
         ]
       },
       workbox: {
-        // Nou ajoute tout assets yo nan kach la
+        // Sa a asire tout fichye pwojè a sere nan kach
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
-        navigateFallback: '/index.html', // Ajoute slash la
-        // Sa a anpeche sèvè a voye index.html lè w ap chèche manifest la
+        navigateFallback: '/index.html',
         navigateFallbackAllowlist: [/^(?!\/__).*/, /^\/index.html$/],
-        
         runtimeCaching: [
           {
+            // Lojik espesyal pou Audio (Supabase oswa lòt)
             urlPattern: ({ request }) => request.destination === 'audio',
             handler: 'CacheFirst',
             options: {
               cacheName: 'music-cache',
               expiration: {
-                maxEntries: 100, // Nou ka mete plis
+                maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jou
               },
               cacheableResponse: {
-                statuses: [0, 200] // Aksepte repons ki soti nan lòt domèn (Opaque)
-              }
+                statuses: [0, 200] 
+              },
+              plugins: [
+                {
+                  // Ranje erè TS pou handlerDidError (retounen undefined olye de null)
+                  handlerDidError: async () => { 
+                    return undefined; 
+                  },
+                  // Asire ke kach la toujou retounen yon repons valid
+                  cachedResponseWillBeUsed: async ({ cachedResponse }) => {
+                    return cachedResponse || undefined;
+                  }
+                }
+              ]
             },
           },
+          {
+            // Lojik pou Imaj (Covers)
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'image-cache',
+              expiration: {
+                maxEntries: 50,
+              }
+            }
+          }
         ],
       },
     }),

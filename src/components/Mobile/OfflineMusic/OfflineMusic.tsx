@@ -7,10 +7,10 @@ import toast from 'react-hot-toast';
 import BottomMenu from '../menu/BottomMenu';
 import Equalizer from '../../buffer/Equalizer';
 
-
-
+// --- KOMPONAN POU IMAJ KI NAN KACH ---
 const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
+
     useEffect(() => {
         let objectUrl: string | null = null;
         const loadImage = async () => {
@@ -23,7 +23,7 @@ const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
                     objectUrl = URL.createObjectURL(blob);
                     setImageSrc(objectUrl);
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error loading offline image:", e); }
         };
         loadImage();
         return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
@@ -33,47 +33,81 @@ const OfflineImage = ({ url, fallback }: { url: string; fallback: any }) => {
     return <img src={imageSrc} alt="" className="w-full h-full object-cover" />;
 };
 
+// --- PAJ OFFLINE PRENSIPAL LA ---
 const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
     const allCachedUrls = useOfflineTracks();
-    const { playSong, currentSong } = useAudio(); // Nou pran currentSong pou konnen kisa k ap jwe
+    const { playSong, currentSong } = useAudio();
     const navigate = useNavigate();
 
+    // Filtre pou n pran sèlman URL mizik yo
+    const musicTracks = allCachedUrls.filter(url => url.includes('/tracks/'));
+    const offlineData = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
+
+    // Chanje koulè "Status Bar" telefòn nan
     useEffect(() => {
         const themeColor = document.querySelector('meta[name="theme-color"]');
         const originalColor = themeColor ? themeColor.getAttribute('content') : '#121212';
         
         if (themeColor) themeColor.setAttribute('content', '#4a1d05');
         return () => {
-            const resetColor = document.querySelector('meta[name="theme-color"]');
-            if (resetColor) resetColor.setAttribute('content', originalColor || '#121212');
+            if (themeColor) themeColor.setAttribute('content', originalColor || '#121212');
         };
     }, []);
 
-    const musicTracks = allCachedUrls.filter(url => url.includes('/tracks/'));
-    const offlineData = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
+    // --- LOJIK POU JWE AK TOUT QUEUE A (POU NEXT MACHE) ---
+    const handlePlayTrack = (index: number) => {
+        if (musicTracks.length === 0) return;
+
+        // 1. Prepare "Queue" la (Tout lis la)
+        const fullQueue = musicTracks.map((url, i) => {
+            const meta = offlineData[url] || {};
+            return {
+                id: `off-${i}`,
+                title: meta.trackTitle || "Mizik san non",
+                artist: "H-Mizik Offline",
+                coverUrl: meta.coverUrl,
+                audioUrl: url
+            };
+        });
+
+        // 2. Chwazi chante ki klike a
+        const selectedSong = fullQueue[index];
+
+        // 3. Jwe li epi pase tout queue a bay PlayerContext la
+        // Si PlayerContext ou a byen fèt, l ap jwe queue a nan lòd
+        playSong(selectedSong, fullQueue);
+    };
 
     const handleDelete = async (audioUrl: string) => {
-        if (window.confirm("Retire mizik sa a?")) {
-            const cache = await caches.open('music-cache');
-            await cache.delete(audioUrl);
-            const newMetadata = { ...offlineData };
-            delete newMetadata[audioUrl];
-            localStorage.setItem('offline_metadata', JSON.stringify(newMetadata));
-            toast.success("Mizik retire");
-            window.location.reload();
+        if (window.confirm("Retire mizik sa a nan telefòn ou?")) {
+            try {
+                const cache = await caches.open('music-cache');
+                await cache.delete(audioUrl);
+                
+                const newMetadata = { ...offlineData };
+                delete newMetadata[audioUrl];
+                localStorage.setItem('offline_metadata', JSON.stringify(newMetadata));
+                
+                toast.success("Mizik retire");
+                // Nou fòse yon reload pou lis la netwaye
+                window.location.reload();
+            } catch (e) {
+                toast.error("Error lè w ap retire mizik la");
+            }
         }
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#4a1d05] via-[#1a0b02] to-[#121212] text-zinc-100 font-sans relative">
             
+            {/* Header / Nav */}
             <div className="sticky top-0 z-50 px-4 py-4 flex items-center justify-between backdrop-blur-xl bg-black/10">
                 <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full active:scale-90 transition-all border border-white/5">
                     <ChevronLeft size={24} />
                 </button>
                 <div className="flex flex-col items-center">
                     <span className="text-[10px] uppercase tracking-[0.25em] text-orange-300/60 font-bold">H-Mizik</span>
-                    <span className="text-sm font-black text-white">OFFLINE</span>
+                    <span className="text-sm font-black text-white">BIBLIYOTÈK</span>
                 </div>
                 <div className="w-10 h-10 flex items-center justify-center">
                     {isRedirected && <WifiOff size={18} className="text-orange-500" />}
@@ -81,26 +115,21 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
             </div>
 
             <div className="px-5 pt-10">
-                {/* --- HEADER AVÈK EQUALIZER VIZYÈL --- */}
+                {/* Visual Header */}
                 <div className="relative mx-auto w-44 h-44 flex items-center justify-center">
-                   
                     <div className="relative w-40 h-40 flex items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-orange-500 to-orange-700 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 z-10">
                         <Download size={70} className="text-white animate-bounce-slow" />
                     </div>
                 </div>
 
                 <div className="text-center mt-8 mb-10">
-                    <h1 className="text-4xl font-black text-white tracking-tighter">Bibliyotèk</h1>
-                    <p className="text-orange-200/50 font-medium text-sm mt-1">{musicTracks.length} mizik ki disponib san koneksyon</p>
+                    <h1 className="text-4xl font-black text-white tracking-tighter">Mizik Offline</h1>
+                    <p className="text-orange-200/50 font-medium text-sm mt-1">
+                        {musicTracks.length} chante ki sove sou telefòn lan
+                    </p>
                     
                     <button 
-                        onClick={() => {
-                            if (musicTracks.length > 0) {
-                                const first = musicTracks[0];
-                                const meta = offlineData[first];
-                                playSong({ id: 'off-0', title: meta.trackTitle, artist: "Atis Offline", coverUrl: meta.coverUrl, audioUrl: first }, []);
-                            }
-                        }}
+                        onClick={() => handlePlayTrack(0)}
                         className="mt-6 px-10 py-3.5 bg-orange-600 hover:bg-orange-500 text-white rounded-full font-bold flex items-center gap-3 mx-auto shadow-2xl transition-all active:scale-95"
                     >
                         <Play size={20} fill="white" />
@@ -108,29 +137,30 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                     </button>
                 </div>
 
+                {/* Song List */}
                 <div className="space-y-2 pb-44 relative z-10">
                     {musicTracks.length === 0 ? (
                         <div className="text-center py-20 opacity-30 italic bg-black/20 rounded-3xl border border-dashed border-white/5">
-                            Pa gen anyen isit la...
+                            Ou pa gen mizik offline ankò.
                         </div>
                     ) : (
                         musicTracks.map((url, index) => {
                             const metadata = offlineData[url] || {};
-                            const isPlaying = currentSong?.audioUrl === url; // Tcheke si se mizik sa k ap jwe
+                            const isPlaying = currentSong?.audioUrl === url;
 
                             return (
                                 <div 
                                     key={index}
-                                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all group ${
+                                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all group border ${
                                         isPlaying ? 'bg-orange-500/10 border-orange-500/20' : 'bg-black/20 border-white/5'
-                                    } border backdrop-blur-sm active:bg-white/10`}
-                                    onClick={() => {
-                                        playSong({ id: `off-${index}`, title: metadata.trackTitle, artist: "H-Mizik Offline", coverUrl: metadata.coverUrl, audioUrl: url }, []);
-                                    }}
+                                    } backdrop-blur-sm active:bg-white/10`}
+                                    onClick={() => handlePlayTrack(index)}
                                 >
                                     <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
-                                        <OfflineImage url={metadata.coverUrl} fallback={<Music size={18} className="m-auto mt-4 text-zinc-700" />} />
-                                        {/* Overlay si mizik la ap jwe */}
+                                        <OfflineImage 
+                                            url={metadata.coverUrl} 
+                                            fallback={<Music size={18} className="m-auto mt-4 text-zinc-700" />} 
+                                        />
                                         {isPlaying && (
                                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                                 <Equalizer />
@@ -142,18 +172,15 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                                         <h4 className={`text-[15px] font-bold truncate ${isPlaying ? 'text-orange-400' : 'text-white'}`}>
                                             {metadata.trackTitle || "Mizik san non"}
                                         </h4>
-                                        <div className="flex items-center gap-1.5 mt-0.5">
-                                            {/* {isPlaying ? <EqualizerIcon /> : <Download size={10} className="text-orange-400" />} */}
-                                            <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">
-                                                {isPlaying ? 'Ap jwe...' : 'Sove nèt'}
-                                            </p>
-                                        </div>
+                                        <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">
+                                            {isPlaying ? 'Ap jwe kounye a' : 'Sove nan kach'}
+                                        </p>
                                     </div>
 
                                     <div className="flex items-center gap-1">
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); handleDelete(url); }}
-                                            className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
+                                            className="p-2 text-zinc-500 hover:text-red-500 transition-colors active:scale-90"
                                         >
                                             <Trash2 size={18} />
                                         </button>
@@ -168,10 +195,12 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                 </div>
             </div>
 
+            {/* Navigasyon anba */}
             <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 bg-gradient-to-t from-[#121212] via-[#121212]/80 to-transparent pt-12">
                 <BottomMenu />
             </div>
 
+            {/* Animasyon CSS */}
             <style>{`
                 @keyframes bounce-slow {
                     0%, 100% { transform: translateY(0); }
@@ -180,15 +209,6 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                 .animate-bounce-slow {
                     animation: bounce-slow 4s infinite ease-in-out;
                 }
-
-                /* Keyframes pou Equalizer Bars */
-                @keyframes eq-1 { 0%, 100% { height: 4px; } 50% { height: 12px; } }
-                @keyframes eq-2 { 0%, 100% { height: 10px; } 50% { height: 4px; } }
-                @keyframes eq-3 { 0%, 100% { height: 6px; } 50% { height: 14px; } }
-
-                .animate-eq-1 { animation: eq-1 0.6s infinite ease-in-out; }
-                .animate-eq-2 { animation: eq-2 0.8s infinite ease-in-out; }
-                .animate-eq-3 { animation: eq-3 0.7s infinite ease-in-out; }
             `}</style>
         </div>
     );

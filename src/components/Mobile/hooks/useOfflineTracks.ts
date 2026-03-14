@@ -1,38 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
 
 export const useOfflineTracks = () => {
   const [offlineTracks, setOfflineTracks] = useState<string[]>([]);
 
-  useEffect(() => {
-    const getCachedTracks = async () => {
-      if ('caches' in window) {
-        // Nou tcheke tou de kach yo
-        const cacheNames = ['music-cache', 'music-offline-cache'];
-        let allUrls: string[] = [];
+  const getCachedTracks = useCallback(async () => {
+    if (!('caches' in window)) return;
 
-        for (const name of cacheNames) {
-          const cache = await caches.open(name);
-          const requests = await cache.keys();
-          const urls = requests.map(request => request.url);
-          allUrls = [...allUrls, ...urls];
-        }
+    try {
+      const cacheNames = ['music-cache', 'music-offline-cache'];
+      let allUrls: string[] = [];
 
-        // Retire double si yon mizik nan de kach yo
-        const uniqueUrls = Array.from(new Set(allUrls));
-        
-        // Filtre pou n pran sèlman URL Supabase yo (mizik)
-        const musicOnly = uniqueUrls.filter(url => url.includes('supabase.co'));
-        
-        setOfflineTracks(musicOnly);
+      for (const name of cacheNames) {
+        const cache = await caches.open(name);
+        const requests = await cache.keys();
+        // Nou pran URL yo
+        const urls = requests.map(request => request.url);
+        allUrls = [...allUrls, ...urls];
       }
-    };
 
-    getCachedTracks();
-    
-    // Ti kòd anplis: tcheke ankò si itilizatè a soti nan yon lòt tab retounen
-    window.addEventListener('focus', getCachedTracks);
-    return () => window.removeEventListener('focus', getCachedTracks);
+      const uniqueMusicUrls = Array.from(new Set(allUrls)).filter(url => 
+        url.includes('supabase.co') && 
+        (url.includes('.mp3') || url.includes('.wav') || url.includes('/tracks/'))
+      );
+
+      setOfflineTracks(uniqueMusicUrls);
+    } catch (error) {
+      console.error("Error retrieving cached tracks:", error);
+    }
   }, []);
+
+  useEffect(() => {
+    getCachedTracks();
+
+    // Listener pou lè itilizatè a tounen sou paj la
+    window.addEventListener('focus', getCachedTracks);
+    
+    // NOUVO: Koute evènman koutim si ou vle fòse yon update apre yon download fini
+    window.addEventListener('offline-cache-updated', getCachedTracks);
+
+    return () => {
+      window.removeEventListener('focus', getCachedTracks);
+      window.removeEventListener('offline-cache-updated', getCachedTracks);
+    };
+  }, [getCachedTracks]);
 
   return offlineTracks;
 };
