@@ -15,16 +15,13 @@ export default defineConfig({
         enabled: true,
         type: 'module'
       },
-      filename: 'sw.js',
       manifest: {
         name: 'H-Mizik Streaming',
         short_name: 'H-Mizik',
         description: 'Streaming mizik ayisyen offline',
-        theme_color: 'red',
-        background_color: 'red',
+        theme_color: '#121212',
+        background_color: '#121212',
         display: 'standalone',
-        display_override: ['window-controls-overlay', 'standalone'],
-        orientation: 'portrait',
         scope: '/',
         start_url: '/',
         icons: [
@@ -42,15 +39,14 @@ export default defineConfig({
         ]
       },
       workbox: {
-        // Sa a asire tout fichye pwojè a sere nan kach
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
         navigateFallback: '/index.html',
-        navigateFallbackAllowlist: [/^(?!\/__).*/, /^\/index.html$/],
         runtimeCaching: [
           {
-            // Lojik espesyal pou Audio (Supabase oswa lòt)
+            // POU AUDIO: Nou kite kòd download nou an jere kach la
+            // Men nou di Workbox pou l sèvi ak CacheFirst si l bezwen li l
             urlPattern: ({ request }) => request.destination === 'audio',
-            handler: 'NetworkFirst',
+            handler: 'CacheFirst',
             options: {
               cacheName: 'music-cache',
               expiration: {
@@ -60,36 +56,25 @@ export default defineConfig({
               cacheableResponse: {
                 statuses: [0, 200]
               },
-              plugins: [
-                {
-                  // Ranje erè TS pou handlerDidError (retounen undefined olye de null)
-                  handlerDidError: async () => {
-                    return undefined;
-                  },
-                  // Asire ke kach la toujou retounen yon repons valid
-                  cachedResponseWillBeUsed: async ({ cachedResponse }) => {
-                    return cachedResponse || undefined;
-                  }
-                }
-              ]
-            },
+              rangeRequests: true // OBLIGATWA pou audio ka avanse (seek)
+            }
           },
           {
+            // POU IMAJ: Nou itilize NetworkFirst pou n asire nou pa bloke
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'images-cache',
-              fetchOptions: {
-                mode: 'cors', // Fòse mòd CORS
-                credentials: 'omit',
+              cacheName: 'music-cache', // Nou itilize menm kach la pou tout bagay offline yo
+              expiration: {
+                maxEntries: 100
               },
               cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
+                statuses: [0, 200]
+              }
+            }
           }
-        ],
-      },
-    }),
-  ],
+        ]
+      }
+    })
+  ]
 })
