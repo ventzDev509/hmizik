@@ -5,36 +5,8 @@
   background-color: #121212;
 }
 
-html {
-  /* Sa fòse zòn deyò viewport la (notch, home bar) rete nwa */
-  background-color: #121212 !important;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  /* Anpeche rale kawotchou (rubber banding) blan an sou iOS */
-  overscroll-behavior: none;
-}
 
-body {
-  background-color: #121212 !important;
-  color: #f4f4f5; /* zinc-100 */
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  /* Fix pou wotè reyèl sou mobil (evite ba navigatè a koupe l) */
-  /* min-height: 100vh; */
-  min-height: -webkit-fill-available;
-  
-  /* Jesyon Safe Area pou iPhone ak Android modern */
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-top: env(safe-area-inset-top);
-  
-  overscroll-behavior-y: none;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+
 
 #root {
   margin: 0;
@@ -67,10 +39,6 @@ button, div, a, input {
   outline: none !important;
 }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
 
 button {
   background-color: transparent;
