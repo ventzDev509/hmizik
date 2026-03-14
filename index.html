@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color: #121212;">
 
 <head>
   <meta charset="UTF-8" />
@@ -8,17 +8,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <meta name="mobile-web-app-capable" content="yes">
-<meta name="msapplication-navbutton-color" content="#121212">
+  <meta name="msapplication-navbutton-color" content="#121212">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <link rel="manifest" href="/manifest.webmanifest">
   <title>H-Mizik</title>
+  <style>
+    /* Evite "flicker" blan lè paj la ap chaje */
+    body {
+      background-color: #121212 !important;
+      margin: 0;
+      padding: 0;
+    }
 
+    #root {
+      background-color: #121212;
+      min-height: 100vh;
+    }
+  </style>
 </head>
 
-<body class="select-none"  style="background-color: #121212; margin: 0; overscroll-behavior: none;">
+<body class="select-none" style="background-color: #121212; margin: 0; overscroll-behavior: none;">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
