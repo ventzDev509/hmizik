@@ -6,8 +6,9 @@
 }
 
 html {
-  /* Sa fòse zòn deyò viewport la (notch, home bar) rete nwa */
-  background-color: #121212 !important;
+ background-color: #121212 !important;
+  /* Sa enpòtan pou navigatè mobil yo */
+  color-scheme: dark;
   height: 100%;
   width: 100%;
   margin: 0;

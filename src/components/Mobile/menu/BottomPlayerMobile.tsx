@@ -6,14 +6,14 @@ import { useAudio } from '../../../provider/PlayerContext';
 
 const BottomMPlayerMobile: React.FC = () => {
   const [showPlayer, setShowPlayer] = useState(false);
-  
-  const { 
-    currentSong, 
-    isPlaying, 
-    togglePlay, 
-    isBuffering, 
-    currentTime, 
-    duration 
+
+  const {
+    currentSong,
+    isPlaying,
+    togglePlay,
+    isBuffering,
+    currentTime,
+    duration
   } = useAudio();
 
   const progressPercent = useMemo(() => {
@@ -26,20 +26,23 @@ const BottomMPlayerMobile: React.FC = () => {
       {/* 1. ANIMASYON POU PARÈT/DISPARÈT MINI PLAYER A */}
       <AnimatePresence>
         {currentSong && (
-          <motion.div 
+          <motion.div
             initial={{ y: 100, opacity: 0 }} // Kòmanse anba epi envizib
             animate={{ y: 0, opacity: 1 }}   // Moute epi parèt
             exit={{ y: 100, opacity: 0 }}    // Desann epi disparèt si currentSong vin null
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="fixed bottom-[80px] left-2 right-2 z-50" 
+            className="fixed left-2 right-2 z-50"
+            style={{
+              bottom: 'calc(env(safe-area-inset-bottom) + 85px)'
+            }}
             onClick={() => setShowPlayer(true)}
           >
             <div className="bg-zinc-900/95 backdrop-blur-lg rounded-xl p-2 flex items-center justify-between shadow-2xl border border-white/10 relative overflow-hidden">
-              
+
               {/* Enfòmasyon Chanson */}
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <img
-                crossOrigin="anonymous"
+                  crossOrigin="anonymous"
                   src={currentSong.coverUrl}
                   alt={currentSong.title}
                   className={`h-11 w-11 rounded-lg shadow-md object-cover ${isPlaying ? 'animate-pulse-slow' : ''}`}
@@ -50,7 +53,7 @@ const BottomMPlayerMobile: React.FC = () => {
                   </h4>
                   <div className="flex items-center gap-1">
                     <span className="text-[11px] text-orange-500 font-bold truncate uppercase tracking-tighter">
-                       {typeof currentSong.artist === 'string' ? currentSong.artist : currentSong.artist?.username}
+                      {typeof currentSong.artist === 'string' ? currentSong.artist : currentSong.artist?.username}
                     </span>
                     <MonitorSpeaker className="w-3 h-3 text-orange-500 ml-1" />
                   </div>
