@@ -2,11 +2,22 @@ import { useCallback } from 'react';
 
 export const useOfflineDownload = () => {
     
-    const isOffline = useCallback(async (audioUrl: string) => {
+   const isOffline = useCallback(async (audioUrl: string) => {
+    // 1. Si pa gen URL, li pa ka offline
+    if (!audioUrl || typeof audioUrl !== 'string') return false;
+
+    try {
         const cache = await caches.open('music-cache');
+        // 2. Nou tcheke si URL la nan kach la
         const match = await cache.match(audioUrl);
+        
+        // 3. Nou fòse l retounen yon boolean solid (true/false)
         return !!match;
-    }, []);
+    } catch (error) {
+        console.error("Erè nan isOffline:", error);
+        return false;
+    }
+}, []);
 
     const downloadWithProgress = async (
         url: string, 

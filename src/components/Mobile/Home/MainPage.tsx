@@ -1,17 +1,26 @@
 import { useNavigate } from "react-router-dom";// 1. Import context la
 import CardOne from "../CardsMobile/CardOne";
-import CardTwo from "../CardsMobile/Cardtwo";
+// import CardTwo from "../CardsMobile/Cardtwo";
 import { useTracks } from "../../../context/TrackContext";
 import TradingTrack from "../CardsMobile/TradSong";
-import { DownloadCloud } from "lucide-react";
+import { DownloadCloud, Loader2 } from "lucide-react";
 import { usePWA } from "../hooks/usePWA";
+import { useAlbum } from "../../../context/AlbumContext";
+import { useEffect } from "react";
+import AlbumCard from "../album/AlbumCard";
 
 function Main() {
   const navigate = useNavigate();
   const { trendingTracks } = useTracks();
   const { isInstallable, installApp } = usePWA();
+  const { albums, getAlbums, loading } = useAlbum();
+  useEffect(() => {
+    getAlbums();
+    
+  }, []);
+  
 
-
+  if (loading) return <Loader2 className="animate-spin text-orange-600 mx-auto mt-10" />;
   return (
     <div className="bg-[#121212] min-h-screen overflow-y-scroll text-white font-sans relative overflow-x-hidden">
 
@@ -26,7 +35,6 @@ function Main() {
         <TradingTrack />
 
         <CardOne />
-        <CardTwo />
 
         {/* 4. ATIS YO */}
         <section className="mt-10">
@@ -40,7 +48,7 @@ function Main() {
                   className="w-24 h-24 rounded-full mb-2 overflow-hidden shadow-2xl border border-white/5 cursor-pointer active:scale-95 transition-transform"
                 >
                   <img
-                  crossOrigin="anonymous"
+                    crossOrigin="anonymous"
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${track.artist.username}`}
                     alt="Artist Avatar"
                     className="w-full h-full object-cover bg-[#282828]"
@@ -52,8 +60,23 @@ function Main() {
           </div>
         </section>
 
-        <CardTwo />
-        <CardTwo />
+        <section className="px-2 py-8">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
+                    Album <span className="text-orange-600">Popilè</span>
+                </h2>
+                <button className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800">
+                    Wè tout
+                </button>
+            </div>
+
+            {/* GRID LA */}
+            <div className="flex overflow-x-auto gap-4  pb-6 scrollbar-hide snap-x">
+                {albums.map((album) => (
+                    <AlbumCard key={album.id} album={album} />
+                ))}
+            </div>
+        </section>
 
         <div className="mt-12 px-1 text-[#b3b3b3] text-sm space-y-6 border-t border-white/5 pt-8">
           <h2 className="text-white font-bold text-lg italic">H-MIZIK <span className="text-orange-500 text-xs">BETA</span></h2>

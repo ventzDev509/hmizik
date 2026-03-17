@@ -5,9 +5,10 @@ import toast from 'react-hot-toast';
 
 interface LikeContextType {
     likedTrackIds: string[];
+    likedAlbumIds: string[];
     loading: boolean;
-    toggleLike: (trackId: string) => Promise<void>;
-    isLiked: (trackId: string) => boolean;
+    toggleLike: (id: string, type?: 'track' | 'album') => Promise<void>;
+    isLiked: (trackId: string,type?: 'track' | 'album') => boolean;
     refreshLikes: () => Promise<void>;
 }
 
@@ -16,22 +17,22 @@ const LikeContext = createContext<LikeContextType | undefined>(undefined);
 export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [likedTrackIds, setLikedTrackIds] = useState<string[]>([]);
+    const [likedAlbumIds, setLikedAlbumIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
-
-    // 1. Rale tout ID mizik itilizatè a like
     const fetchLikes = async () => {
-        if (!user) {
-            setLikedTrackIds([]);
-            setLoading(false);
-            return;
-        }
         try {
             setLoading(true);
             const { data } = await api.get('/likes');
-            const ids = data.map((track: any) => track.id);
-            setLikedTrackIds(ids);
+
+            // Data ap gen fòm sa a: { tracks: [...], albums: [...] }
+            const trackIds = data.tracks.map((t: any) => t.id);
+            const albumIds = data.albums.map((a: any) => a.id);
+
+            setLikedTrackIds(trackIds);
+            setLikedAlbumIds(albumIds); // Asire w ou te kreye state sa a
+
         } catch (error) {
-            console.error("Erè chaje favoris:", error);
+            console.error("Erè:", error);
         } finally {
             setLoading(false);
         }
@@ -41,53 +42,60 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchLikes();
     }, [user]);
 
-    // 2. Fonksyon Toggle (Like/Unlike)
-    const toggleLike = async (trackId: string) => {
-         
+    // 2. Fonksyon Toggle (Like/Unlike) - Ajoute 'type'
+    const toggleLike = async (id: string, type: 'track' | 'album' = 'track') => {
+
         if (!user) {
-            toast.error("Ou dwe konekte pou w like yon mizik");
+            toast.error(`Ou dwe konekte pou w like yon ${type === 'track' ? 'mizik' : 'album'}`);
             return;
         }
 
-       
         // --- OPTIMISTIC UI UPDATE ---
-        // Nou chanje eta a imedyatman pou itilizatè a pa tann
-        const wasLiked = likedTrackIds.includes(trackId);
-        
+        // Si se yon album, ou ka bezwen yon lòt state (ex: likedAlbumIds) 
+        // oswa ou ka jere yo ansanm si ID yo inik.
+        const wasLiked = likedTrackIds.includes(id);
+
+        // Mete ajou UI a imedyatman
         if (wasLiked) {
-            setLikedTrackIds(prev => prev.filter(id => id !== trackId));
+            setLikedTrackIds(prev => prev.filter(item => item !== id));
         } else {
-            setLikedTrackIds(prev => [...prev, trackId]);
+            setLikedTrackIds(prev => [...prev, id]);
         }
 
         try {
-            // Rele endpoint POST /likes/:trackId nou te fè nan NestJS la
-            await api.post(`/likes/${trackId}`);
-            
-            // Pa bezwen toast si sa mache, se yon aksyon ki fèt souvan
+            // --- RANJE REKÈT LA ISIT LA ---
+            // Nou voye 'type' la kòm yon Query Parameter pou l matche ak Backend la
+            const response = await api.post(`/likes/${id}?type=${type}`);
+
+            console.log("Repons sèvè:", response.data);
         } catch (error) {
             console.error("Erè toggle like:", error);
-            toast.error("Echèk nan koneksyon ak sèvè a");
-            
-            // ROLLBACK: Si gen erè, nou remete eta a jan l te ye
+            toast.error("Echèk nan koneksyon");
+
+            // ROLLBACK: Remete jan l te ye
             if (wasLiked) {
-                setLikedTrackIds(prev => [...prev, trackId]);
+                setLikedTrackIds(prev => [...prev, id]);
             } else {
-                setLikedTrackIds(prev => prev.filter(id => id !== trackId));
+                setLikedTrackIds(prev => prev.filter(item => item !== id));
             }
         }
     };
-
-    // 3. Helper pou konnen si yon track like (itil anpil nan kòman kòd la ekri)
-    const isLiked = (trackId: string) => likedTrackIds.includes(trackId);
+    // Helper pou konnen si yon mizik oswa yon album "liked"
+const isLiked = (id: string, type: 'track' | 'album' = 'track') => {
+    if (type === 'track') {
+        return likedTrackIds.includes(id);
+    }
+    return likedAlbumIds.includes(id); // Asire w ou te kreye state likedAlbumIds la
+};
 
     return (
-        <LikeContext.Provider value={{ 
-            likedTrackIds, 
-            loading, 
-            toggleLike, 
-            isLiked, 
-            refreshLikes: fetchLikes 
+        <LikeContext.Provider value={{
+            likedTrackIds,
+            likedAlbumIds,
+            loading,
+            toggleLike,
+            isLiked,
+            refreshLikes: fetchLikes
         }}>
             {children}
         </LikeContext.Provider>

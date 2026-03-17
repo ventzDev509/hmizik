@@ -9,8 +9,8 @@ import AddToPlaylistModal from '../Modal/AddToPlaylistModal';
 import Equalizer from '../../buffer/Equalizer';
 import DownloadButton from '../DownloadButton/DownloadButton';
 import { useAlbum } from '../../../context/AlbumContext';
+import { useLikes } from '../../../context/LikeContext';
 
-// Nou itilize Interface Track ki nan Context la
 interface Song {
     id: string;
     title: string;
@@ -24,30 +24,32 @@ const AlbumDetailPage = () => {
     const [searchParams] = useSearchParams();
     const albumId = searchParams.get('id');
     const navigate = useNavigate();
-
-    // Context Data
+    
+    // Contexts
+    const { isLiked, toggleLike } = useLikes();
     const { currentAlbum, getAlbum, loading, error, resetAlbumState } = useAlbum();
     const { playSong, isPlaying, currentSong, togglePlay, addToQueue } = useAudio();
 
+    // States
     const [showActionModal, setShowActionModal] = useState(false);
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [selectedSongForActions, setSelectedSongForActions] = useState<Song | null>(null);
     const [isAddingToQueue, setIsAddingToQueue] = useState(false);
 
-    // 1. Fetch Album nan lè paj la chaje
     useEffect(() => {
         if (albumId) {
             getAlbum(albumId);
         }
-
-        return () => resetAlbumState(); // Netwaye lè n ap kite paj la
+        return () => resetAlbumState(); 
     }, [albumId]);
 
-    // 2. Koulè dinamik baze sou cover album nan
+    // KORIJE: Nou tcheke si se yon ALBUM ki like
+    const isAlbumLiked = albumId ? isLiked(albumId, 'album') : false;
+
     const { bgColor, imgRef } = useImageColors(currentAlbum?.coverUrl || "");
     const { scrollY } = useScroll();
 
-    // Animasyon Scroll
+    // Animasyon
     const imgOpacity = useTransform(scrollY, [0, 200], [1, 0]);
     const imgScale = useTransform(scrollY, [0, 200], [1, 0.8]);
     const navOpacity = useTransform(scrollY, [150, 250], [0, 1]);
@@ -67,7 +69,6 @@ const AlbumDetailPage = () => {
         if (typeof window !== 'undefined' && window.navigator.vibrate) window.navigator.vibrate(pattern);
     };
 
-    console.log(currentAlbum)
     const openActionMenu = (e: React.MouseEvent, song: any) => {
         e.stopPropagation();
         setSelectedSongForActions(song);
@@ -80,12 +81,10 @@ const AlbumDetailPage = () => {
         setIsAddingToQueue(true);
         triggerVibration(20);
         await addToQueue(selectedSongForActions as any);
-        await new Promise(resolve => setTimeout(resolve, 600));
         setIsAddingToQueue(false);
         setShowActionModal(false);
     };
 
-    // Loader si n ap fetch done
     if (loading && !currentAlbum) {
         return (
             <div className="h-screen w-full bg-[#121212] flex flex-col items-center justify-center gap-4">
@@ -95,7 +94,6 @@ const AlbumDetailPage = () => {
         );
     }
 
-    // Si gen erè oswa album nan pa egziste
     if (error || (!loading && !currentAlbum)) {
         return (
             <div className="h-screen w-full bg-[#121212] flex flex-col items-center justify-center p-6 text-center">
@@ -107,33 +105,33 @@ const AlbumDetailPage = () => {
 
     return (
         <div className="bg-[#121212] text-white font-sans relative overflow-x-hidden min-h-screen">
-            {/* NAVBAR DINAMIK */}
+            {/* NAVBAR */}
             <motion.nav
                 style={{ backgroundColor: bgColor, opacity: navOpacity }}
-                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4 gap-4 transition-colors duration-300 shadow-xl"
+                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4 gap-4 shadow-xl pointer-events-none"
             >
-                <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
-                <div className="flex items-center gap-3 overflow-hidden">
-                    <img src={currentAlbum?.coverUrl} className="w-8 h-8 rounded-sm object-cover" alt="mini" />
-                    <h2 className="text-sm font-black truncate uppercase italic">{currentAlbum?.title}</h2>
+                <div className="pointer-events-auto flex items-center gap-4 w-full">
+                    <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <img src={currentAlbum?.coverUrl} className="w-8 h-8 rounded-sm object-cover" alt="" />
+                        <h2 className="text-sm font-black truncate uppercase italic">{currentAlbum?.title}</h2>
+                    </div>
                 </div>
             </motion.nav>
 
-            {/* GRADIENT DEGRADE */}
             <div className="absolute top-0 left-0 right-0 h-[60vh] z-0"
                 style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} -20%, #121212 100%)`, opacity: 0.6 }} />
 
             <main className="relative z-10 pt-12">
                 <motion.div style={{ opacity: imgOpacity, scale: imgScale }} className="flex flex-col items-center px-6 pb-6 pt-6 text-center">
-                    <div className="w-56 h-56 mb-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] transition-transform duration-500">
+                    <div className="w-56 h-56 mb-8 shadow-2xl">
                         <img ref={imgRef} src={currentAlbum?.coverUrl} alt={currentAlbum?.title} className="w-full h-full object-cover rounded-md shadow-2xl" />
                     </div>
                     <div className="w-full">
-                        <h3 className="text-4xl font-black mb-2 tracking-tighter line-clamp-2 uppercase italic leading-tight">{currentAlbum?.title}</h3>
+                        <h3 className="text-4xl font-black mb-2 tracking-tighter uppercase italic leading-tight line-clamp-2">{currentAlbum?.title}</h3>
                         <div className="flex items-center justify-center gap-2 mb-4">
-                            <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-[10px] font-bold text-black">A</div>
                             <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest italic">
-                                Atis • {currentAlbum?.tracks?.length || 0} Mizik
+                                {currentAlbum?.artist?.username || 'Atis'} • {currentAlbum?.tracks?.length || 0} Mizik
                             </span>
                         </div>
                     </div>
@@ -142,30 +140,34 @@ const AlbumDetailPage = () => {
                 {/* CONTROLS */}
                 <div className="flex justify-between items-center px-8 py-4 mb-4">
                     <div className="flex items-center gap-8 text-zinc-400">
-                        <Heart size={28} className="hover:text-red-500 transition cursor-pointer" />
-                        <MoreVertical size={26} className="hover:text-white transition cursor-pointer" />
+                        <motion.div 
+                            whileTap={{ scale: 0.8 }} 
+                            onClick={() => { albumId && toggleLike(albumId, "album"); triggerVibration(15); }} 
+                            className="cursor-pointer"
+                        >
+                            {/* KORIJE: Itilize isAlbumLiked isit la */}
+                            <Heart size={28} className={`transition-all duration-300 ${isAlbumLiked ? 'fill-orange-500 text-orange-500' : 'hover:text-white'}`} />
+                        </motion.div>
+                        <MoreVertical size={26} className="cursor-pointer" />
                     </div>
 
                     <motion.div
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => currentAlbum?.tracks && currentAlbum.tracks.length > 0 && playSong(currentAlbum.tracks[0] as any, currentAlbum.tracks as any)}
-                        className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-[0_10px_25px_rgba(234,88,12,0.4)] cursor-pointer"
+                        onClick={() => currentAlbum?.tracks?.[0] && playSong(currentAlbum.tracks[0] as any, currentAlbum.tracks as any)}
+                        className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
                     >
-                        <Play size={30} className="fill-black text-black ml-1" />
+                        {isPlaying && currentAlbum?.tracks?.some(t => t.id === currentSong?.id) ? <Pause size={30} className="fill-black text-black" /> : <Play size={30} className="fill-black text-black ml-1" />}
                     </motion.div>
                 </div>
 
                 {/* LIS MIZIK YO */}
-                {/* LIS MIZIK YO */}
                 <div className="px-4 mt-4 space-y-1 pb-40">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic mb-6 px-4">
-                        Tracks nan Album nan
-                    </p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic mb-6 px-4">Tracks nan Album nan</p>
 
                     {currentAlbum?.tracks?.map((track, index) => {
                         const isThisTrackActive = currentSong?.id === track.id;
-                        // Nou garanti gen yon imaj ki afiche
                         const trackImage = track.coverUrl || currentAlbum.coverUrl;
+                        const isThisTrackLiked = isLiked(track.id, 'track'); // Tcheke chak track si yo like
 
                         return (
                             <div key={track.id} className={`flex items-center gap-4 p-3 rounded-2xl transition active:bg-white/10 ${isThisTrackActive ? 'bg-white/5' : ''}`}>
@@ -173,13 +175,8 @@ const AlbumDetailPage = () => {
                                     {isThisTrackActive && isPlaying ? <Equalizer /> : <span>{index + 1}</span>}
                                 </div>
 
-                                {/* AJOUTE IMAJ LA ISIT SI W VLE L NAN LIS LA */}
-                                <div className="w-12 h-12 relative flex-shrink-0">
-                                    <img
-                                        src={trackImage}
-                                        className="w-full h-full object-cover rounded-lg shadow-lg"
-                                        alt={track.title}
-                                    />
+                                <div className="w-12 h-12 relative flex-shrink-0" onClick={() => isThisTrackActive ? togglePlay() : playSong(track as any, currentAlbum.tracks as any)}>
+                                    <img src={trackImage} className="w-full h-full object-cover rounded-lg shadow-lg" alt="" />
                                     {isThisTrackActive && (
                                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-lg">
                                             {isPlaying ? <Pause size={16} fill="white" /> : <Play size={16} fill="white" />}
@@ -191,23 +188,18 @@ const AlbumDetailPage = () => {
                                     <h4 className={`text-sm font-black truncate italic uppercase tracking-tight ${isThisTrackActive ? 'text-orange-500' : 'text-zinc-100'}`}>
                                         {track.title}
                                     </h4>
-                                    <p className="text-[10px] text-zinc-500 font-bold uppercase line-clamp-1">
-                                        {currentAlbum.title}
-                                    </p>
+                                    <p className="text-[10px] text-zinc-500 font-bold uppercase line-clamp-1">{currentAlbum.title}</p>
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <DownloadButton
-                                        trackId={track.id}
-                                        audioUrl={track.audioUrl}
-                                        coverUrl={trackImage}
-                                        title={track.title}
+                                    {/* Kè pou chak track si w vle l parèt nan lis la */}
+                                    <Heart 
+                                        size={18} 
+                                        onClick={() => toggleLike(track.id, 'track')}
+                                        className={isThisTrackLiked ? "fill-orange-500 text-orange-500" : "text-zinc-600"} 
                                     />
-                                    <MoreVertical
-                                        size={20}
-                                        className="text-zinc-600 cursor-pointer"
-                                        onClick={(e) => openActionMenu(e, track)}
-                                    />
+                                    <DownloadButton trackId={track.id} audioUrl={track.audioUrl} coverUrl={trackImage} title={track.title} />
+                                    <MoreVertical size={20} className="text-zinc-600 cursor-pointer" onClick={(e) => openActionMenu(e, track)} />
                                 </div>
                             </div>
                         );
@@ -222,26 +214,25 @@ const AlbumDetailPage = () => {
                 {showActionModal && selectedSongForActions && (
                     <div className="fixed inset-0 z-[200] flex items-end justify-center">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => !isAddingToQueue && setShowActionModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                            className="relative w-full bg-zinc-900 rounded-t-[40px] p-8 pb-14 z-[210] border-t border-white/5 shadow-2xl">
+                            onClick={() => !isAddingToQueue && setShowActionModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="relative w-full bg-zinc-900 rounded-t-[40px] p-8 pb-14 z-[210]">
                             <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-8" />
                             <div className="flex items-center gap-5 mb-10">
-                                <img src={selectedSongForActions.coverUrl || currentAlbum?.coverUrl} className="w-20 h-20 rounded-2xl object-cover shadow-2xl" alt="" />
+                                <img src={selectedSongForActions.coverUrl || currentAlbum?.coverUrl} className="w-20 h-20 rounded-2xl object-cover" alt="" />
                                 <div className="flex-1 overflow-hidden">
-                                    <h3 className="text-white text-2xl font-black truncate italic uppercase leading-tight mb-1">{selectedSongForActions.title}</h3>
-                                    <p className="text-zinc-500 font-bold uppercase text-xs tracking-wider">Album: {currentAlbum?.title}</p>
+                                    <h3 className="text-white text-2xl font-black truncate italic uppercase">{selectedSongForActions.title}</h3>
+                                    <p className="text-zinc-500 font-bold uppercase text-xs">Album: {currentAlbum?.title}</p>
                                 </div>
                             </div>
 
                             <div className="grid gap-3">
-                                <button onClick={handleAddToQueue} disabled={isAddingToQueue}
-                                    className="w-full flex items-center gap-4 p-5 bg-white/5 rounded-3xl text-white active:scale-95 transition-all hover:bg-white/10">
+                                <button onClick={handleAddToQueue} className="w-full flex items-center gap-4 p-5 bg-white/5 rounded-3xl text-white active:scale-95 transition-all">
                                     {isAddingToQueue ? <Loader2 size={22} className="animate-spin text-orange-500" /> : <ListPlus size={22} className="text-orange-500" />}
                                     <span className="font-black uppercase italic text-sm">Ajoute nan keu</span>
                                 </button>
                                 <button onClick={() => { setShowActionModal(false); setTimeout(() => setShowPlaylistModal(true), 200); }}
-                                    className="w-full flex items-center gap-4 p-5 bg-white/5 rounded-3xl text-white active:scale-95 transition-all hover:bg-white/10">
+                                    className="w-full flex items-center gap-4 p-5 bg-white/5 rounded-3xl text-white active:scale-95 transition-all">
                                     <PlusSquare size={22} className="text-orange-500" />
                                     <span className="font-black uppercase italic text-sm">Ajoute nan Playlist</span>
                                 </button>

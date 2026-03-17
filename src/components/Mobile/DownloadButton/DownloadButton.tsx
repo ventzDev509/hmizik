@@ -24,13 +24,24 @@ const DownloadButton = ({
     const [status, setStatus] = useState<'idle' | 'loading' | 'completed'>('idle');
     const [progress, setProgress] = useState(0);
 
-    useEffect(() => {
-        const checkStatus = async () => {
-            const offline = await isOffline(audioUrl);
-            if (offline) setStatus('completed');
-        };
-        checkStatus();
-    }, [audioUrl, isOffline]);
+   useEffect(() => {
+    let isMounted = true; // Pou evite memwa leak
+
+    const checkStatus = async () => {
+        if (!audioUrl) return;
+
+        const offline = await isOffline(audioUrl);
+        
+        if (isMounted) {
+            // Si l offline, mete completed. Si l pa offline, mete idle.
+            setStatus(offline ? 'completed' : 'idle');
+        }
+    };
+
+    checkStatus();
+
+    return () => { isMounted = false; };
+}, [audioUrl, isOffline]);
 
     const handleDownload = async (e: React.MouseEvent) => {
         e.stopPropagation();

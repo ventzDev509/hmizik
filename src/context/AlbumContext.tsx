@@ -17,8 +17,12 @@ interface Album {
     genre?: string;
     description?: string;
     tracks: Track[];
-    trackCount?: number; // Pou nou konnen konbe mizik ki ladan l san nou pa chaje tout tracks yo
+    artist?: {
+        username: string;
+    };
+    trackCount?: number;
     createdAt: string;
+
 }
 
 interface AlbumContextType {
@@ -28,12 +32,13 @@ interface AlbumContextType {
     uploadProgress: number;
     error: string | null;
     loading: boolean; // <--- Pou loader lè n ap fetch
-    
+
     // Fonksyon yo
     createAlbum: (formData: FormData) => Promise<void>;
     addTrack: (albumId: string, formData: FormData) => Promise<void>;
     finalizeAlbum: (albumId: string) => Promise<void>;
     getAlbum: (albumId: string) => Promise<void>;
+    getAlbums: () => Promise<void>;
     fetchUserAlbums: (userId: string) => Promise<void>; // <--- AJOUTE SA
     clearError: () => void;
     resetAlbumState: () => void;
@@ -120,6 +125,21 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
+    // 4. JWENN YON SÈL ALBUM (GET /album/:id)
+    const getAlbums = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const { data } = await api.get(`/album`);
+
+            setAlbums(data);
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Nou pa ka jwenn album sa a");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // 5. JWENN TOUT ALBUM YON ATIS (GET /album/user/:userId)
     const fetchUserAlbums = async (userId: string) => {
         setLoading(true);
@@ -135,10 +155,11 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     return (
-        <AlbumContext.Provider value={{ 
+        <AlbumContext.Provider value={{
             currentAlbum, albums, isUploading, uploadProgress, error, loading,
             createAlbum, addTrack, finalizeAlbum, getAlbum, fetchUserAlbums,
-            clearError, resetAlbumState 
+            getAlbums,
+            clearError, resetAlbumState
         }}>
             {children}
         </AlbumContext.Provider>
