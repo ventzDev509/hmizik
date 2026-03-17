@@ -20,6 +20,7 @@ import AddMusicMobile from "./components/Mobile/AddSong/AddMusicMobile";
 import LikedSongsPage from "./components/Mobile/LikeSong/LikeSong";
 import PlaylistDetailPage from "./components/Mobile/PlaylistDetailPage/PlaylistDetailPage";
 import OfflineMusic from "./components/Mobile/OfflineMusic/OfflineMusic";
+import AlbumDetailPage from "./components/Mobile/album/AlbumDetailPage";
 
 function App() {
   // 1. Nou kreye yon eta pou detekte si moun lan online
@@ -126,6 +127,11 @@ function App() {
     {
       path: "/nouvoson", element: <>
         <div className=""><>{isMobile ? <AddMusicMobile /> : ""}</></div>
+      </>, withBottomNav: true
+    },
+    {
+      path: "/album", element: <>
+        <div className=""><>{isMobile ? <AlbumDetailPage /> : ""}</></div>
       </>, withBottomNav: true
     },
   ];

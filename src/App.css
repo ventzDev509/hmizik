@@ -10,8 +10,8 @@ html, body {
   background-color: #121212 !important;
   /* Sa fòse sistèm nan konprann app a se nwa li ye */
   color-scheme: dark; 
-  height: 100%;
-  overflow: hidden;
+  /* height: 100%; */
+  /* overflow: hidden; */
 }
 
 img {

@@ -1,34 +1,61 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Music, Upload, Image as ImageIcon, X, Loader2, CheckCircle2, Info } from 'lucide-react';
+import { Music, Upload, Image as ImageIcon, X, Loader2, CheckCircle2, Activity } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTracks } from '../../../context/TrackContext';
+import { useAlbum } from '../../../context/AlbumContext';
 
 const AddMusicMobile: React.FC = () => {
-    const { uploadTrack, uploading: isUploading } = useTracks();
+    // Hooks Context
+    const { uploadTrack, uploading: isUploadingSingle } = useTracks();
+    const { addTrack, isUploading: isUploadingAlbum, uploadProgress } = useAlbum();
+    
+    // Hooks Navigasyon
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    
+    // Detekte mòd operasyon
+    const albumId = searchParams.get('albumId');
+    const isAddingToAlbum = Boolean(albumId);
 
+    // States lokal pou fichye
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [duration, setDuration] = useState<number>(0);
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
+    const [isProcessingAudio, setIsProcessingAudio] = useState(false);
 
+    // State pou fòm
     const [formData, setFormData] = useState({
         title: '',
         genre: 'Konpa',
         description: '',
-        isPublic: true
     });
 
+    // Refs
     const audioInputRef = useRef<HTMLInputElement>(null);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
+    // Compute uploading status
+    const combinedUploading = isUploadingSingle || isUploadingAlbum;
+
+    // Kalkile longè mizik la (Analyzing Buffer)
     const getAudioDuration = (file: File): Promise<number> => {
+        setIsProcessingAudio(true);
         return new Promise((resolve) => {
             const audio = new Audio();
-            audio.src = URL.createObjectURL(file);
+            const url = URL.createObjectURL(file);
+            audio.src = url;
             audio.onloadedmetadata = () => {
+                setIsProcessingAudio(false);
                 resolve(Math.round(audio.duration));
-                URL.revokeObjectURL(audio.src);
+                URL.revokeObjectURL(url);
+            };
+            audio.onerror = () => {
+                setIsProcessingAudio(false);
+                toast.error("Erè nan lekti fichye audio a");
+                resolve(0);
             };
         });
     };
@@ -42,7 +69,10 @@ const AddMusicMobile: React.FC = () => {
                 setDuration(dur);
 
                 if (!formData.title) {
-                    setFormData(prev => ({ ...prev, title: file.name.replace(/\.[^/.]+$/, "") }));
+                    setFormData(prev => ({ 
+                        ...prev, 
+                        title: file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " ") 
+                    }));
                 }
             } else {
                 toast.error("Tanpri chwazi yon fichye audio valid");
@@ -64,59 +94,76 @@ const AddMusicMobile: React.FC = () => {
         e.preventDefault();
         if (!audioFile) return toast.error("Ou dwe chwazi yon mizik");
         if (!formData.title) return toast.error("Mizik la bezwen yon tit");
+        if (isProcessingAudio) return toast.error("N ap analize audio a toujou...");
 
         const data = new FormData();
         data.append('title', formData.title);
-        data.append('genre', formData.genre);
         data.append('duration', duration.toString());
         data.append('audio', audioFile);
-
+        
         if (coverFile) {
             data.append('cover', coverFile);
         }
 
         try {
-            await uploadTrack(data);
-            setAudioFile(null);
-            setCoverFile(null);
-            setCoverPreview(null);
-            setFormData({ title: '', genre: 'Konpa', description: '', isPublic: true });
+            if (isAddingToAlbum && albumId) {
+                await addTrack(albumId, data);
+                toast.success("Mizik ajoute nan album nan!");
+            } else {
+                data.append('genre', formData.genre);
+                await uploadTrack(data);
+                toast.success("Mizik pibliye ak siksè!");
+            }
+
+            setTimeout(() => {
+                isAddingToAlbum ? navigate(`/album?id=${albumId}`) : navigate('/profile');
+            }, 2000);
+
         } catch (error) {
-            // Jere nan Provider
+            console.error("Upload failed:", error);
+            toast.error("Upload la echwe. Tcheke koneksyon ou.");
         }
     };
 
     return (
         <div className="min-h-screen bg-[#121212] text-white font-sans pb-32">
-            <Toaster position="top-center" />
+            <Toaster position="top-center" reverseOrder={false} />
 
-            {/* --- OVERLAY UPLOAD PROGRESS (Koulè Orange) --- */}
+            {/* --- OVERLAY UPLOAD PROGRESS VIZYALIZÈ --- */}
             <AnimatePresence>
-                {isUploading && (
+                {combinedUploading && (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center px-10"
                     >
-                        <div className="w-full max-w-xs space-y-6 text-center">
-                            <div className="relative inline-block">
-                                <Loader2 className="animate-spin text-orange-600" size={50} />
-                                <div className="absolute inset-0 blur-2xl bg-orange-600/30 animate-pulse"></div>
+                        <div className="w-full max-w-xs space-y-8 text-center">
+                            <div className="relative flex justify-center">
+                                <div className="relative">
+                                    <Loader2 className="animate-spin text-orange-600 opacity-20" size={100} strokeWidth={1} />
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="text-2xl font-black font-mono text-orange-500">
+                                            {uploadProgress}%
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
-                                <h2 className="text-xl font-black uppercase tracking-widest">Ap Pibliye...</h2>
-                                <p className="text-zinc-400 text-sm italic">H-MIZIK ap prepare son ou a</p>
+                                <h2 className="text-xl font-black uppercase tracking-widest italic">
+                                    {uploadProgress < 100 ? "N ap Transfere..." : "Processing..."}
+                                </h2>
+                                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">H-MIZIK Cloud Storage</p>
                             </div>
 
-                            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            {/* PROGRESS BAR */}
+                            <div className="relative w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                 <motion.div
-                                    className="h-full bg-orange-600"
-                                    initial={{ width: "10%" }}
-                                    animate={{ width: "98%" }}
-                                    transition={{ duration: 12, ease: "linear" }}
+                                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-600 to-orange-400"
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: `${uploadProgress}%` }}
+                                    transition={{ ease: "easeOut", duration: 0.5 }}
                                 />
                             </div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-tighter italic">Pa fèmen oswa kache aplikasyon an</p>
                         </div>
                     </motion.div>
                 )}
@@ -124,128 +171,120 @@ const AddMusicMobile: React.FC = () => {
 
             {/* HEADER */}
             <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 sticky top-0 bg-[#121212]/95 backdrop-blur-md z-40">
-                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-orange-600">Ajoute yon Mizik</h2>
-                <div onClick={() => window.history.back()} className="p-2 bg-zinc-900 rounded-lg cursor-pointer">
+                <div onClick={() => navigate(-1)} className="p-2 bg-zinc-900 rounded-lg cursor-pointer">
                     <X className="text-zinc-400" size={18} />
                 </div>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 italic">
+                    {isAddingToAlbum ? "Add to Album" : "Upload Single"}
+                </h2>
+                <div className="w-10"></div> {/* Spacer */}
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-8 max-w-md mx-auto">
-
-                {/* COVER SECTION */}
+                {/* COVER PICKER */}
                 <div className="flex flex-col items-center">
                     <motion.div
                         whileTap={{ scale: 0.95 }}
                         onClick={() => coverInputRef.current?.click()}
-                        className="relative w-64 h-64 bg-zinc-900 rounded-3xl shadow-2xl flex flex-col items-center justify-center overflow-hidden border-2 border-dashed border-white/5 group cursor-pointer"
+                        className="relative w-64 h-64 bg-zinc-900 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center overflow-hidden border border-white/5 group cursor-pointer"
                     >
                         {coverPreview ? (
-                            <img crossOrigin="anonymous" src={coverPreview} className="w-full h-full object-cover" alt="Preview" />
+                            <img src={coverPreview} className="w-full h-full object-cover" alt="Preview" />
                         ) : (
                             <div className="flex flex-col items-center p-6 text-center">
-                                <div className="p-4 bg-orange-600/10 rounded-full mb-4">
-                                    <ImageIcon size={32} className="text-orange-600" />
-                                </div>
-                                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Foto Kouvèti (Cover)</span>
+                                <ImageIcon size={40} className="text-zinc-800 mb-3" />
+                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+                                    {isAddingToAlbum ? "Track Cover (Optional)" : "Single Cover"}
+                                </span>
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-orange-600/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
-                            <Upload size={24} className="text-white" />
+                        <div className="absolute inset-0 bg-orange-600/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
+                            <Upload size={30} className="text-white" />
                         </div>
                     </motion.div>
                     <input type="file" ref={coverInputRef} onChange={handleCoverChange} accept="image/*" className="hidden" />
                 </div>
 
-                {/* AUDIO SELECTOR (Orange Theme) */}
+                {/* AUDIO SELECTOR SECTION */}
                 <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Fichye Son (MP3, WAV)</label>
                     <div
-                        onClick={() => audioInputRef.current?.click()}
-                        className={`w-full p-5 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex items-center gap-4 ${audioFile ? 'border-orange-600 bg-orange-600/5 shadow-lg shadow-orange-600/5' : 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-700'}`}
+                        onClick={() => !isProcessingAudio && audioInputRef.current?.click()}
+                        className={`w-full p-6 rounded-[2.5rem] border transition-all cursor-pointer flex items-center gap-4 ${audioFile ? 'border-orange-600/50 bg-orange-600/5 shadow-[0_0_20px_rgba(234,88,12,0.05)]' : 'border-white/5 bg-zinc-900/40'}`}
                     >
-                        <div className={`p-3 rounded-xl ${audioFile ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-500'}`}>
-                            <Music size={22} />
+                        <div className={`p-4 rounded-2xl ${audioFile ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'bg-zinc-800 text-zinc-500'}`}>
+                            {isProcessingAudio ? <Activity className="animate-pulse" size={20} /> : <Music size={20} />}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <h3 className="text-sm font-black truncate">
-                                {audioFile ? audioFile.name : "Chwazi mizik la"}
+                            <h3 className="text-[11px] font-black truncate uppercase italic tracking-wider">
+                                {isProcessingAudio ? "Analyzing Audio..." : audioFile ? audioFile.name : "Select Audio File"}
                             </h3>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[9px] text-zinc-500 uppercase font-black tracking-tighter">
-                                    {audioFile ? `${(audioFile.size / (1024 * 1024)).toFixed(2)} MB` : "Audio file"}
-                                </span>
-                                {duration > 0 && (
-                                    <span className="text-[9px] bg-orange-600/20 text-orange-500 px-2 py-0.5 rounded-md font-mono font-bold">
+                            {duration > 0 && (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-[10px] text-orange-500 font-black italic">
                                         {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
                                     </span>
-                                )}
-                            </div>
+                                    <div className="h-1 w-1 bg-zinc-700 rounded-full" />
+                                    <span className="text-[9px] text-zinc-500 font-bold">READY</span>
+                                </div>
+                            )}
                         </div>
-                        {audioFile && <CheckCircle2 className="text-orange-600" size={20} />}
+                        {audioFile && !isProcessingAudio && <CheckCircle2 className="text-orange-600" size={20} />}
+                        {isProcessingAudio && <Loader2 className="animate-spin text-orange-600" size={20} />}
                         <input type="file" ref={audioInputRef} onChange={handleAudioChange} accept="audio/*" className="hidden" />
                     </div>
                 </div>
 
-                {/* INPUTS SECTION */}
-                <div className="space-y-5 bg-zinc-900/30 p-5 rounded-[2.5rem] border border-white/5 shadow-inner">
+                {/* FIELDS */}
+                <div className="space-y-5 bg-zinc-900/30 p-6 rounded-[3rem] border border-white/5">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Tit Mizik la</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 ml-2 italic">Song Title</label>
                         <input
                             type="text"
                             required
-                            placeholder="Ekri tit son an..."
+                            placeholder="Enter title"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            className="w-full bg-zinc-900 border border-white/5 focus:border-orange-600/50 outline-none p-4 rounded-2xl font-bold text-white transition-all placeholder:text-zinc-700 shadow-xl"
+                            className="w-full bg-zinc-900/80 border border-white/5 outline-none p-5 rounded-2xl font-black text-sm text-white focus:border-orange-600/40 transition-all uppercase italic"
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    {!isAddingToAlbum && (
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Stil</label>
-                            <select
-                                value={formData.genre}
-                                onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-                                className="w-full bg-zinc-900 border border-white/5 outline-none p-4 rounded-2xl font-bold text-white appearance-none cursor-pointer focus:border-orange-600/50"
-                            >
-                                <option value="Konpa">Konpa</option>
-                                <option value="Raboday">Raboday</option>
-                                <option value="Rap Kreyol">Rap Kreyòl</option>
-                                <option value="Afrobeats">Afrobeats</option>
-                                <option value="Dancehall">Dancehall</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Vizibilite</label>
-                            <div
-                                onClick={() => setFormData({ ...formData, isPublic: !formData.isPublic })}
-                                className="w-full bg-zinc-900 p-4 rounded-2xl font-bold text-white flex items-center justify-between cursor-pointer border border-white/5"
-                            >
-                                <span className="text-[10px] uppercase font-black">{formData.isPublic ? 'Piblik' : 'Prive'}</span>
-                                <div className={`w-3 h-3 rounded-full ${formData.isPublic ? 'bg-orange-600 shadow-[0_0_10px_rgba(234,88,12,0.6)]' : 'bg-zinc-700'}`} />
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 ml-2 italic">Genre</label>
+                            <div className="relative">
+                                <select
+                                    value={formData.genre}
+                                    onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
+                                    className="w-full bg-zinc-900/80 border border-white/5 outline-none p-5 rounded-2xl font-black text-xs text-white appearance-none cursor-pointer uppercase italic"
+                                >
+                                    <option value="Konpa">Konpa</option>
+                                    <option value="Raboday">Raboday</option>
+                                    <option value="Rap Kreyol">Rap Kreyòl</option>
+                                    <option value="Afrobeats">Afrobeats</option>
+                                </select>
+                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
+                                    <Upload size={14} className="rotate-180" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div className="flex items-start gap-3 bg-orange-600/5 p-4 rounded-2xl border border-orange-600/10">
-                    <Info size={16} className="text-orange-600 mt-1 flex-shrink-0" />
-                    <p className="text-[9px] text-zinc-500 leading-relaxed font-medium">
-                        Lè w pibliye sou <span className="text-orange-600 font-bold">H-MIZIK</span>, ou konfime ke ou gen dwa legal sou travay sa a. Nenpòt vòlè dwa otè ka lakòz kont ou fèmen.
-                    </p>
+                    )}
                 </div>
 
                 <motion.button
-                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    style={{backgroundColor:"oklch(64.6% 0.222 41.116)"}}
                     type="submit"
-                    disabled={isUploading}
-                    className="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-5  rounded-2xl shadow-2xl shadow-orange-600/10 uppercase tracking-[0.2em] text-xs transition-all disabled:opacity-50"
+                    disabled={combinedUploading || isProcessingAudio}
+                    className="w-full bg-orange-600 text-white font-black py-6 rounded-[2rem] uppercase tracking-[0.3em] text-[11px] disabled:opacity-30 shadow-2xl shadow-orange-600/20 italic"
                 >
-                    {isUploading ? "N ap uploade son an..." : "Pibliye Mizik la"}
+                    {combinedUploading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <Loader2 className="animate-spin" size={16} />
+                            <span>Uploading...</span>
+                        </div>
+                    ) : (
+                        isAddingToAlbum ? "Add to Album" : "Publish Single"
+                    )}
                 </motion.button>
-
             </form>
         </div>
     );
