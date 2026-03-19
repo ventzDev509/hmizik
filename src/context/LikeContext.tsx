@@ -8,7 +8,7 @@ interface LikeContextType {
     likedAlbumIds: string[];
     loading: boolean;
     toggleLike: (id: string, type?: 'track' | 'album') => Promise<void>;
-    isLiked: (trackId: string,type?: 'track' | 'album') => boolean;
+    isLiked: (trackId: string, type?: 'track' | 'album') => boolean;
     refreshLikes: () => Promise<void>;
 }
 
@@ -63,16 +63,12 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         try {
-            // --- RANJE REKÈT LA ISIT LA ---
-            // Nou voye 'type' la kòm yon Query Parameter pou l matche ak Backend la
-            const response = await api.post(`/likes/${id}?type=${type}`);
 
-            console.log("Repons sèvè:", response.data);
+            await api.post(`/likes/${id}?type=${type}`);
+
         } catch (error) {
-            console.error("Erè toggle like:", error);
             toast.error("Echèk nan koneksyon");
 
-            // ROLLBACK: Remete jan l te ye
             if (wasLiked) {
                 setLikedTrackIds(prev => [...prev, id]);
             } else {
@@ -81,12 +77,12 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
     // Helper pou konnen si yon mizik oswa yon album "liked"
-const isLiked = (id: string, type: 'track' | 'album' = 'track') => {
-    if (type === 'track') {
-        return likedTrackIds.includes(id);
-    }
-    return likedAlbumIds.includes(id); // Asire w ou te kreye state likedAlbumIds la
-};
+    const isLiked = (id: string, type: 'track' | 'album' = 'track') => {
+        if (type === 'track') {
+            return likedTrackIds.includes(id);
+        }
+        return likedAlbumIds.includes(id); // Asire w ou te kreye state likedAlbumIds la
+    };
 
     return (
         <LikeContext.Provider value={{

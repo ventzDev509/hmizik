@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Loader2, InstagramIcon, Facebook, Youtube, LinkIcon } from 'lucide-react';
+import { Plus, Loader2, LinkIcon, FilePlay } from 'lucide-react';
 import { useScroll, useTransform, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ import { useImageColors } from "../../utils/GetColor";
 import BottomMenu from '../menu/BottomMenu';
 import type { AlbumFormState } from '../../types/Profile';
 import { ProfileContent } from './composants/ProfileContent';
-import { FiTwitter } from 'react-icons/fi';
+import { FiFacebook, FiInstagram, FiTwitter, FiYoutube } from 'react-icons/fi';
 
 const UserProfile = () => {
     const navigate = useNavigate();
@@ -32,12 +32,13 @@ const UserProfile = () => {
         title: '', releaseDate: '', cover: null, preview: ''
     });
 
-    const getPlatformIcon = (platform: string) => {
-        const p = platform.toLowerCase();
-        if (p.includes('instagram')) return <InstagramIcon size={14} />;
-        if (p.includes('facebook')) return <Facebook size={14} />;
-        if (p.includes('youtube')) return <Youtube size={14} />;
-        if (p.includes('twitter')) return <FiTwitter size={14} />;
+    const getPlatformIcon = (url: string) => {
+        const u = String(url).toLowerCase();
+        if (u.includes('instagram.com')) return <FiInstagram size={14} />;
+        if (u.includes('facebook.com') || u.includes('fb.com')) return <FiFacebook size={14} />;
+        if (u.includes('youtube.com') || u.includes('youtu.be')) return <FiYoutube size={14} />;
+        if (u.includes('twitter.com') || u.includes('x.com')) return <FiTwitter size={14} />;
+        if (u.includes('tiktok.com') || u.includes('tik.com')) return <FilePlay size={14} />;
         return <LinkIcon size={14} />;
     };
     // DESIGN & ANIMATION
@@ -85,6 +86,25 @@ const UserProfile = () => {
         } catch (e) { return {}; }
     }, [profile?.socialLinks]);
 
+    useEffect(() => {
+        let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+
+        if (!metaThemeColor) {
+            metaThemeColor = document.createElement('meta');
+            metaThemeColor.setAttribute('name', 'theme-color');
+            document.head.appendChild(metaThemeColor);
+        }
+
+        metaThemeColor.setAttribute('content', bgColor || '#121212');
+
+        return () => {
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) {
+                meta.setAttribute('content', '#121212');
+            }
+        };
+    }, [bgColor]);
+
     if (profileLoading) {
         return (
             <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center gap-4">
@@ -107,32 +127,32 @@ const UserProfile = () => {
 
             <div className="p-8">
                 {/* 2. CONTENT (TABS & LIS) */}
-            <ProfileContent
-                activeTab={activeTab} setActiveTab={setActiveTab}
-                tracks={tracks} albums={albums}
-                tracksLoading={tracksLoading} incrementPlay={incrementPlay}
-                setIsAlbumModalOpen={setIsAlbumModalOpen} navigate={navigate}
-            />
+                <ProfileContent
+                    activeTab={activeTab} setActiveTab={setActiveTab}
+                    tracks={tracks} albums={albums}
+                    tracksLoading={tracksLoading} incrementPlay={incrementPlay}
+                    setIsAlbumModalOpen={setIsAlbumModalOpen} navigate={navigate}
+                />
 
-            {/* 3. MODAL */}
-            <AlbumModal
-                isOpen={isAlbumModalOpen} onClose={() => setIsAlbumModalOpen(false)}
-                albumForm={albumForm} setAlbumForm={setAlbumForm}
-                onSubmit={onSubmitAlbum} isUploading={isUploading}
-                uploadProgress={uploadProgress} error={error}
-                handleFileChange={handleFileChange}
-            />
+                {/* 3. MODAL */}
+                <AlbumModal
+                    isOpen={isAlbumModalOpen} onClose={() => setIsAlbumModalOpen(false)}
+                    albumForm={albumForm} setAlbumForm={setAlbumForm}
+                    onSubmit={onSubmitAlbum} isUploading={isUploading}
+                    uploadProgress={uploadProgress} error={error}
+                    handleFileChange={handleFileChange}
+                />
 
-            {/* 4. FAB BUTTON */}
-            {profile?.isArtist && (
-                <motion.div
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => navigate("/nouvoson")}
-                    className="fixed bottom-32 right-6 w-16 h-16 bg-orange-600 rounded-[2rem] flex items-center justify-center shadow-2xl z-[90] border-2 border-white/10 text-white"
-                >
-                    <Plus size={32} strokeWidth={3} />
-                </motion.div>
-            )}
+                {/* 4. FAB BUTTON */}
+                {profile?.isArtist && (
+                    <motion.div
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => navigate("/nouvoson")}
+                        className="fixed bottom-32 right-6 w-16 h-16 bg-orange-600 rounded-[2rem] flex items-center justify-center shadow-2xl z-[90] border-2 border-white/10 text-white"
+                    >
+                        <Plus size={32} strokeWidth={3} />
+                    </motion.div>
+                )}
 
             </div>
             <BottomMenu />

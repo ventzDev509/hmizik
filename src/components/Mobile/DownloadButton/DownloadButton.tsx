@@ -1,7 +1,6 @@
-import { CheckCircle2, Download } from "lucide-react";
+import { CheckCircle2, Download, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { useOfflineDownload } from "../hooks/useOfflineDownload";
+import { useDownload } from "../../../context/DownloadContext";
 
 interface DownloadButtonProps {
     audioUrl: string;
@@ -12,78 +11,71 @@ interface DownloadButtonProps {
     showText?: boolean;
 }
 
-const DownloadButton = ({ 
-    audioUrl, 
-    coverUrl, 
-    title, 
-    trackId, 
-    className = "", 
-    showText = false 
+const DownloadButton = ({
+    audioUrl,
+    coverUrl,
+    title,
+    trackId,
+    className = "",
+    showText = false
 }: DownloadButtonProps) => {
-    const { downloadWithProgress, isOffline } = useOfflineDownload();
-    const [status, setStatus] = useState<'idle' | 'loading' | 'completed'>('idle');
-    const [progress, setProgress] = useState(0);
+    // Nou rale tout sa nou bezwen nan Context la
+    const { activeDownloads, downloadTrack, cancelDownload, isOffline } = useDownload();
+    
+    // Tcheke si track sa a egzakteman ap telechaje nan Context la
+    const downloadInfo = activeDownloads[trackId];
+    const isDownloading = !!downloadInfo;
+    const progress = downloadInfo?.progress || 0;
 
-   useEffect(() => {
-    let isMounted = true; // Pou evite memwa leak
+    const [isAlreadyOffline, setIsAlreadyOffline] = useState(false);
 
-    const checkStatus = async () => {
-        if (!audioUrl) return;
-
-        const offline = await isOffline(audioUrl);
+    // Tcheke estati offline la
+    useEffect(() => {
+        let isMounted = true;
         
-        if (isMounted) {
-            // Si l offline, mete completed. Si l pa offline, mete idle.
-            setStatus(offline ? 'completed' : 'idle');
-        }
-    };
+        const check = async () => {
+            if (!audioUrl) return;
+            const result = await isOffline(audioUrl);
+            if (isMounted) {
+                setIsAlreadyOffline(result);
+            }
+        };
 
-    checkStatus();
+        check();
+        return () => { isMounted = false; };
+    }, [audioUrl, isOffline, isDownloading]); // Li re-tcheke lè isDownloading chanje (lè l fini)
 
-    return () => { isMounted = false; };
-}, [audioUrl, isOffline]);
-
-    const handleDownload = async (e: React.MouseEvent) => {
+    const handleAction = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (status !== 'idle') return;
 
-        setStatus('loading');
-        setProgress(0);
+        if (isDownloading) {
+            // SI L AP TELECHAJE: Nou anile li
+            cancelDownload(trackId);
+            return;
+        }
 
-        try {
-            // Nou pase tout paramèt yo, enkli trackId
-            await downloadWithProgress(audioUrl, coverUrl, title, trackId, (p) => setProgress(p));
-
-            setStatus('completed');
-            toast.success(`${title} sove offline!`);
-        } catch (error) {
-            console.error("Download error:", error);
-            setStatus('idle');
-            toast.error("Telechajman an echwe.");
+        if (!isAlreadyOffline) {
+            // SI L PA OFFLINE: Nou kòmanse telechajman an
+            downloadTrack(trackId, audioUrl, coverUrl, title);
         }
     };
 
     return (
         <button
-            onClick={handleDownload}
-            disabled={status === 'loading'}
-            className={`relative flex items-center justify-center min-w-[40px] h-10 rounded-full bg-white/5 transition-all active:scale-95 ${className}`}
+            onClick={handleAction}
+            className={`relative flex items-center justify-center min-w-[40px] h-10 rounded-full bg-white/5 transition-all active:scale-95 group ${className}`}
         >
-            {/* Rond Progress la (SVG) */}
-            {status === 'loading' && (
+            {/* 1. Progress Ring (SVG) - Parèt sèlman si l ap telechaje */}
+            {isDownloading && (
                 <svg className="absolute inset-0 w-full h-full -rotate-90">
                     <circle
                         cx="20" cy="20" r="18"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        fill="transparent"
+                        stroke="currentColor" strokeWidth="2" fill="transparent"
                         className="text-white/10"
                     />
                     <circle
                         cx="20" cy="20" r="18"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        fill="transparent"
+                        stroke="currentColor" strokeWidth="2" fill="transparent"
                         strokeDasharray={113}
                         strokeDashoffset={113 - (progress / 100) * 113}
                         strokeLinecap="round"
@@ -93,17 +85,25 @@ const DownloadButton = ({
             )}
 
             <div className="relative z-10 flex items-center gap-2 px-2">
-                {status === 'loading' ? (
-                    <span className="text-[10px] font-black text-orange-500">{progress}%</span>
-                ) : status === 'completed' ? (
+                {isDownloading ? (
+                    // Lè l ap telechaje: Montre % oswa X pou anile lè w hover
+                    <div className="flex items-center justify-center">
+                        <span className="text-[10px] font-black text-orange-500 group-hover:hidden">
+                            {progress}%
+                        </span>
+                        <XCircle size={18} className="text-red-500 hidden group-hover:block transition-colors" />
+                    </div>
+                ) : isAlreadyOffline ? (
+                    // Lè l fini
                     <CheckCircle2 size={18} className="text-green-500 fill-green-500/10" />
                 ) : (
-                    <Download size={18} className="text-zinc-400 hover:text-white transition-colors" />
+                    // Estati nòmal
+                    <Download size={18} className="text-zinc-400 group-hover:text-white transition-colors" />
                 )}
 
-                {showText && status !== 'loading' && (
+                {showText && !isDownloading && (
                     <span className="font-black text-xs uppercase tracking-tighter italic">
-                        {status === 'completed' ? "Sove" : "Offline"}
+                        {isAlreadyOffline ? "Sove" : "Offline"}
                     </span>
                 )}
             </div>

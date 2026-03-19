@@ -17,18 +17,11 @@ interface AlbumCardProps {
 
 const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
     const navigate = useNavigate();
-    const { currentSong, isPlaying, togglePlay, playSong } = useAudio();
+    const { currentSong, isPlaying,  } = useAudio();
 
     const isThisAlbumActive = currentSong && album.tracks?.some(t => t.id === currentSong.id);
 
-    const handlePlayClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (isThisAlbumActive) {
-            togglePlay();
-        } else if (album.tracks && album.tracks.length > 0) {
-            playSong(album.tracks[0], album.tracks);
-        }
-    };
+   
 
     return (
         <div className="flex-shrink-0 w-[160px] snap-start p2">
@@ -67,7 +60,7 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
                                     key="active-btn"
                                     initial={{ scale: 0, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    onClick={handlePlayClick}
+                                    
                                     className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(234,88,12,0.6)] text-white"
                                 >
                                     {isPlaying ? (
@@ -81,7 +74,6 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
                                     className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0"
                                 >
                                     <div 
-                                        onClick={handlePlayClick}
                                         className="w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-orange-600 hover:border-orange-500 transition-colors"
                                     >
                                         <Play size={20} fill="white" className="ml-1" />

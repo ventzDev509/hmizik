@@ -1,53 +1,53 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreVertical, Play, Heart, ChevronLeft, Pause, Loader2, ListPlus, PlusSquare } from 'lucide-react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { ChevronLeft } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+
+// Konpozan nou dekoupe yo
+import PlaylistHeader from './components/PlaylistHeader';
+import PlaylistControls from './components/PlaylistControls';
+import SuggestionItem from './components/SuggestionItem';
+import PlaylistModals from './components/PlaylistModals';
 import BottomMenu from '../menu/BottomMenu';
+
+// Hooks ak Contexts
 import { useImageColors } from "../../utils/GetColor";
 import { useTracks } from '../../../context/TrackContext';
 import { useAudio } from '../../../provider/PlayerContext';
 import { useLikes } from '../../../context/LikeContext';
-import AddToPlaylistModal from '../Modal/AddToPlaylistModal';
-import Equalizer from '../../buffer/Equalizer';
-
-import DownloadButton from '../DownloadButton/DownloadButton';
-
-interface Song {
-    id: string;
-    title: string;
-    artist?: { username: string } | string;
-    coverUrl: string;
-    audioUrl: string;
-    genre?: string;
-}
 
 const PlaylistPage = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const id = searchParams.get('id');
     const navigate = useNavigate();
+    
     const { tracks } = useTracks();
-
-    const { playSong, isPlaying, currentSong, togglePlay, isBuffering, addToQueue } = useAudio();
     const { isLiked, toggleLike } = useLikes();
+    const { 
+        playSong, isPlaying, currentSong, togglePlay, 
+        isBuffering, addToQueue 
+    } = useAudio();
 
+    // States
     const [showActionModal, setShowActionModal] = useState(false);
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
-    const [selectedSongForActions, setSelectedSongForActions] = useState<Song | null>(null);
+    const [selectedSongForActions, setSelectedSongForActions] = useState<any>(null);
     const [isAddingToQueue, setIsAddingToQueue] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
+    // Lojik pou jwenn mizik la ak sijesyon yo
     const selectedTrack = useMemo(() => tracks.find(t => t.id === id), [tracks, id]);
-    const isCurrentTrackPlaying = useMemo(() => isPlaying && currentSong?.id === selectedTrack?.id, [isPlaying, currentSong, selectedTrack]);
-    const isMainTrackLiked = selectedTrack ? isLiked(selectedTrack.id) : false;
-
+    
     const suggestions = useMemo(() => {
         if (!selectedTrack) return [];
-        return tracks.filter(t => t.genre === selectedTrack.genre && t.id !== selectedTrack.id).slice(0, 15);
+        return tracks
+            .filter(t => t.genre === selectedTrack.genre && t.id !== selectedTrack.id)
+            .slice(0, 15);
     }, [tracks, selectedTrack]);
 
+    // Koulè ak Animasyon
     const { bgColor, imgRef } = useImageColors(selectedTrack?.coverUrl || "");
-    const [isScrolled, setIsScrolled] = useState(false);
     const { scrollY } = useScroll();
-
     const imgOpacity = useTransform(scrollY, [0, 200], [1, 0]);
     const imgScale = useTransform(scrollY, [0, 200], [1, 0.8]);
     const navOpacity = useTransform(scrollY, [150, 250], [0, 1]);
@@ -55,22 +55,17 @@ const PlaylistPage = () => {
     useEffect(() => {
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) metaThemeColor.setAttribute('content', bgColor || '#121212');
+        
         const unsubscribe = scrollY.on("change", (latest) => setIsScrolled(latest > 200));
+        
         return () => {
             unsubscribe();
             if (metaThemeColor) metaThemeColor.setAttribute('content', '#121212');
         };
     }, [bgColor, scrollY]);
 
-    const triggerVibration = (pattern: number | number[] = 10) => {
-        if (typeof window !== 'undefined' && window.navigator.vibrate) window.navigator.vibrate(pattern);
-    };
-
-    const openActionMenu = (e: React.MouseEvent, song: Song) => {
-        e.stopPropagation();
-        setSelectedSongForActions(song);
-        setShowActionModal(true);
-        triggerVibration(15);
+    const triggerVibration = (pattern: number = 10) => {
+        if (window.navigator.vibrate) window.navigator.vibrate(pattern);
     };
 
     const handleAddToQueue = async () => {
@@ -78,183 +73,100 @@ const PlaylistPage = () => {
         setIsAddingToQueue(true);
         triggerVibration(20);
         await addToQueue(selectedSongForActions);
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setIsAddingToQueue(false);
-        setShowActionModal(false);
+        setTimeout(() => {
+            setIsAddingToQueue(false);
+            setShowActionModal(false);
+        }, 800);
     };
 
     if (!selectedTrack) return null;
 
     return (
         <div className="bg-[#121212] text-white font-sans relative overflow-x-hidden min-h-screen">
-            {/* NAVBAR STICKY */}
+            
+            {/* 1. NAVBAR STICKY */}
             <motion.nav
                 style={{ backgroundColor: bgColor, opacity: navOpacity }}
-                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4 gap-4"
+                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4 gap-4 pointer-events-none"
             >
-                <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
-                <div className="flex items-center gap-3 overflow-hidden">
-                    <img src={selectedTrack.coverUrl} className="w-8 h-8 rounded-sm object-cover" alt="mini" />
-                    <h2 className="text-sm font-black truncate">{selectedTrack.title}</h2>
+                <div className="pointer-events-auto flex items-center gap-4 w-full">
+                    <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <img src={selectedTrack.coverUrl} className="w-8 h-8 rounded-sm object-cover shadow-lg" alt="" />
+                        <h2 className="text-sm font-black truncate uppercase italic tracking-tighter">
+                            {selectedTrack.title}
+                        </h2>
+                    </div>
                 </div>
             </motion.nav>
 
-            <div className="absolute top-0 left-0 right-0 h-[50vh] z-0" style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
+            {/* Background Gradient */}
+            <div className="absolute top-0 left-0 right-0 h-[50vh] z-0" 
+                 style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
 
             <main className="relative z-10 pt-12">
-                <motion.div style={{ opacity: imgOpacity, scale: imgScale }} className="flex flex-col items-center px-6 pb-6 pt-6">
-                    <div className="w-52 h-52 mb-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-                        <img ref={imgRef} src={selectedTrack.coverUrl} alt={selectedTrack.title} className="w-full h-full object-cover rounded-sm" />
-                    </div>
-                    <div className="w-full">
-                        <h3 className="text-2xl font-black mb-2 tracking-tight line-clamp-2 uppercase italic">{selectedTrack.title}</h3>
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-[10px] font-bold text-black">H</div>
-                            <span className="text-xs font-bold text-white/80 uppercase">
-                                {typeof selectedTrack.artist === 'string' ? selectedTrack.artist : selectedTrack.artist?.username} • {selectedTrack.genre}
-                            </span>
-                        </div>
-                    </div>
-                </motion.div>
+                {/* 2. Header (Foto + Tit) */}
+                <PlaylistHeader 
+                    track={selectedTrack} 
+                    imgOpacity={imgOpacity} 
+                    imgScale={imgScale} 
+                    imgRef={imgRef} 
+                />
 
-                {/* CONTROLS AREA */}
-                <div className={`sticky top-16 z-40 flex justify-between items-center px-6 py-4 transition-colors duration-300 ${isScrolled ? 'bg-[#121212]' : 'bg-transparent'}`}>
-                    <div className="flex items-center gap-6 text-zinc-400">
-                        <motion.div whileTap={{ scale: 0.8 }} onClick={() => { toggleLike(selectedTrack.id); triggerVibration(15); }} className="cursor-pointer p-1">
-                            <Heart size={28} className={`transition-all duration-300 ${isMainTrackLiked ? 'fill-orange-500 text-orange-500' : 'hover:text-white'}`} />
-                        </motion.div>
+                {/* 3. Controls (Play/Like/Download Sticky) */}
+                <PlaylistControls 
+                    track={selectedTrack}
+                    isScrolled={isScrolled}
+                    isLiked={isLiked(selectedTrack.id)}
+                    isPlaying={isPlaying && currentSong?.id === selectedTrack.id}
+                    onToggleLike={() => { toggleLike(selectedTrack.id); triggerVibration(15); }}
+                    onPlayToggle={() => currentSong?.id === selectedTrack?.id ? togglePlay() : playSong(selectedTrack, [selectedTrack, ...suggestions])}
+                    onOpenMenu={(_) => {
+                        setSelectedSongForActions(selectedTrack);
+                        setShowActionModal(true);
+                        triggerVibration(15);
+                    }}
+                />
 
-                        {/* BOUTON DOWNLOAD POU MIZIK PRINCIPAL LA */}
-                        <DownloadButton 
-                            trackId={selectedTrack.id}
-                            audioUrl={selectedTrack.audioUrl}
-                            coverUrl={selectedTrack.coverUrl}
-                            title={selectedTrack.title}
-                        />
-
-                        <MoreVertical size={24} className="hover:text-white transition cursor-pointer" onClick={(e) => openActionMenu(e, selectedTrack)} />
-                    </div>
-
-                    <div onClick={() => currentSong?.id === selectedTrack?.id ? togglePlay() : playSong(selectedTrack, [selectedTrack, ...suggestions])} className="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition cursor-pointer shadow-orange-500/20">
-                        {isCurrentTrackPlaying ? <Pause size={28} className="fill-black text-black" /> : <Play size={28} className="fill-black text-black ml-1" />}
-                    </div>
-                </div>
-
-                {/* SUGGESTIONS LIST */}
+                {/* 4. Lis Sijesyon yo */}
                 <div className="px-4 mt-8 space-y-1 pb-40">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 italic mb-4 px-2">Menm jan ak sa</h3>
-                    {suggestions.map((track, index) => {
-                        const isThisTrackActive = currentSong?.id === track.id;
-
-                        return (
-                            <div key={track.id} className={`flex items-center gap-4 p-2 rounded-xl transition active:bg-white/10 ${isThisTrackActive ? 'bg-white/5' : 'hover:bg-white/5'}`}>
-
-                                <div className="text-xs text-zinc-500 w-5 flex justify-center font-bold">
-                                    {isThisTrackActive && isBuffering ? (
-                                        <Loader2 size={14} className="text-orange-500 animate-spin" />
-                                    ) : isThisTrackActive && isPlaying ? (
-                                        <Equalizer />
-                                    ) : (
-                                        <span>{index + 1}</span>
-                                    )}
-                                </div>
-
-                                <div className="relative w-10 h-10 flex-shrink-0 cursor-pointer" onClick={() => isThisTrackActive ? togglePlay() : playSong(track, suggestions)}>
-                                    <img src={track.coverUrl} alt={track.title} className={`w-full h-full object-cover rounded-md shadow-md ${isThisTrackActive ? 'opacity-80' : 'opacity-100'}`} />
-                                    {isThisTrackActive && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-md">
-                                            {isPlaying ? <Pause size={14} className="text-white fill-white" /> : <Play size={14} className="text-white fill-white ml-0.5" />}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="flex-1 overflow-hidden cursor-pointer" onClick={() => isThisTrackActive ? togglePlay() : playSong(track, suggestions)}>
-                                    <h4 className={`text-sm font-bold truncate ${isThisTrackActive ? 'text-orange-500' : 'text-white'}`}>
-                                        {track.title}
-                                    </h4>
-                                    <p className="text-[11px] text-zinc-400 font-bold truncate uppercase tracking-tighter">
-                                        {typeof track.artist === 'string' ? track.artist : track.artist?.username}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    {/* BOUTON DOWNLOAD POU CHAK MIZIK NAN LIS LA */}
-                                    <DownloadButton 
-                                        trackId={track.id}
-                                        audioUrl={track.audioUrl}
-                                        coverUrl={track.coverUrl}
-                                        title={track.title}
-                                    />
-                                    
-                                    <Heart
-                                        onClick={(e) => { e.stopPropagation(); toggleLike(track.id); triggerVibration(10); }}
-                                        size={18}
-                                        className={isLiked(track.id) ? 'fill-orange-500 text-orange-500' : 'text-zinc-500'}
-                                    />
-                                    <MoreVertical
-                                        size={18}
-                                        className="text-zinc-500 cursor-pointer"
-                                        onClick={(e) => openActionMenu(e, track)}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic mb-6 px-2 opacity-60">
+                        Menm jan ak sa
+                    </h3>
+                    {suggestions.map((track, index) => (
+                        <SuggestionItem 
+                            key={track.id}
+                            track={track}
+                            index={index}
+                            isActive={currentSong?.id === track.id}
+                            isPlaying={isPlaying}
+                            isBuffering={isBuffering}
+                            isLiked={isLiked(track.id)}
+                            onPlay={() => playSong(track, suggestions)}
+                            onToggleLike={() => { toggleLike(track.id); triggerVibration(10); }}
+                            onOpenMenu={(e) => {
+                                e.stopPropagation();
+                                setSelectedSongForActions(track);
+                                setShowActionModal(true);
+                                triggerVibration(15);
+                            }}
+                        />
+                    ))}
                 </div>
             </main>
 
             <BottomMenu />
 
-            {/* ACTION MODAL */}
-            <AnimatePresence>
-                {showActionModal && selectedSongForActions && (
-                    <div className="fixed inset-0 z-[200] flex items-end justify-center">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isAddingToQueue && setShowActionModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="relative w-full bg-[#1c1c1e] rounded-t-[32px] p-6 pb-12 z-[210] border-t border-white/5">
-                            <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-6" />
-                            <div className="flex items-center gap-4 mb-8">
-                                <img src={selectedSongForActions.coverUrl} className="w-16 h-16 rounded-xl object-cover shadow-lg" alt="" />
-                                <div className="flex-1 overflow-hidden">
-                                    <h3 className="text-white text-xl font-black truncate italic uppercase tracking-tighter">{selectedSongForActions.title}</h3>
-                                    <p className="text-zinc-400 font-bold truncate uppercase tracking-widest text-xs">
-                                        {typeof selectedSongForActions.artist === 'string' ? selectedSongForActions.artist : selectedSongForActions.artist?.username}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <button
-                                    disabled={isAddingToQueue}
-                                    onClick={handleAddToQueue}
-                                    className="w-full flex items-center gap-4 p-5 bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-2xl transition-all text-white disabled:opacity-50"
-                                >
-                                    <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
-                                        {isAddingToQueue ? <Loader2 size={22} className="text-orange-500 animate-spin" /> : <ListPlus size={22} className="text-orange-500" />}
-                                    </div>
-                                    <span className="font-black text-lg italic uppercase tracking-tighter">
-                                        {isAddingToQueue ? "Ap ajoute..." : "Ajoute nan keu"}
-                                    </span>
-                                </button>
-
-                                <button
-                                    disabled={isAddingToQueue}
-                                    onClick={() => { setShowActionModal(false); setTimeout(() => setShowPlaylistModal(true), 300); }}
-                                    className="w-full flex items-center gap-4 p-5 bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-2xl transition-all text-white disabled:opacity-50"
-                                >
-                                    <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
-                                        <PlusSquare size={22} className="text-orange-500" />
-                                    </div>
-                                    <span className="font-black text-lg italic uppercase tracking-tighter">Ajoute nan Playlist</span>
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-
-                {showPlaylistModal && selectedSongForActions && (
-                    <AddToPlaylistModal trackId={selectedSongForActions.id} onClose={() => { setShowPlaylistModal(false); setSelectedSongForActions(null); }} />
-                )}
-            </AnimatePresence>
+            {/* 5. Modals */}
+            <PlaylistModals 
+                showAction={showActionModal}
+                setShowAction={setShowActionModal}
+                showPlaylist={showPlaylistModal}
+                setShowPlaylist={setShowPlaylistModal}
+                song={selectedSongForActions}
+                isAdding={isAddingToQueue}
+                onAddToQueue={handleAddToQueue}
+            />
         </div>
     );
 };

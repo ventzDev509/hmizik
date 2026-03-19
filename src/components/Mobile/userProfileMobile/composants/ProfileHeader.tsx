@@ -61,14 +61,36 @@ export const ProfileHeader = ({
                             <span className="text-[9px] font-black uppercase tracking-widest">{profile.location}</span>
                         </div>
                     )}
-                    {Object.entries(socialLinks).map(([key, url]) => (
-                        url && (
-                            <motion.a key={key} whileHover={{ y: -2 }} href={String(url)} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-300">
-                                <span className="text-orange-600">{getPlatformIcon(key)}</span>
+                    {Array.isArray(socialLinks) ? (
+                        socialLinks.map((url, index) => (
+                            url && (
+                                <motion.a
+                                    key={index}
+                                    whileHover={{ y: -2 }}
+                                    href={String(url)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-300"
+                                >
+                                    <span className="text-orange-600">
+                                        {getPlatformIcon(String(url))}
+                                    </span>
+
+                                    <span className="text-[9px] font-black uppercase tracking-widest">
+                                       
+                                        Link {index + 1}
+                                    </span>
+                                </motion.a>
+                            )
+                        ))
+                    ) : (
+                        Object.entries(socialLinks).map(([key, url]) => (
+                            <motion.a key={key} href={String(url)} className="...">
+                                <span className="text-orange-600">{getPlatformIcon(String(url))}</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest">{key}</span>
                             </motion.a>
-                        )
-                    ))}
+                        ))
+                    )}
                 </div>
 
                 <p className="text-sm text-zinc-400 leading-relaxed mb-8 italic line-clamp-2">{profile?.bio || "Mizisyen H-MIZIK."}</p>

@@ -19,7 +19,6 @@ export const ProfileContent = ({
     tracks,
     albums,
     tracksLoading,
-    incrementPlay,
     setIsAlbumModalOpen,
     navigate
 }: ProfileContentProps) => {
@@ -40,15 +39,14 @@ export const ProfileContent = ({
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${
-                            activeTab === tab ? 'text-orange-600' : 'text-zinc-600'
-                        }`}
+                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-600' : 'text-zinc-600'
+                            }`}
                     >
                         {tab === 'uploads' ? 'Mizik' : tab === 'playlists' ? 'Album yo' : 'Favori'}
                         {activeTab === tab && (
-                            <motion.div 
-                                layoutId="activeTab" 
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600" 
+                            <motion.div
+                                layoutId="activeTab"
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600"
                             />
                         )}
                     </button>
@@ -59,25 +57,24 @@ export const ProfileContent = ({
             <div className="py-8 pb-32">
                 <AnimatePresence mode="wait">
                     {activeTab === 'uploads' ? (
-                        <motion.div 
-                            key="tracks" 
-                            initial={{ opacity: 0, y: 10 }} 
-                            animate={{ opacity: 1, y: 0 }} 
-                            exit={{ opacity: 0, y: -10 }} 
+                        <motion.div
+                            key="tracks"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
                             className="space-y-3"
                         >
                             {tracks.length > 0 ? (
                                 tracks.map((track) => (
-                                    <motion.div 
-                                        key={track.id} 
-                                        onClick={() => incrementPlay(track.id)} 
+                                    <motion.div
+                                        key={track.id}
                                         className="flex items-center gap-4 bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-all group cursor-pointer border border-white/[0.02]"
                                     >
                                         <div className="relative w-14 h-14 flex-shrink-0">
-                                            <img 
-                                                src={track.coverUrl || "/default-music.png"} 
-                                                className="w-full h-full object-cover rounded-xl shadow-lg" 
-                                                alt={track.title} 
+                                            <img
+                                                src={track.coverUrl || "/default-music.png"}
+                                                className="w-full h-full object-cover rounded-xl shadow-lg"
+                                                alt={track.title}
                                             />
                                             <div className="absolute inset-0 bg-orange-600/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
                                                 <Play size={20} className="fill-white text-white" />
@@ -113,10 +110,10 @@ export const ProfileContent = ({
                             )}
                         </motion.div>
                     ) : activeTab === 'playlists' ? (
-                        <motion.div 
-                            key="albums" 
-                            initial={{ opacity: 0 }} 
-                            animate={{ opacity: 1 }} 
+                        <motion.div
+                            key="albums"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             className="grid grid-cols-2 gap-4"
                         >
                             {/* Bouton Kreye Album */}
@@ -139,10 +136,10 @@ export const ProfileContent = ({
                                     className="flex flex-col gap-3 group cursor-pointer"
                                 >
                                     <div className="relative aspect-square overflow-hidden rounded-[2.5rem] shadow-xl">
-                                        <img 
-                                            src={album.coverUrl || "/default-album.png"} 
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                                            alt={album.title} 
+                                        <img
+                                            src={album.coverUrl || "/default-album.png"}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            alt={album.title}
                                         />
                                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all" />
                                         <div className="absolute bottom-4 right-4 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all">
