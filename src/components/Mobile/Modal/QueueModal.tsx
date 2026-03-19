@@ -1,9 +1,10 @@
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Music } from 'lucide-react';
 import { useAudio } from '../../../provider/PlayerContext';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import Equalizer from '../../buffer/Equalizer'; 
+import { OfflineImage } from '../OfflineMusic/OfflineMusic';
 
-const QueueModal = ({  onClose }: { isOpen: boolean, onClose: () => void }) => {
+const QueueModal = ({ onClose }: { isOpen: boolean, onClose: () => void }) => {
   const { queue, removeFromQueue, currentSong, isPlaying } = useAudio();
 
   const handleDragEnd = (_: any, info: PanInfo) => {
@@ -61,7 +62,7 @@ const QueueModal = ({  onClose }: { isOpen: boolean, onClose: () => void }) => {
         </div>
 
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          {/* Current Song Section - BG Nwa/Gri fonse */}
+          {/* Current Song Section */}
           <div className="mb-10">
             <p className="text-white/40 text-[10px] mb-4 font-black uppercase tracking-[0.2em] italic">K ap jwe kounye a</p>
             {currentSong && (
@@ -70,8 +71,15 @@ const QueueModal = ({  onClose }: { isOpen: boolean, onClose: () => void }) => {
                 className="flex items-center gap-4 bg-white/[0.03] p-4 rounded-2xl border border-white/5"
               >
                 <div className="relative flex-shrink-0">
-                  <img crossOrigin="anonymous" src={currentSong.coverUrl} className="w-16 h-16 rounded-xl object-cover" alt="" />
-                  {/* Equalizer nan plas zoranj la */}
+                  <OfflineImage 
+                    url={currentSong.coverUrl} 
+                    className="w-16 h-16 rounded-xl object-cover" 
+                    fallback={
+                      <div className="w-16 h-16 bg-zinc-800 flex items-center justify-center rounded-xl">
+                        <Music size={20} className="text-white/20"/>
+                      </div>
+                    }
+                  />
                   <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
                     {isPlaying ? <Equalizer /> : <div className="w-1 h-3 bg-white/50 rounded-full" />}
                   </div>
@@ -112,7 +120,15 @@ const QueueModal = ({  onClose }: { isOpen: boolean, onClose: () => void }) => {
                     >
                       <div className="flex items-center gap-4 overflow-hidden">
                         <span className="text-white/10 font-mono text-[10px] w-4 font-bold">{index + 1}</span>
-                        <img src={song.coverUrl} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt="" />
+                        <OfflineImage 
+                          url={song.coverUrl} 
+                          className="w-12 h-12 rounded-lg object-cover flex-shrink-0" 
+                          fallback={
+                            <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center rounded-lg">
+                              <Music size={16} className="text-white/20"/>
+                            </div>
+                          }
+                        />
                         <div className="overflow-hidden">
                           <p className="text-white text-sm font-black truncate italic uppercase tracking-tight leading-tight">
                             {song.title}

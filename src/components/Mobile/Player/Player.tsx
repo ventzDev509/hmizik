@@ -44,10 +44,28 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
         if (tracks.length === 0) fetchTracks(1);
     }, []);
 
+    // Nan PlayerPage.tsx
+    // 1. Modifye useMemo a pou l pi solid
     const currentSong = useMemo(() => {
-        return audioCurrentSong || tracks.find(t => t.id === songId);
-    }, [tracks, songId, audioCurrentSong]);
+        if (audioCurrentSong) return audioCurrentSong;
 
+        // Si nou pa jwenn li nan context, chèche l nan tracks yo
+        const trackFromList = tracks.find(t => t.id === songId);
+        return trackFromList;
+    }, [audioCurrentSong, tracks, songId]);
+
+    // 2. Ajoute yon useEffect pou "AUTO-PLAY" apre refresh
+    const { playSong } = useAudio(); // Asire w ou rale playSong nan useAudio()
+
+    useEffect(() => {
+        // Si nou gen yon ID nan URL men anyen pa ap jwe nan context la
+        if (songId && !audioCurrentSong && tracks.length > 0) {
+            const songToPlay = tracks.find(t => t.id === songId);
+            if (songToPlay) {
+                playSong(songToPlay, tracks); // Sa ap deklannche lojik playSong nou te ranje a
+            }
+        }
+    }, [songId, audioCurrentSong, tracks, playSong]);
     const liked = currentSong ? isLiked(currentSong.id) : false;
     const { bgColor, imgRef } = useImageColors(currentSong?.coverUrl || "");
 
@@ -89,7 +107,7 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
         const shareData = {
             title: currentSong.title,
             text: `Koute ${currentSong.title} pa ${typeof currentSong.artist === 'string' ? currentSong.artist : currentSong.artist?.username} sou H-MIZIK!`,
-            url: `${window.location.origin}/player?id=${currentSong.id}`,
+            url: `${window.location.origin}/song?id=${currentSong.id}`,
         };
         try {
             if (navigator.share) {
@@ -126,6 +144,7 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
                 <div className="w-10 h-1 bg-white/20 rounded-full" />
             </div>
 
+
             <header className="flex justify-between items-center px-6 pt-4">
                 <div onClick={onClose} className="text-white active:scale-90 transition cursor-pointer p-2">
                     <ChevronDown size={30} />
@@ -149,7 +168,13 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
                         ref={imgRef}
                         src={currentSong.coverUrl || "/default-cover.png"}
                         alt={currentSong.title}
+                        // Sa enpòtan pou useImageColors ka li data a san erè sekirite
+                        crossOrigin="anonymous"
                         className="w-full h-full object-cover rounded-lg pointer-events-none"
+                        // Si imaj la chanje (egz: lòt chante), nou asire nou ke koulè a re-kalkile
+                        onLoad={() => {
+                            // Si useImageColors bezwen yon ti pouse, onLoad la ap deklannche rann lan
+                        }}
                     />
                 </motion.div>
             </div>
@@ -230,7 +255,7 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
                         togglePlay();
                         triggerVibration([10, 30, 10]);
                     }}
-                    className="relative z-10 w-18 h-18 bg-white rounded-full flex items-center justify-center active:scale-90 transition shadow-xl cursor-pointer overflow-hidden"
+                    className="relative z-10 w-20 h-20 bg-white rounded-full flex items-center justify-center active:scale-90 transition shadow-xl cursor-pointer overflow-hidden"
                 >
                     <AnimatePresence mode="wait">
                         {isBuffering ? (
@@ -246,9 +271,9 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
                                 transition={{ duration: 0.2 }}
                             >
                                 {isPlaying ? (
-                                    <Pause size={35} className="text-black fill-black" />
+                                    <Pause size={40} className="text-black fill-black" />
                                 ) : (
-                                    <Play size={35} className="text-black fill-black ml-1" />
+                                    <Play size={40} className="text-black fill-black ml-1" />
                                 )}
                             </motion.div>
                         )}

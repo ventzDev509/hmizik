@@ -10,7 +10,7 @@ interface User {
     avatar?: string;
     profile?: {
         id:string;
-
+        
     };
 }
 

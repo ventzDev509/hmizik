@@ -1,112 +1,91 @@
-import { CheckCircle2, Download, XCircle } from "lucide-react";
+import { X, Download, CheckCircle2 } from "lucide-react";
+import { useDownloads } from "../../../context/DownloadContext";
 import { useEffect, useState } from "react";
-import { useDownload } from "../../../context/DownloadContext";
+import { useOfflineDownload } from "../hooks/useOfflineDownload";
 
-interface DownloadButtonProps {
-    audioUrl: string;
-    coverUrl: string;
-    title: string;
-    trackId: string;
-    className?: string;
-    showText?: boolean;
-}
-
-const DownloadButton = ({
-    audioUrl,
-    coverUrl,
-    title,
-    trackId,
-    className = "",
-    showText = false
-}: DownloadButtonProps) => {
-    // Nou rale tout sa nou bezwen nan Context la
-    const { activeDownloads, downloadTrack, cancelDownload, isOffline } = useDownload();
+const DownloadButton = ({ audioUrl, coverUrl, title, trackId }: any) => {
+    const { activeDownloads, startDownload, cancelDownload } = useDownloads();
+    const { isOffline } = useOfflineDownload();
+    const [isSaved, setIsSaved] = useState(false);
     
-    // Tcheke si track sa a egzakteman ap telechaje nan Context la
-    const downloadInfo = activeDownloads[trackId];
-    const isDownloading = !!downloadInfo;
-    const progress = downloadInfo?.progress || 0;
+    const currentTask = activeDownloads[trackId];
+    const isDownloading = !!currentTask;
 
-    const [isAlreadyOffline, setIsAlreadyOffline] = useState(false);
-
-    // Tcheke estati offline la
+    // Tcheke si track la deja offline depi nan kòmansman
     useEffect(() => {
-        let isMounted = true;
-        
-        const check = async () => {
-            if (!audioUrl) return;
-            const result = await isOffline(audioUrl);
-            if (isMounted) {
-                setIsAlreadyOffline(result);
-            }
+        const checkCach = async () => {
+            const saved = await isOffline(audioUrl);
+            setIsSaved(saved);
         };
+        checkCach();
+    }, [audioUrl, isOffline, isDownloading]); // Re-tcheke lè download la fini
 
-        check();
-        return () => { isMounted = false; };
-    }, [audioUrl, isOffline, isDownloading]); // Li re-tcheke lè isDownloading chanje (lè l fini)
-
-    const handleAction = async (e: React.MouseEvent) => {
+    const handleAction = (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
 
         if (isDownloading) {
-            // SI L AP TELECHAJE: Nou anile li
+            // Lojik pou CANCEL
             cancelDownload(trackId);
-            return;
-        }
-
-        if (!isAlreadyOffline) {
-            // SI L PA OFFLINE: Nou kòmanse telechajman an
-            downloadTrack(trackId, audioUrl, coverUrl, title);
+        } else if (!isSaved) {
+            // Lojik pou START
+            startDownload({ id: trackId, audioUrl, coverUrl, title });
         }
     };
 
+    // Kalkil pou Sèk Progress la
+    const radius = 16;
+    const circumference = 2 * Math.PI * radius; // ~100.5
+
     return (
-        <button
-            onClick={handleAction}
-            className={`relative flex items-center justify-center min-w-[40px] h-10 rounded-full bg-white/5 transition-all active:scale-95 group ${className}`}
+        <button 
+            onClick={handleAction} 
+            className="group relative w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-all active:scale-90"
         >
-            {/* 1. Progress Ring (SVG) - Parèt sèlman si l ap telechaje */}
-            {isDownloading && (
-                <svg className="absolute inset-0 w-full h-full -rotate-90">
-                    <circle
-                        cx="20" cy="20" r="18"
-                        stroke="currentColor" strokeWidth="2" fill="transparent"
-                        className="text-white/10"
-                    />
-                    <circle
-                        cx="20" cy="20" r="18"
-                        stroke="currentColor" strokeWidth="2" fill="transparent"
-                        strokeDasharray={113}
-                        strokeDashoffset={113 - (progress / 100) * 113}
-                        strokeLinecap="round"
-                        className="text-orange-500 transition-all duration-300"
-                    />
-                </svg>
-            )}
-
-            <div className="relative z-10 flex items-center gap-2 px-2">
-                {isDownloading ? (
-                    // Lè l ap telechaje: Montre % oswa X pou anile lè w hover
-                    <div className="flex items-center justify-center">
-                        <span className="text-[10px] font-black text-orange-500 group-hover:hidden">
-                            {progress}%
-                        </span>
-                        <XCircle size={18} className="text-red-500 hidden group-hover:block transition-colors" />
-                    </div>
-                ) : isAlreadyOffline ? (
-                    // Lè l fini
-                    <CheckCircle2 size={18} className="text-green-500 fill-green-500/10" />
-                ) : (
-                    // Estati nòmal
-                    <Download size={18} className="text-zinc-400 group-hover:text-white transition-colors" />
-                )}
-
-                {showText && !isDownloading && (
-                    <span className="font-black text-xs uppercase tracking-tighter italic">
-                        {isAlreadyOffline ? "Sove" : "Offline"}
+            {isDownloading ? (
+                <div className="relative flex items-center justify-center">
+                    {/* Progress Ring Background */}
+                    <svg className="absolute w-9 h-9 -rotate-90">
+                        <circle
+                            cx="18" cy="18"
+                            r={radius}
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            fill="transparent"
+                            className="text-white/10"
+                        />
+                        {/* Progress k ap avanse a */}
+                        <circle
+                            cx="18" cy="18"
+                            r={radius}
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            fill="transparent"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={circumference - (currentTask.progress / 100) * circumference}
+                            strokeLinecap="round"
+                            className="text-orange-500 transition-all duration-300 ease-out"
+                        />
+                    </svg>
+                    
+                    {/* Ikòn X pou anile a parèt nan mitan */}
+                    <X size={14} className="text-orange-500 z-10 animate-in fade-in zoom-in duration-200" />
+                    
+                    {/* Ti pousantaj la anba (opsyonèl) */}
+                    <span className="absolute -bottom-6 text-[8px] font-bold text-orange-500">
+                        {currentTask.progress}%
                     </span>
-                )}
-            </div>
+                </div>
+            ) : isSaved ? (
+                <div className="animate-in zoom-in duration-300">
+                    <CheckCircle2 size={20} className="text-green-500 fill-green-500/10" />
+                </div>
+            ) : (
+                <Download 
+                    size={18} 
+                    className="text-zinc-400 group-hover:text-white transition-colors" 
+                />
+            )}
         </button>
     );
 };

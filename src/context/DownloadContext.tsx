@@ -1,104 +1,76 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useOfflineDownload } from '../components/Mobile/hooks/useOfflineDownload';
 
-// Tip pou done chak telechajman
-interface DownloadState {
+interface DownloadTask {
+    trackId: string;
     progress: number;
-    controller: AbortController;
     title: string;
+    abortController: AbortController;
 }
 
 interface DownloadContextType {
-    activeDownloads: Record<string, DownloadState>;
-    downloadTrack: (trackId: string, audioUrl: string, coverUrl: string, title: string) => Promise<void>;
+    activeDownloads: Record<string, DownloadTask>;
+    startDownload: (song: any) => Promise<void>;
     cancelDownload: (trackId: string) => void;
-    isOffline: (url: string) => Promise<boolean>;
 }
 
 const DownloadContext = createContext<DownloadContextType | undefined>(undefined);
 
-export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    // Nou estoke telechajman yo pa trackId: { progress, controller, title }
-    const [activeDownloads, setActiveDownloads] = useState<Record<string, DownloadState>>({});
+export const DownloadProvider = ({ children }: { children: React.ReactNode }) => {
+    const [activeDownloads, setActiveDownloads] = useState<Record<string, DownloadTask>>({});
+    const { downloadWithProgress } = useOfflineDownload();
 
-    // Fonksyon pou tcheke si yon mizik deja offline (match nan Cache Storage)
-    const isOffline = useCallback(async (url: string): Promise<boolean> => {
-        try {
-            const cache = await caches.open("offline-audio");
-            const match = await cache.match(url);
-            return !!match;
-        } catch {
-            return false;
-        }
-    }, []);
-
-    const downloadTrack = async (trackId: string, audioUrl: string, coverUrl: string, title: string) => {
-        if (activeDownloads[trackId]) return;
+    const startDownload = async (song: any) => {
+        if (activeDownloads[song.id]) return;
 
         const controller = new AbortController();
-        const { signal } = controller;
-
+        
         setActiveDownloads(prev => ({
             ...prev,
-            [trackId]: { progress: 0, controller, title }
+            [song.id]: { 
+                trackId: song.id, 
+                progress: 0, 
+                title: song.title, 
+                abortController: controller 
+            }
         }));
 
         try {
-            // 1. Telechaje Cover la an premye (li rapid paske l piti)
-            // Nou mete sa nan cache "offline-audio" a tou
-            if (coverUrl) {
-                const cache = await caches.open("offline-audio");
-                const coverResponse = await fetch(coverUrl, { mode: 'no-cors' }); // no-cors si foto a soti sou yon lòt domain
-                if (coverResponse.ok || coverResponse.type === 'opaque') {
-                    await cache.put(coverUrl, coverResponse);
-                }
-            }
-
-            // 2. Telechaje Audio a (ak progress)
-            const response = await fetch(audioUrl, { signal });
-            if (!response.ok) throw new Error("Network response was not ok");
-
-            const contentLength = response.headers.get('content-length');
-            const total = contentLength ? parseInt(contentLength, 10) : 0;
-            let loaded = 0;
-
-            const reader = response.body?.getReader();
-            if (!reader) throw new Error("ReadableStream not supported");
-
-            const chunks: Uint8Array[] = [];
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                chunks.push(value);
-                loaded += value.length;
-
-                if (total > 0) {
-                    const progress = Math.round((loaded / total) * 100);
+            await downloadWithProgress(
+                song.audioUrl,
+                song.coverUrl,
+                song.title,
+                song.id,
+                (p:any) => {
                     setActiveDownloads(prev => ({
                         ...prev,
-                        [trackId]: { ...prev[trackId], progress }
+                        [song.id]: { ...prev[song.id], progress: Math.round(p) }
                     }));
                 }
-            }
+                // Si useOfflineDownload ou a sipòte AbortSignal, pase controller.signal la isit la
+            );
 
-            const blob = new Blob(chunks as unknown as BlobPart[], { type: 'audio/mpeg' });
-            const cache = await caches.open("offline-audio");
-
-            // 3. Sove Audio a nan Cache la
-            await cache.put(audioUrl, new Response(blob));
-
-            toast.success(`${title} sove offline!`);
-
-        } catch (error: any) {
-            if (error.name === 'AbortError') {
-                toast.error(`Telechajman ${title} anile.`);
+            toast.success(`${song.title} fini!`);
+        } catch (err: any) {
+            if (err.name === 'AbortError') {
+                toast.error("Telechajman anile");
             } else {
-                console.error("Download error:", error);
-                toast.error("Echèk nan telechajman an.");
+                toast.error("Erè telechajman");
             }
         } finally {
+            setActiveDownloads(prev => {
+                const newState = { ...prev };
+                delete newState[song.id];
+                return newState;
+            });
+        }
+    };
+
+    const cancelDownload = (trackId: string) => {
+        const task = activeDownloads[trackId];
+        if (task) {
+            task.abortController.abort(); // Sa ap sispann request la
             setActiveDownloads(prev => {
                 const newState = { ...prev };
                 delete newState[trackId];
@@ -107,23 +79,15 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    const cancelDownload = (trackId: string) => {
-        const download = activeDownloads[trackId];
-        if (download) {
-            download.controller.abort(); 
-        }
-    };
-
     return (
-        <DownloadContext.Provider value={{ activeDownloads, downloadTrack, cancelDownload, isOffline }}>
+        <DownloadContext.Provider value={{ activeDownloads, startDownload, cancelDownload }}>
             {children}
         </DownloadContext.Provider>
     );
 };
 
-// Hook pou itilize Context la fasil
-export const useDownload = () => {
+export const useDownloads = () => {
     const context = useContext(DownloadContext);
-    if (!context) throw new Error("useDownload dwe itilize anndan DownloadProvider");
+    if (!context) throw new Error("useDownloads must be used within DownloadProvider");
     return context;
 };

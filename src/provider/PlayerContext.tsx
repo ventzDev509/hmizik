@@ -121,41 +121,58 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     // --- SÈL FONKSYON PLAYSONG LAN ---
-    const playSong = async (song: Song, playlist: Song[] = []) => {
-        const audio = audioRef.current;
-        if (!audio) return;
+   const playSong = async (song: Song, playlist: Song[] = []) => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
-        try {
-            audio.pause();
-            setIsPlaying(false);
-            setIsBuffering(true);
-            setHasCountedPlay(false);
+    try {
+        // 1. Netwaye ansyen eta a
+        audio.pause();
+        audio.removeAttribute('src'); // Fòse navigatè a jete ansyen kach la
+        audio.load();
 
-            updateMediaSession(song);
-            setCurrentSong(song);
-            
-            // Si yo pase yon nouvo playlist, nou sove l
-            if (playlist.length > 0) {
-                setOriginalPlaylist(playlist);
+        setIsPlaying(false);
+        setIsBuffering(true);
+        setHasCountedPlay(false);
+
+        // 2. Mizajou Done yo
+        setCurrentSong(song);
+        if (playlist.length > 0) setOriginalPlaylist(playlist);
+        updateMediaSession(song);
+
+        // 3. Konfigirasyon Audio
+        audio.src = song.audioUrl;
+        audio.crossOrigin = "anonymous"; // Trè enpòtan pou Supabase
+        audio.preload = "auto";
+
+        // 4. JWE (ak sekirite pou Refresh)
+        // Nou itilize oncanplay pito pou n asire URL la pare
+        const startPlay = async () => {
+            try {
+                await audio.play();
+                setIsPlaying(true);
+                setIsBuffering(false);
+            } catch (err) {
+                console.warn("Autoplay blocked or failed:", err);
+                setIsPlaying(false);
+                setIsBuffering(false);
             }
+        };
 
-            audio.src = song.audioUrl;
-            audio.load();
+        // Si se yon Blob oswa URL Supabase, li ka pran yon ti tan pou l "mount"
+        audio.oncanplay = () => {
+            startPlay();
+            audio.oncanplay = null; // Netwaye event la
+        };
 
-            audio.oncanplaythrough = async () => {
-                try {
-                    await audio.play();
-                    setIsPlaying(true);
-                    setIsBuffering(false);
-                    audio.oncanplaythrough = null;
-                } catch (err) {
-                    console.error("Play error:", err);
-                }
-            };
-        } catch (err) {
-            console.error("Load error:", err);
-        }
-    };
+        // Sekirite si oncanplay pa deklanche vit ase
+        audio.load();
+
+    } catch (err) {
+        console.error("Fatal load error:", err);
+        setIsBuffering(false);
+    }
+};
 
     const togglePlay = async () => {
         const audio = audioRef.current;
