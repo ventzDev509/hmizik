@@ -15,7 +15,7 @@ const ArtistSection = () => {
     return (
         <section className="mt-8">
             <h2 className="text-lg font-black italic uppercase tracking-tighter text-white/90 px-4 mb-4">
-                Atis <span className="text-orange-400 underline decoration-1 underline-offset-4">k ap monte</span>
+                Atis <span className="text-orange-500 underline decoration-1 underline-offset-4">k ap monte</span>
             </h2>
 
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide px-4 snap-x">

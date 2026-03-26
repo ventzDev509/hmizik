@@ -38,7 +38,7 @@ function Main() {
         <section className="px-2 py-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
-              Album <span className="text-orange-600">Popilè</span>
+              Album <span className="text-orange-500">Popilè</span>
             </h2>
             <button className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800">
               Wè tout
