@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Play, Pause, ChevronLeft, Verified,
-    Share2, Headset, Instagram, Twitter, Facebook
+    Share2, Headset, Instagram, Twitter, Facebook, Info
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -77,20 +77,17 @@ const ArtistPageMobile = () => {
     const { bgColor, imgRef } = useImageColors(artistImg);
     const { scrollY } = useScroll();
 
-    // 3. EFFECT POU THEME-COLOR (Status Bar / Bottom Bar PWA)
+    // 3. EFFECT POU THEME-COLOR (PWA Optimized)
     useEffect(() => {
         const themeColor = isScrolled ? "#121212" : (bgColor || "#121212");
-        let metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        
-        if (!metaThemeColor) {
-            metaThemeColor = document.createElement('meta');
-            metaThemeColor.setAttribute('name', 'theme-color');
-            document.head.appendChild(metaThemeColor);
+        let meta = document.querySelector('meta[name="theme-color"]');
+        if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute('name', 'theme-color');
+            document.head.appendChild(meta);
         }
-        
-        metaThemeColor.setAttribute('content', themeColor);
-        
-        return () => metaThemeColor?.setAttribute('content', '#121212');
+        meta.setAttribute('content', themeColor);
+        return () => meta?.setAttribute('content', '#121212');
     }, [isScrolled, bgColor]);
 
     // 4. Lojik Playlists
@@ -99,7 +96,7 @@ const ArtistPageMobile = () => {
             const { data } = await api.get('/playlists/me');
             setUserPlaylists(data);
         } catch (error) {
-            console.error("Erè nan chaje playlists:", error);
+            console.error("Erè playlists:", error);
         }
     };
 
@@ -135,9 +132,10 @@ const ArtistPageMobile = () => {
         e.stopPropagation();
         setSelectedTrackForActions(track);
         setShowActionModal(true);
+        fetchMyPlaylists();
     };
 
-    // 7. Animations Framer Motion
+    // 7. Animations
     const headerOpacity = useTransform(scrollY, [0, 250], [1, 0]);
     const navOpacity = useTransform(scrollY, [200, 300], [0, 1]);
     const bannerScale = useTransform(scrollY, [-100, 0, 100], [1.2, 1, 1]);
@@ -147,28 +145,28 @@ const ArtistPageMobile = () => {
         return () => unsubscribe();
     }, [scrollY]);
 
-    if (loading && !displayData) return <div className="min-h-screen bg-[#121212] flex items-center justify-center text-orange-500 font-black italic animate-pulse tracking-tighter">H-MIZIK...</div>;
-    if (!displayData) return <div className="min-h-screen bg-[#121212] flex items-center justify-center text-white font-bold">Atis sa a pa egziste.</div>;
+    if (loading && !displayData) return <div className="min-h-screen bg-[#121212] flex items-center justify-center text-orange-500 font-black italic animate-pulse">H-MIZIK...</div>;
+    if (!displayData) return <div className="min-h-screen bg-[#121212] flex items-center justify-center text-white font-bold">Atis pa jwenn.</div>;
 
     return (
         <div className="min-h-screen bg-[#121212] text-white font-sans relative overflow-x-hidden">
 
-            {/* NAV BAR DINAMIK */}
+            {/* NAV BAR */}
             <motion.nav
                 style={{ backgroundColor: bgColor, opacity: navOpacity }}
-                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-4 transition-colors duration-300"
+                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-4"
             >
                 <div className="flex items-center gap-4">
-                    <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer active:scale-75 transition" />
+                    <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
                     <div className="flex items-center gap-1.5 truncate w-40">
                         <h2 className="text-sm font-black uppercase tracking-tighter truncate">{displayData.username}</h2>
                         {displayData.verified && <Verified size={14} className="text-blue-400 fill-blue-400 flex-shrink-0" />}
                     </div>
                 </div>
-                <Share2 size={20} className="mr-2 active:text-orange-500 transition" />
+                <Share2 size={20} className="mr-2" />
             </motion.nav>
 
-            {/* BANNER AVÈK EFFET SCALE */}
+            {/* BANNER */}
             <div className="absolute top-0 left-0 right-0 h-[50vh] overflow-hidden z-0">
                 <motion.img
                     style={{ scale: bannerScale }}
@@ -181,7 +179,7 @@ const ArtistPageMobile = () => {
             </div>
 
             <main className="relative z-10">
-                {/* HERO INFO SECTION */}
+                {/* HERO INFO */}
                 <motion.div style={{ opacity: headerOpacity }} className="h-[50vh] flex flex-col justify-end px-6 pb-8 text-left">
                     <div className="flex items-center gap-1.5 mb-2">
                         {displayData.verified && <Verified size={18} className="text-blue-400 fill-blue-400" />}
@@ -191,11 +189,10 @@ const ArtistPageMobile = () => {
                         {displayData.username}
                     </h1>
 
-                    {/* SOCIAL LINKS */}
                     <div className="flex gap-4 mb-5 text-white/60">
-                        <Instagram size={20} className="hover:text-pink-500 transition-colors cursor-pointer" />
-                        <Twitter size={20} className="hover:text-blue-400 transition-colors cursor-pointer" />
-                        <Facebook size={20} className="hover:text-blue-600 transition-colors cursor-pointer" />
+                        <Instagram size={20} className="active:text-pink-500 transition-colors" />
+                        <Twitter size={20} className="active:text-blue-400 transition-colors" />
+                        <Facebook size={20} className="active:text-blue-600 transition-colors" />
                     </div>
 
                     <div className="flex gap-5">
@@ -210,34 +207,23 @@ const ArtistPageMobile = () => {
                     </div>
                 </motion.div>
 
-                {/* STICKY ACTION BAR */}
+                {/* STICKY PLAY div */}
                 <div className={`sticky top-16 z-40 px-6 py-4 transition-all duration-500 ${isScrolled ? 'bg-[#121212]/95 backdrop-blur-xl border-b border-white/5' : ''}`}>
                     <div className="flex items-center justify-between">
-                        <button className="px-10 py-3 border border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] active:scale-95 active:bg-white active:text-black transition-all">
+                        <div className="px-10 py-3 border border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] active:scale-95 transition">
                             Suivre
-                        </button>
-                        <div
-                            onClick={handleHeroPlay}
-                            className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition cursor-pointer shadow-orange-600/30"
-                        >
-                            {isThisArtistPlaying ? (
-                                <Pause size={30} fill="black" className="text-black" />
-                            ) : (
-                                <Play size={30} fill="black" className="text-black ml-1" />
-                            )}
+                        </div>
+                        <div onClick={handleHeroPlay} className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition cursor-pointer">
+                            {isThisArtistPlaying ? <Pause size={30} fill="black" className="text-black" /> : <Play size={30} fill="black" className="text-black ml-1" />}
                         </div>
                     </div>
                 </div>
 
-                {/* TRACK LIST SECTION */}
-                <div
-                    style={{ background: `linear-gradient(to bottom, transparent, ${bgColor}10, #121212)` }}
-                    className="px-4 pt-8 pb-40"
-                >
+                {/* LIST MIZIK */}
+                <div style={{ background: `linear-gradient(to bottom, transparent, ${bgColor}10, #121212)` }} className="px-4 pt-8 pb-10">
                     <h3 className="px-2 text-lg font-black italic uppercase tracking-tighter flex items-center gap-2 mb-6 text-left">
                         <Headset className="text-orange-600" size={18} /> Popilè
                     </h3>
-
                     <div className="space-y-1">
                         {allTracks.map((track, index) => (
                             <TrackItem
@@ -255,9 +241,30 @@ const ArtistPageMobile = () => {
                         ))}
                     </div>
                 </div>
+
+                {/* --- SEKSYON A PROPOS (REMETE) --- */}
+                <div className="px-6 pb-40">
+                    <div className="bg-white/5 rounded-3xl p-6 border border-white/10 backdrop-blur-md">
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2 mb-4">
+                            <Info className="text-orange-600" size={20} /> À propos
+                        </h3>
+                        <div className="flex items-center gap-4 mb-4">
+                             <img src={displayData.avatarUrl} className="w-16 h-16 rounded-full object-cover border-2 border-orange-600" alt={displayData.username} />
+                             <div>
+                                 <p className="text-sm font-bold">{displayData.username}</p>
+                                 <p className="text-[10px] text-white/50 uppercase tracking-widest">{totalPlays.toLocaleString()} Auditeurs</p>
+                             </div>
+                        </div>
+                        <p className="text-sm text-white/70 leading-relaxed italic line-clamp-4">
+                            {displayData.bio || `Dekouvri linivè mizikal ${displayData.username} sou H-MIZIK. Swiv atis sa a pou w pa manke anyen nan nouvèl li yo.`}
+                        </p>
+                        <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-orange-500 border-b border-orange-500/30 pb-1">
+                            Li plis
+                        </div>
+                    </div>
+                </div>
             </main>
 
-            {/* MODALS POU PLAYLISTS AK AKSYON */}
             <PlaylistModals
                 showAction={showActionModal}
                 setShowAction={setShowActionModal}
@@ -271,10 +278,7 @@ const ArtistPageMobile = () => {
                     if (!selectedTrackForActions) return;
                     setIsAddingToQueue(true);
                     await addToQueue(selectedTrackForActions);
-                    setTimeout(() => {
-                        setIsAddingToQueue(false);
-                        setShowActionModal(false);
-                    }, 500);
+                    setTimeout(() => { setIsAddingToQueue(false); setShowActionModal(false); }, 500);
                 }}
             />
 
