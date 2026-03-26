@@ -57,7 +57,7 @@ function App() {
 
     { path: "/playlist", element: <PlayList />, withBottomNav: true },
     {
-      path: "/artist", element:
+      path: "/atis/:id", element:
         <>
           {isMobile ? <ArtistPageMobile /> : <ArtistePage />}
         </>

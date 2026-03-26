@@ -16,15 +16,30 @@ interface ProfileData {
     socialLinks: string[];
     updatedAt: string;
     user: {
-        id:string;
+        id: string;
         name: string;
         email: string;
+    };
+}
+
+// Estrikti pou done paginated yo
+interface PaginatedProfiles {
+    data: ProfileData[];
+    meta: {
+        total: number;
+        page: number;
+        lastPage: number;
     };
 }
 
 interface ProfileContextType {
     profile: ProfileData | null;
     loading: boolean;
+    // --- Nouvo Pwopriyete yo ---
+    allProfiles: ProfileData[];
+    profilesMeta: PaginatedProfiles['meta'] | null;
+    fetchAllProfiles: (page?: number, limit?: number) => Promise<void>;
+    // --------------------------
     refreshProfile: () => Promise<void>;
     updateProfile: (data: any | FormData) => Promise<boolean>;
 }
@@ -32,22 +47,45 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user } = useAuth(); 
+    const { user } = useAuth();
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // Nouvo states pou lis jeneral la
+    const [allProfiles, setAllProfiles] = useState<ProfileData[]>([]);
+    const [profilesMeta, setProfilesMeta] = useState<PaginatedProfiles['meta'] | null>(null);
+
     const fetchProfile = async () => {
-        if (!user) return;
+        if (!user) {
+            setProfile(null);
+            setLoading(false);
+            return;
+        }
         try {
             setLoading(true);
-            // Rele endpoint GET /profiles/me nou te kreye nan NestJS la
             const { data } = await api.get('/profiles/me');
-           
             setProfile(data);
         } catch (error) {
-            console.error("Erè chaje pwofil:", error);
+            console.error("Erè chaje pwofil mwen:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Fonksyon pou rale tout pwofil yo ak pagination
+    const fetchAllProfiles = async (page = 1, limit = 10) => {
+        try {
+            const { data } = await api.get<PaginatedProfiles>(`/profiles`, {
+                params: { page, limit }
+            });
+
+            // Si se paj 1 nou ranplase lis la, si se paj > 1 nou ajoute nouvo yo
+            setAllProfiles(prev => (page === 1 ? data.data : [...prev, ...data.data]));
+
+            setProfilesMeta(data.meta);
+        } catch (error) {
+            console.error("Erè chaje lis pwofil yo:", error);
+            toast.error("Impossible chaje lis atis yo");
         }
     };
 
@@ -55,24 +93,31 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         fetchProfile();
     }, [user]);
 
-    const updateProfile = async (updateData: any): Promise<boolean> => { // Ajoute : Promise<boolean>
+    const updateProfile = async (updateData: any): Promise<boolean> => {
         try {
             const { data } = await api.patch('/profiles/update', updateData);
-            setProfile(data); // Mizajou lokal apre siksè
+            setProfile(data);
+            toast.success("Pwofil mizajou!");
             return true;
         } catch (error) {
             console.error("Erè nan update:", error);
             toast.error("Echèk nan mizajou pwofil la");
-
-            // TRÈ ENPÒTAN: Retounen false si gen erè
             return false;
-            // throw error;
-
         }
     };
 
     return (
-        <ProfileContext.Provider value={{ profile, loading, refreshProfile: fetchProfile, updateProfile }}>
+        <ProfileContext.Provider
+            value={{
+                profile,
+                loading,
+                allProfiles,
+                profilesMeta,
+                fetchAllProfiles,
+                refreshProfile: fetchProfile,
+                updateProfile
+            }}
+        >
             {children}
         </ProfileContext.Provider>
     );

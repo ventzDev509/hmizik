@@ -1,24 +1,21 @@
-import { useNavigate } from "react-router-dom";// 1. Import context la
+
 import CardOne from "../CardsMobile/CardOne";
-// import CardTwo from "../CardsMobile/Cardtwo";
-import { useTracks } from "../../../context/TrackContext";
 import TradingTrack from "../CardsMobile/TradSong";
 import { DownloadCloud, Loader2 } from "lucide-react";
 import { usePWA } from "../hooks/usePWA";
 import { useAlbum } from "../../../context/AlbumContext";
 import { useEffect } from "react";
 import AlbumCard from "../album/AlbumCard";
+import ArtistSection from "../Artise/ArtisteSection";
 
 function Main() {
-  const navigate = useNavigate();
-  const { trendingTracks } = useTracks();
   const { isInstallable, installApp } = usePWA();
   const { albums, getAlbums, loading } = useAlbum();
   useEffect(() => {
     getAlbums();
-    
+
   }, []);
-  
+
 
   if (loading) return <Loader2 className="animate-spin text-orange-600 mx-auto mt-10" />;
   return (
@@ -36,46 +33,24 @@ function Main() {
 
         <CardOne />
 
-        {/* 4. ATIS YO */}
-        <section className="mt-10">
-          <h2 className="text-xl font-bold mb-4 px-1 text-white/90">Atis ou pi renmen</h2>
-          <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-            {/* Nou ka filtre atis inik ki nan trending yo pou kounye a */}
-            {trendingTracks.slice(0, 5).map((track, i) => (
-              <div key={i} className="min-w-[110px] flex flex-col items-center">
-                <div
-                  onClick={() => navigate(`/artist/${track.artist.username}`)}
-                  className="w-24 h-24 rounded-full mb-2 overflow-hidden shadow-2xl border border-white/5 cursor-pointer active:scale-95 transition-transform"
-                >
-                  <img
-                    crossOrigin="anonymous"
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${track.artist.username}`}
-                    alt="Artist Avatar"
-                    className="w-full h-full object-cover bg-[#282828]"
-                  />
-                </div>
-                <span className="text-[12px] font-bold text-center text-white/80">{track.artist.username}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ArtistSection />
 
         <section className="px-2 py-8">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
-                    Album <span className="text-orange-600">Popilè</span>
-                </h2>
-                <button className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800">
-                    Wè tout
-                </button>
-            </div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
+              Album <span className="text-orange-600">Popilè</span>
+            </h2>
+            <button className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800">
+              Wè tout
+            </button>
+          </div>
 
-            {/* GRID LA */}
-            <div className="flex overflow-x-auto gap-4  pb-6 scrollbar-hide snap-x">
-                {albums.map((album) => (
-                    <AlbumCard key={album.id} album={album} />
-                ))}
-            </div>
+          {/* GRID LA */}
+          <div className="flex overflow-x-auto gap-4  pb-6 scrollbar-hide snap-x">
+            {albums.map((album) => (
+              <AlbumCard key={album.id} album={album} />
+            ))}
+          </div>
         </section>
 
         <div className="mt-12 px-1 text-[#b3b3b3] text-sm space-y-6 border-t border-white/5 pt-8">
