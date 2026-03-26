@@ -104,7 +104,7 @@ const PlaylistPage = () => {
             <div className="absolute top-0 left-0 right-0 h-[50vh] z-0" 
                  style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
 
-            <main className="relative z-10 pt-12">
+            <main className="relative z-10 pt-10">
                 {/* 2. Header (Foto + Tit) */}
                 <PlaylistHeader 
                     track={selectedTrack} 
