@@ -35,7 +35,7 @@ const LikedSongsPage = () => {
 
      useEffect(() => {
             const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            if (metaThemeColor) metaThemeColor.setAttribute('content', "#813514");
+            if (metaThemeColor) metaThemeColor.setAttribute('content', "#3a1707");
             
            
         }, []);
