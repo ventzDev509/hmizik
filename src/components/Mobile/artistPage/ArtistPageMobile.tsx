@@ -79,7 +79,7 @@ const ArtistPageMobile = () => {
 
     // 3. EFFECT POU THEME-COLOR (PWA Optimized)
     useEffect(() => {
-        const themeColor = isScrolled ? "#121212" : (bgColor || "#121212");
+        const themeColor = bgColor || "#121212";
         let meta = document.querySelector('meta[name="theme-color"]');
         if (!meta) {
             meta = document.createElement('meta');
