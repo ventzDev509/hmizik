@@ -45,6 +45,7 @@ const ArtistPageMobile = () => {
     const artistFromContext = useMemo(() => {
         return allProfiles.find(p => p.id === id || p.username === id);
     }, [allProfiles, id]);
+    // console.log(extraData)
 
     // 1. Fetch Done Atis
     useEffect(() => {
@@ -79,7 +80,7 @@ const ArtistPageMobile = () => {
 
     // 3. EFFECT POU THEME-COLOR (PWA Optimized)
     useEffect(() => {
-        const themeColor = bgColor || "#121212";
+        const themeColor = "#121212";
         let meta = document.querySelector('meta[name="theme-color"]');
         if (!meta) {
             meta = document.createElement('meta');
@@ -153,7 +154,7 @@ const ArtistPageMobile = () => {
 
             {/* NAV BAR */}
             <motion.nav
-                style={{ backgroundColor: bgColor, opacity: navOpacity }}
+                style={{ backgroundColor: "#121212", opacity: navOpacity }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-4"
             >
                 <div className="flex items-center gap-4">

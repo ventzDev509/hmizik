@@ -138,7 +138,7 @@ const PlaylistDetailPage = () => {
         <div className="min-h-screen text-white relative pb-40 overflow-x-hidden select-none" style={{ backgroundColor: themeColor }}>
             
             {/* OVERLAY AJISTE (PA TROP WO) */}
-            <div className="absolute top-0 inset-x-0 bottom-0 bg-gradient-to-b from-black/60 via-black/20 to-[#121212] z-0 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 bottom-0 bg-gradient-to-b from-black/0 via-black/60 to-[#121212] z-0 pointer-events-none" />
 
             <motion.nav 
                 initial={false}

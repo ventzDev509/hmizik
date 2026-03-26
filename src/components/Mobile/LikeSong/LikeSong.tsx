@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Heart, Play, Pause, Loader2, Music, Shuffle } from 'lucide-react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
@@ -33,6 +33,12 @@ const LikedSongsPage = () => {
         }
     };
 
+     useEffect(() => {
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) metaThemeColor.setAttribute('content', "oklch(64.6% 0.222 41.116)");
+            
+           
+        }, []);
     // Fonksyon pou Shuffle
     const handleShufflePlay = () => {
         if (likedTracks.length > 0) {

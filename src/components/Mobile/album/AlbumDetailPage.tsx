@@ -141,7 +141,7 @@ const AlbumDetailPage = () => {
 
             {/* Background Gradient */}
             <div className="absolute top-0 left-0 right-0 h-[60vh] z-0"
-                style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} -20%, #121212 100%)`, opacity: 0.6 }} />
+                style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
 
             <main className="relative z-10 pt-12">
                 {/* 2. Album Header (Foto + Tit) */}
