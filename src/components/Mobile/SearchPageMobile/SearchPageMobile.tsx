@@ -180,13 +180,12 @@ const SearchPageMobile: React.FC = () => {
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Mizik</h3>
                                     <div className="space-y-1">
                                         {results.tracks.map(track => (
-                                            <div key={track.id} className="flex items-center gap-4 active:bg-white/5 p-2 rounded-xl transition">
+                                            <div key={track.id} onClick={()=>navigate(`/song?id=${track?.id}`)} className="flex items-center gap-4 active:bg-white/5 p-2 rounded-xl transition">
                                                 <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover" alt="" />
                                                 <div className="flex-1 truncate">
                                                     <p className="font-bold truncate text-sm">{track.title}</p>
                                                     <p className="text-xs text-zinc-500">{track.artist?.username}</p>
                                                 </div>
-                                                <Play size={18} className="text-orange-500" />
                                             </div>
                                         ))}
                                     </div>
