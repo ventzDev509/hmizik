@@ -54,7 +54,7 @@ const LikedSongsPage = () => {
             {/* TOP NAVIGATION */}
             <motion.nav
                 style={{ opacity: navBgOpacity }}
-                className="fixed top-0 left-0 right-0 h-16 bg-[#121212]/90 backdrop-blur-xl border-b border-white/5 z-[100] flex items-center px-4 shadow-2xl pointer-events-none"
+                className="fixed top-0 left-0 right-0 h-20 bg-[#121212]/90 backdrop-blur-xl border-b border-white/5 z-[100] flex items-center px-4 shadow-2xl pointer-events-none"
             >
                 <div className="pointer-events-auto flex items-center">
                     <ChevronLeft size={28} onClick={() => navigate(-1)} className="cursor-pointer active:scale-75 transition" />

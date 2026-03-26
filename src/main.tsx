@@ -13,6 +13,7 @@ import { PlaylistProvider } from './context/PlaylistContext.tsx'
 import { registerSW } from 'virtual:pwa-register'
 import { AlbumProvider } from './context/AlbumContext.tsx'
 import { DownloadProvider } from './context/DownloadContext.tsx'
+import { SearchProvider } from './context/SearchContext.tsx'
 
 const updateSW = registerSW({
   immediate: true, // Sa a enpòtan pou l detekte PWA a vit
@@ -37,7 +38,9 @@ createRoot(document.getElementById('root')!).render(
                 <AudioProvider>
                   <AlbumProvider>
                     <DownloadProvider>
-                      <App />
+                      <SearchProvider>
+                        <App />
+                      </SearchProvider>
                     </DownloadProvider>
                   </AlbumProvider>
                 </AudioProvider>
