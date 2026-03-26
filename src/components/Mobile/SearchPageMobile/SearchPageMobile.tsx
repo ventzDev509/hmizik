@@ -158,7 +158,7 @@ const SearchPageMobile: React.FC = () => {
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Atis</h3>
                                     <div className="space-y-4">
                                         {results.artists.map(art => (
-                                            <div key={art.id} onClick={() => handleSelectResult('artist', art.id, art.username)} className="flex items-center gap-4 active:bg-white/5 p-2 rounded-2xl transition">
+                                            <div key={art.id} onClick={() => handleSelectResult('atis', art.id, art.username)} className="flex items-center gap-4 active:bg-white/5 p-2 rounded-2xl transition">
                                                 <img src={art.avatarUrl} className="w-14 h-14 rounded-full object-cover border border-white/10" alt="" />
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-1">
