@@ -211,9 +211,12 @@ const ArtistPageMobile = () => {
                 </motion.div>
 
                 {/* STICKY PLAY div */}
-                <div className={`sticky top-16 z-40  pr-6 py-4 transition-all duration-500 ${isScrolled ? 'bg-[#121212]/95 backdrop-blur-xl border-b border-white/5' : ''}`}>
+                <div className={`sticky top-16 z-40  px-6 py-4 transition-all duration-500 ${isScrolled ? 'bg-[#121212]/95 backdrop-blur-xl border-b border-white/5' : ''}`}>
                     <div className="flex items-center justify-between">
-                        {id && <FollowButton artistId={id}/>}
+                       
+                       <div className=" rounded-3xl border border-zinc-600">
+                         {id && <FollowButton artistId={id}/>}
+                       </div>
                         <div onClick={handleHeroPlay} className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition cursor-pointer">
                             {isThisArtistPlaying ? <Pause size={30} fill="black" className="text-black" /> : <Play size={30} fill="black" className="text-black ml-1" />}
                         </div>
