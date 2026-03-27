@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Play, Pause, ChevronLeft, Verified,
-    Share2, Headset, Instagram, Twitter, Facebook, Info
+    Share2, Headset, Info
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -17,9 +17,11 @@ import { useLikes } from '../../../context/LikeContext';
 import BottomMenu from '../menu/BottomMenu';
 import TrackItem from './TrackItem';
 import PlaylistModals from '../PlayListe/components/PlaylistModals';
+import { FiFacebook, FiInstagram, FiTwitter } from 'react-icons/fi';
+import FollowButton from '../follow/FollowButton';
 
 const ArtistPageMobile = () => {
-    const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>() || "";
     const navigate = useNavigate();
     const { allProfiles, fetchAllProfiles } = useProfile();
 
@@ -191,9 +193,9 @@ const ArtistPageMobile = () => {
                     </h1>
 
                     <div className="flex gap-4 mb-5 text-white/60">
-                        <Instagram size={20} className="active:text-pink-500 transition-colors" />
-                        <Twitter size={20} className="active:text-blue-400 transition-colors" />
-                        <Facebook size={20} className="active:text-blue-600 transition-colors" />
+                        <FiInstagram size={20} className="active:text-pink-500 transition-colors" />
+                        <FiTwitter size={20} className="active:text-blue-400 transition-colors" />
+                        <FiFacebook size={20} className="active:text-blue-600 transition-colors" />
                     </div>
 
                     <div className="flex gap-5">
@@ -209,11 +211,9 @@ const ArtistPageMobile = () => {
                 </motion.div>
 
                 {/* STICKY PLAY div */}
-                <div className={`sticky top-16 z-40 px-6 py-4 transition-all duration-500 ${isScrolled ? 'bg-[#121212]/95 backdrop-blur-xl border-b border-white/5' : ''}`}>
+                <div className={`sticky top-16 z-40  pr-6 py-4 transition-all duration-500 ${isScrolled ? 'bg-[#121212]/95 backdrop-blur-xl border-b border-white/5' : ''}`}>
                     <div className="flex items-center justify-between">
-                        <div className="px-10 py-3 border border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] active:scale-95 transition">
-                            Suivre
-                        </div>
+                        {id && <FollowButton artistId={id}/>}
                         <div onClick={handleHeroPlay} className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition cursor-pointer">
                             {isThisArtistPlaying ? <Pause size={30} fill="black" className="text-black" /> : <Play size={30} fill="black" className="text-black ml-1" />}
                         </div>

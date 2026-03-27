@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
 const Auth: React.FC = () => {
-  const { register, login, magicLink, loginWithGoogle } = useAuth();
+  const { register, login, loginWithGoogle } = useAuth();
 
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [formData, setFormData] = useState({
@@ -15,9 +15,9 @@ const Auth: React.FC = () => {
   });
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [magicLoading, setMagicLoading] = useState<boolean>(false);
+  // const [magicLoading, setMagicLoading] = useState<boolean>(false);
 
-  const isProcessing = loading || magicLoading;
+  const isProcessing = loading;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,16 +42,16 @@ const Auth: React.FC = () => {
     }
   };
 
-  const handleMagicLinkSubmit = async () => {
-    if (!formData.email) return;
-    setMagicLoading(true);
-    try {
-      await magicLink(formData.email);
-    } catch (error) {
-    } finally {
-      setMagicLoading(false);
-    }
-  };
+  // const handleMagicLinkSubmit = async () => {
+  //   if (!formData.email) return;
+  //   setMagicLoading(true);
+  //   try {
+  //     await magicLink(formData.email);
+  //   } catch (error) {
+  //   } finally {
+  //     setMagicLoading(false);
+  //   }
+  // };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 font-sans py-20 bg-black overflow-hidden">
@@ -185,7 +185,7 @@ const Auth: React.FC = () => {
             Kontinye ak Google
           </button>
 
-          <button
+          {/* <button
             style={{ backgroundColor: "#1e1e1e" }}
             type="button"
             disabled={isProcessing}
@@ -193,7 +193,7 @@ const Auth: React.FC = () => {
             className="w-full flex items-center justify-center gap-3 text-white font-bold py-4 px-4 rounded-2xl border border-white/5 transition-all transform hover:bg-[#252525] active:scale-95 disabled:opacity-50 shadow-md text-sm"
           >
             Konekte ak yon Magic Link
-          </button>
+          </button> */}
         </div>
 
         <div className="mt-10 text-center border-t border-white/5 pt-8">

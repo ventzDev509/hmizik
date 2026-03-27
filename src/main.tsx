@@ -14,6 +14,7 @@ import { registerSW } from 'virtual:pwa-register'
 import { AlbumProvider } from './context/AlbumContext.tsx'
 import { DownloadProvider } from './context/DownloadContext.tsx'
 import { SearchProvider } from './context/SearchContext.tsx'
+import { FollowProvider } from './context/FollowContext.tsx'
 
 const updateSW = registerSW({
   immediate: true, // Sa a enpòtan pou l detekte PWA a vit
@@ -39,7 +40,9 @@ createRoot(document.getElementById('root')!).render(
                   <AlbumProvider>
                     <DownloadProvider>
                       <SearchProvider>
-                        <App />
+                        <FollowProvider>
+                          <App />
+                        </FollowProvider>
                       </SearchProvider>
                     </DownloadProvider>
                   </AlbumProvider>

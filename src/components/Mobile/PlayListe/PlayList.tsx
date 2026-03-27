@@ -20,12 +20,12 @@ const PlaylistPage = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const id = searchParams.get('id');
     const navigate = useNavigate();
-    
+
     const { tracks } = useTracks();
     const { isLiked, toggleLike } = useLikes();
-    const { 
-        playSong, isPlaying, currentSong, togglePlay, 
-        isBuffering, addToQueue 
+    const {
+        playSong, isPlaying, currentSong, togglePlay,
+        isBuffering, addToQueue
     } = useAudio();
 
     // States
@@ -37,7 +37,7 @@ const PlaylistPage = () => {
 
     // Lojik pou jwenn mizik la ak sijesyon yo
     const selectedTrack = useMemo(() => tracks.find(t => t.id === id), [tracks, id]);
-    
+
     const suggestions = useMemo(() => {
         if (!selectedTrack) return [];
         return tracks
@@ -55,9 +55,9 @@ const PlaylistPage = () => {
     useEffect(() => {
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) metaThemeColor.setAttribute('content', bgColor || '#121212');
-        
+
         const unsubscribe = scrollY.on("change", (latest) => setIsScrolled(latest > 200));
-        
+
         return () => {
             unsubscribe();
             if (metaThemeColor) metaThemeColor.setAttribute('content', '#121212');
@@ -83,7 +83,7 @@ const PlaylistPage = () => {
 
     return (
         <div className="bg-[#121212] text-white font-sans relative overflow-x-hidden min-h-screen">
-            
+
             {/* 1. NAVBAR STICKY */}
             <motion.nav
                 style={{ backgroundColor: bgColor, opacity: navOpacity }}
@@ -101,20 +101,20 @@ const PlaylistPage = () => {
             </motion.nav>
 
             {/* Background Gradient */}
-            <div className="absolute top-0 left-0 right-0 h-[50vh] z-0" 
-                 style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
+            <div className="absolute top-0 left-0 right-0 h-[50vh] z-0"
+                style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
 
             <main className="relative z-10 pt-10">
                 {/* 2. Header (Foto + Tit) */}
-                <PlaylistHeader 
-                    track={selectedTrack} 
-                    imgOpacity={imgOpacity} 
-                    imgScale={imgScale} 
-                    imgRef={imgRef} 
+                <PlaylistHeader
+                    track={selectedTrack}
+                    imgOpacity={imgOpacity}
+                    imgScale={imgScale}
+                    imgRef={imgRef}
                 />
 
                 {/* 3. Controls (Play/Like/Download Sticky) */}
-                <PlaylistControls 
+                <PlaylistControls
                     track={selectedTrack}
                     isScrolled={isScrolled}
                     isLiked={isLiked(selectedTrack.id)}
@@ -134,7 +134,7 @@ const PlaylistPage = () => {
                         Menm jan ak sa
                     </h3>
                     {suggestions.map((track, index) => (
-                        <SuggestionItem 
+                        <SuggestionItem
                             key={track.id}
                             track={track}
                             index={index}
@@ -158,7 +158,7 @@ const PlaylistPage = () => {
             <BottomMenu />
 
             {/* 5. Modals */}
-            <PlaylistModals 
+            <PlaylistModals
                 showAction={showActionModal}
                 setShowAction={setShowActionModal}
                 showPlaylist={showPlaylistModal}
