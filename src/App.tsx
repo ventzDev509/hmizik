@@ -21,7 +21,8 @@ import LikedSongsPage from "./components/Mobile/LikeSong/LikeSong";
 import PlaylistDetailPage from "./components/Mobile/PlaylistDetailPage/PlaylistDetailPage";
 import OfflineMusic from "./components/Mobile/OfflineMusic/OfflineMusic";
 import AlbumDetailPage from "./components/Mobile/album/AlbumDetailPage";
-
+import { getToken } from "firebase/messaging";
+import { messaging } from './firebase';
 function App() {
   // 1. Nou kreye yon eta pou detekte si moun lan online
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
@@ -37,6 +38,30 @@ function App() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
+  }, []);
+
+  useEffect(() => {
+    const requestPermission = async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          // Rale Token an
+          const token = await getToken(messaging, {
+            vapidKey: "BK6mtK2hIrhmuNNd7JqltgQ3Vzqpakgf73Yf5lyqn_hc2U5759oJy2mbEIuEPjtq86GTE1B5CC5dLtuvSPYjvuE" 
+          });
+
+          if (token) {
+            // Sove Token nan nan DB (Supabase via NestJS)
+            // await api.patch('/users/update-push-token', { token });
+            console.log("Push Token sove ak siksè!" ,token);
+          }
+        }
+      } catch (error) {
+        console.error("Erè notifikasyon:", error);
+      }
+    };
+
+    requestPermission();
   }, []);
 
   const routes = [
