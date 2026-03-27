@@ -53,7 +53,7 @@ function App() {
 
           if (token) {
             // Sove Token nan nan DB (Supabase via NestJS)
-            await api.patch('/users/update-push-token', { token });
+            await api.patch('/users/update-token', { token });
             console.log("Push Token sove ak siksè!" ,token);
           }
         }
