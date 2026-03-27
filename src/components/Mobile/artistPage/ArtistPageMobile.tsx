@@ -12,6 +12,7 @@ import api from '../../../api/axios';
 import { useImageColors } from "../../utils/GetColor";
 import { useAudio } from '../../../provider/PlayerContext';
 import { useLikes } from '../../../context/LikeContext';
+import { useFollow } from '../../../context/FollowContext'; // Import useFollow
 
 // Components
 import BottomMenu from '../menu/BottomMenu';
@@ -24,6 +25,9 @@ const ArtistPageMobile = () => {
     const { id } = useParams<{ id: string }>() || "";
     const navigate = useNavigate();
     const { allProfiles, fetchAllProfiles } = useProfile();
+    
+    // Follow Context pou jere chif abòne yo
+    const { followersCounts, updateFollowersCount } = useFollow();
 
     // Audio Context
     const { currentSong, isPlaying, isBuffering, playSong, togglePlay, addToQueue } = useAudio();
@@ -47,17 +51,22 @@ const ArtistPageMobile = () => {
     const artistFromContext = useMemo(() => {
         return allProfiles.find(p => p.id === id || p.username === id);
     }, [allProfiles, id]);
-    // console.log(extraData)
 
-    // 1. Fetch Done Atis
+    // 1. Fetch Done Atis + Followers Count
     useEffect(() => {
         const fetchFullDetails = async () => {
             if (!id) return;
             try {
                 setLoading(true);
                 if (allProfiles.length === 0) await fetchAllProfiles(1, 20);
+                
+                // Fetch pwofil la
                 const { data } = await api.get(`/profiles/p/${id}`);
                 setExtraData(data);
+
+                // Fetch kantite followers (Wout nou sot kreye a)
+                const countRes = await api.get(`/follow/count/${data.id || id}`);
+                updateFollowersCount(data.id || id, countRes.data.count);
 
                 const formattedTracks = data.tracks?.map((t: any) => ({
                     ...t,
@@ -71,7 +80,7 @@ const ArtistPageMobile = () => {
             }
         };
         fetchFullDetails();
-    }, [id, allProfiles.length, fetchAllProfiles]);
+    }, [id, allProfiles.length, fetchAllProfiles, updateFollowersCount]);
 
     const displayData = extraData || artistFromContext;
     const artistImg = displayData?.bannerUrl || displayData?.avatarUrl || "https://via.placeholder.com/800x400";
@@ -80,7 +89,7 @@ const ArtistPageMobile = () => {
     const { bgColor, imgRef } = useImageColors(artistImg);
     const { scrollY } = useScroll();
 
-    // 3. EFFECT POU THEME-COLOR (PWA Optimized)
+    // 3. EFFECT POU THEME-COLOR
     useEffect(() => {
         const themeColor = "#121212";
         let meta = document.querySelector('meta[name="theme-color"]');
@@ -199,6 +208,14 @@ const ArtistPageMobile = () => {
                     </div>
 
                     <div className="flex gap-5">
+                        {/* KANTITE ABONE (Soti nan Context la) */}
+                        <div className="flex flex-col text-center">
+                            <span className="text-lg font-black">
+                                {(followersCounts[displayData.id] || 0).toLocaleString()}
+                            </span>
+                            <span className="text-[8px] uppercase font-bold tracking-widest text-orange-500">Abòne</span>
+                        </div>
+                        
                         <div className="flex flex-col text-center">
                             <span className="text-lg font-black">{totalPlays.toLocaleString()}</span>
                             <span className="text-[8px] uppercase font-bold tracking-widest text-orange-500">Koute</span>
@@ -215,7 +232,7 @@ const ArtistPageMobile = () => {
                     <div className="flex items-center justify-between">
                        
                        <div className=" rounded-3xl border border-zinc-600">
-                         {id && <FollowButton artistId={id}/>}
+                         {displayData.id && <FollowButton artistId={displayData.id}/>}
                        </div>
                         <div onClick={handleHeroPlay} className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition cursor-pointer">
                             {isThisArtistPlaying ? <Pause size={30} fill="black" className="text-black" /> : <Play size={30} fill="black" className="text-black ml-1" />}
@@ -246,7 +263,7 @@ const ArtistPageMobile = () => {
                     </div>
                 </div>
 
-                {/* --- SEKSYON A PROPOS (REMETE) --- */}
+                {/* --- SEKSYON A PROPOS --- */}
                 <div className="px-6 pb-40">
                     <div className="bg-white/5 rounded-3xl p-6 border border-white/10 backdrop-blur-md">
                         <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2 mb-4">
@@ -256,7 +273,9 @@ const ArtistPageMobile = () => {
                              <img src={displayData.avatarUrl} className="w-16 h-16 rounded-full object-cover border-2 border-orange-600" alt={displayData.username} />
                              <div>
                                  <p className="text-sm font-bold">{displayData.username}</p>
-                                 <p className="text-[10px] text-white/50 uppercase tracking-widest">{totalPlays.toLocaleString()} Auditeurs</p>
+                                 <p className="text-[10px] text-white/50 uppercase tracking-widest">
+                                    {(followersCounts[displayData.id] || 0).toLocaleString()} Abonnés
+                                 </p>
                              </div>
                         </div>
                         <p className="text-sm text-white/70 leading-relaxed italic line-clamp-4">
