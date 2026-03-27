@@ -23,6 +23,7 @@ import OfflineMusic from "./components/Mobile/OfflineMusic/OfflineMusic";
 import AlbumDetailPage from "./components/Mobile/album/AlbumDetailPage";
 import { getToken } from "firebase/messaging";
 import { messaging } from './firebase';
+import api from "./api/axios";
 function App() {
   // 1. Nou kreye yon eta pou detekte si moun lan online
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
@@ -52,7 +53,7 @@ function App() {
 
           if (token) {
             // Sove Token nan nan DB (Supabase via NestJS)
-            // await api.patch('/users/update-push-token', { token });
+            await api.patch('/users/update-push-token', { token });
             console.log("Push Token sove ak siksè!" ,token);
           }
         }
