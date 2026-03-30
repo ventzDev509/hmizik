@@ -33,18 +33,16 @@ interface AlbumContextType {
     error: string | null;
     loading: boolean;
 
-    // Fonksyon ki te la deja
     createAlbum: (formData: FormData) => Promise<void>;
     addTrack: (albumId: string, formData: FormData) => Promise<void>;
     getAlbum: (albumId: string) => Promise<void>;
     getAlbums: () => Promise<void>;
     fetchUserAlbums: (userId: string) => Promise<void>;
-    
-    // NOUVO FONKSYON POU ADAPTE AK BACKEND NAN
+    deleteAlbum: (albumId: string) => Promise<void>;
     updateAlbum: (albumId: string, formData: FormData) => Promise<void>; // Pou tit ak cover
     deleteTrack: (trackId: string) => Promise<void>;
     finalizeAlbum: (albumId: string) => Promise<void>;
-    
+
     clearError: () => void;
     resetAlbumState: () => void;
 }
@@ -197,12 +195,35 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
+    const deleteAlbum = async (albumId: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            // Nou rele endpoint DELETE nou te kreye nan Backend lan
+            await api.delete(`/album/${albumId}`);
+
+            // Nou retire l nan lis albums ki nan state la
+            setAlbums(prev => prev.filter(a => a.id !== albumId));
+
+            // Si se album n ap gade a ki efase, nou reset currentAlbum
+            if (currentAlbum?.id === albumId) {
+                setCurrentAlbum(null);
+            }
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.message || "Nou pa ka efase album sa a";
+            setError(errorMsg);
+            throw err; // Nou re-voye l pou Component lan ka montre yon Toast si l vle
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <AlbumContext.Provider value={{
             currentAlbum, albums, isUploading, uploadProgress, error, loading,
-            createAlbum, updateAlbum, deleteTrack, addTrack, finalizeAlbum, 
+            createAlbum, updateAlbum, deleteTrack, addTrack, finalizeAlbum,
             getAlbum, fetchUserAlbums, getAlbums,
-            clearError, resetAlbumState
+            clearError, resetAlbumState,deleteAlbum
         }}>
             {children}
         </AlbumContext.Provider>

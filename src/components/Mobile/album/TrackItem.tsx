@@ -2,7 +2,8 @@ import React from 'react';
 import { Play, Pause, Heart, MoreVertical, Trash2 } from 'lucide-react';
 import Equalizer from '../../buffer/Equalizer';
 import DownloadButton from '../DownloadButton/DownloadButton';
-
+import { motion } from 'framer-motion';
+import { useTracks } from '../../../context/TrackContext';
 interface TrackItemProps {
     track: any;
     index: number;
@@ -19,14 +20,14 @@ interface TrackItemProps {
 }
 
 const TrackItem: React.FC<TrackItemProps> = ({
-    track, index, isActive, isPlaying, isEditMode, isLiked, 
-    albumTitle, albumCover, onPlay, onToggleLike, onDelete, onOpenActions
+    track, index, isActive, isPlaying, isEditMode, isLiked,
+    albumTitle, albumCover, onPlay, onToggleLike, onOpenActions
 }) => {
     const trackImage = track.coverUrl || albumCover;
-
+    const { deleteTrack } = useTracks();
     return (
         <div className={`flex items-center gap-4 p-3 rounded-2xl transition active:bg-white/10 ${isActive ? 'bg-white/5' : ''}`}>
-            
+
             {/* Nimewo oswa Equalizer */}
             <div className="text-xs text-zinc-600 w-5 flex justify-center font-bold">
                 {isActive && isPlaying ? <Equalizer /> : <span>{index + 1}</span>}
@@ -53,12 +54,16 @@ const TrackItem: React.FC<TrackItemProps> = ({
             {/* Bouton Aksyon yo */}
             <div className="flex items-center gap-4">
                 {isEditMode ? (
-                    <button 
-                        onClick={() => onDelete(track.id)} 
-                        className="p-2 text-zinc-400 hover:text-red-500 transition-colors"
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            deleteTrack(track.id);
+                        }}
+                        className="p-2 hover:bg-red-500/10 rounded-full group/del transition-colors"
                     >
-                        <Trash2 size={18} />
-                    </button>
+                        <Trash2 size={16} className="text-zinc-600 group-hover/del:text-red-500 transition-colors" />
+                    </motion.button>
                 ) : (
                     <>
                         <Heart
@@ -66,16 +71,17 @@ const TrackItem: React.FC<TrackItemProps> = ({
                             onClick={onToggleLike}
                             className={`cursor-pointer transition-all ${isLiked ? "fill-orange-500 text-orange-500" : "text-zinc-600 hover:text-white"}`}
                         />
-                        <DownloadButton 
-                            trackId={track.id} 
-                            audioUrl={track.audioUrl} 
-                            coverUrl={trackImage} 
-                            title={track.title} 
+                        <DownloadButton
+                            trackId={track.id}
+                            audioUrl={track.audioUrl}
+                            coverUrl={trackImage}
+                            title={track.title}
                         />
-                        <MoreVertical 
-                            size={20} 
-                            className="text-zinc-600 cursor-pointer hover:text-white" 
-                            onClick={(e) => onOpenActions(e, track)} 
+
+                        <MoreVertical
+                            size={20}
+                            className="text-zinc-600 cursor-pointer hover:text-white"
+                            onClick={(e) => onOpenActions(e, track)}
                         />
                     </>
                 )}

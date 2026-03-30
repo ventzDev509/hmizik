@@ -10,7 +10,7 @@ interface Track {
     audioUrl: string;
     coverUrl: string;
     duration: number;
-    playCount: number; 
+    playCount: number;
     artist: {
         username: string;
         user: { name: string };
@@ -30,6 +30,7 @@ interface TrackContextType {
     fetchTrending: (limit?: number) => Promise<void>;
     searchTracks: (query: string) => Promise<void>;
     incrementPlay: (trackId: string) => Promise<void>;
+    deleteTrack: (trackId: string) => Promise<void>;
 }
 
 const TrackContext = createContext<TrackContextType | undefined>(undefined);
@@ -111,7 +112,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLoading(true);
         try {
             const { data } = await api.get(`/search?q=${query}`);
-            setSearchResults(data.tracks || []); 
+            setSearchResults(data.tracks || []);
         } catch (error) {
             console.error("H-MIZIK SEARCH ERROR:", error);
         } finally {
@@ -131,25 +132,25 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         try {
             // Rele Back-end la (Asire w se POST epi URL la kòrèk)
             const response = await api.post(`/tracks/${trackId}/play`);
-            
+
             console.log("H-MIZIK DEBUG: Repons Sèvè:", response.status, response.data);
 
             // Si sèvè a reponn byen, nou update UI a
-            const updatePlayCount = (list: Track[]) => 
+            const updatePlayCount = (list: Track[]) =>
                 list.map(t => t.id === trackId ? { ...t, playCount: (t.playCount || 0) + 1 } : t);
 
             setTracks(prev => updatePlayCount(prev));
             setTrendingTracks(prev => updatePlayCount(prev));
             setSearchResults(prev => updatePlayCount(prev));
-            
+
         } catch (error: any) {
             console.error("%c H-MIZIK ERROR: incrementPlay echwe! ", 'background: #ff0000; color: #ffffff');
-            
+
             if (error.response) {
                 // Sèvè a reponn ak erè (ex: 404, 500, 401)
                 console.error("Detay Erè (Server):", error.response.data);
                 console.error("Status kòd:", error.response.status);
-                
+
                 if (error.response.status === 404) {
                     toast.error("Endpoint '/play' la pa egziste nan Back-end lan.");
                 }
@@ -163,9 +164,39 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
+
+    const deleteTrack = async (trackId: string) => {
+        // Yon ti konfimasyon rapid anvan nou efase
+        if (!window.confirm("Èske ou sèten ou vle efase mizik sa a nèt sou H-MIZIK?")) return;
+
+        setLoading(true);
+        try {
+            // Nou rele Backend la (Route nou te kreye a)
+            const response = await api.delete(`/tracks/remove/${trackId}`);
+
+            if (response.status === 200 || response.status === 204) {
+                toast.success("Mizik la efase ak siksè!");
+
+                // UPDATE UI: Nou retire mizik la nan tout lis yo san nou pa bezwen reload paj la
+                const filterList = (list: Track[]) => list.filter(t => t.id !== trackId);
+
+                setTracks(prev => filterList(prev));
+                setTrendingTracks(prev => filterList(prev));
+                setSearchResults(prev => filterList(prev));
+            }
+        } catch (error: any) {
+            console.error("H-MIZIK DELETE ERROR:", error);
+            // const message = error.response?.data?.message || "Nou pa ka efase mizik sa a.";
+           
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     useEffect(() => {
         fetchTracks(1);
-        fetchTrending(6); 
+        fetchTrending(6);
     }, []);
 
     return (
@@ -181,7 +212,8 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             fetchUserTracks,
             fetchTrending,
             searchTracks,
-            incrementPlay
+            incrementPlay,
+            deleteTrack
         }}>
             {children}
         </TrackContext.Provider>

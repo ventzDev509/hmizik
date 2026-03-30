@@ -23,7 +23,7 @@ const UserProfile = () => {
     // CONTEXTS
     const { profile, loading: profileLoading } = useProfile();
     const { tracks, fetchUserTracks, loading: tracksLoading, incrementPlay } = useTracks();
-    const { albums, createAlbum, isUploading, uploadProgress, error, fetchUserAlbums } = useAlbum();
+    const { albums, deleteAlbum, createAlbum, isUploading, uploadProgress, error, fetchUserAlbums } = useAlbum();
 
     // STATES
     const [activeTab, setActiveTab] = useState('uploads');
@@ -130,6 +130,7 @@ const UserProfile = () => {
                 <ProfileContent
                     activeTab={activeTab} setActiveTab={setActiveTab}
                     tracks={tracks} albums={albums}
+                    deleteAlbum={deleteAlbum}
                     tracksLoading={tracksLoading} incrementPlay={incrementPlay}
                     setIsAlbumModalOpen={setIsAlbumModalOpen} navigate={navigate}
                 />
