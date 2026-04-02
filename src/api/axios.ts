@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: 'https://hmizikbackend-1.onrender.com',
 });
 
-// INTERCEPTOR POU VOYE TOKEN AN (REQUEST)
+// INTERCEPTOR POU VOYE TOKEN LAN (REQUEST)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('h_mizik_token');

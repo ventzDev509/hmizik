@@ -3,6 +3,7 @@ import { Music, Play, Headphones, MoreVertical, Plus, Loader2, Trash2 } from 'lu
 import type { Album, Track } from '../../../types/Profile';
 import { useTracks } from '../../../../context/TrackContext';
 import { useState } from 'react';
+import { ArtistAnalytics } from '../../../Analystic/ArtistAnalytics';
 
 interface ProfileContentProps {
     activeTab: string;
@@ -60,9 +61,8 @@ export const ProfileContent = ({
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${
-                            activeTab === tab ? 'text-orange-600' : 'text-zinc-600'
-                        }`}
+                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-600' : 'text-zinc-600'
+                            }`}
                     >
                         {tab === 'uploads' ? 'Mizik' : tab === 'playlists' ? 'Album yo' : 'Favori'}
                         {activeTab === tab && (
@@ -78,7 +78,7 @@ export const ProfileContent = ({
             {/* LIST KONTNI */}
             <div className="py-8 pb-32">
                 <AnimatePresence mode="wait">
-                    
+
                     {/* TAB: MIZIK (UPLOADS) */}
                     {activeTab === 'uploads' ? (
                         <motion.div
@@ -149,79 +149,79 @@ export const ProfileContent = ({
                                 </div>
                             )}
                         </motion.div>
-                    ) : 
+                    ) :
 
-                    /* TAB: ALBUM YO (PLAYLISTS) */
-                    activeTab === 'playlists' ? (
-                        <motion.div
-                            key="albums"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="grid grid-cols-2 gap-4"
-                        >
-                            {/* Bouton Kreye Album */}
+                        /* TAB: ALBUM YO (PLAYLISTS) */
+                        activeTab === 'playlists' ? (
                             <motion.div
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => setIsAlbumModalOpen(true)}
-                                className="aspect-square bg-white/[0.03] rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center p-6 text-center group cursor-pointer hover:border-orange-600/30 transition-all"
+                                key="albums"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="grid grid-cols-2 gap-4"
                             >
-                                <div className="w-12 h-12 rounded-full bg-orange-600/10 flex items-center justify-center mb-3">
-                                    <Plus size={24} className="text-orange-600" />
-                                </div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Nouvo Album</p>
-                            </motion.div>
-
-                            {/* Lis Album yo */}
-                            {albums?.map((album) => (
+                                {/* Bouton Kreye Album */}
                                 <motion.div
-                                    key={album.id}
-                                    layout
-                                    onClick={() => navigate(`/album?id=${album.id}`)}
-                                    className="flex flex-col gap-3 group cursor-pointer relative"
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => setIsAlbumModalOpen(true)}
+                                    className="aspect-square bg-white/[0.03] rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center p-6 text-center group cursor-pointer hover:border-orange-600/30 transition-all"
                                 >
-                                    <div className="relative aspect-square overflow-hidden rounded-[2.5rem] shadow-xl">
-                                        <img
-                                            src={album.coverUrl || "/default-album.png"}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            alt={album.title}
-                                        />
-                                        
-                                        {/* Bouton Delete sou Album nan */}
-                                        <div className="absolute top-4 right-4 z-20">
-                                            <motion.button
-                                                whileTap={{ scale: 0.8 }}
-                                                disabled={deletingAlbumId === album.id}
-                                                onClick={(e) => handleDeleteAlbum(e, album.id)}
-                                                className="w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-red-600 transition-colors shadow-lg"
-                                            >
-                                                {deletingAlbumId === album.id ? (
-                                                    <Loader2 size={14} className="text-white animate-spin" />
-                                                ) : (
-                                                    <Trash2 size={14} className="text-white" />
-                                                )}
-                                            </motion.button>
-                                        </div>
-
-                                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all" />
-                                        <div className="absolute bottom-4 right-4 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all shadow-lg">
-                                            <Play size={18} className="fill-white text-white" />
-                                        </div>
+                                    <div className="w-12 h-12 rounded-full bg-orange-600/10 flex items-center justify-center mb-3">
+                                        <Plus size={24} className="text-orange-600" />
                                     </div>
-                                    <div className="px-1 text-left">
-                                        <h4 className="text-[11px] font-black uppercase italic truncate">{album.title}</h4>
-                                        <p className="text-[9px] text-zinc-500 font-bold uppercase mt-0.5">{album.trackCount || 0} Mizik</p>
-                                    </div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Nouvo Album</p>
                                 </motion.div>
-                            ))}
-                        </motion.div>
-                    ) : (
-                        /* TAB: FAVORI (LIKES) */
-                        <div className="flex flex-col items-center justify-center py-20 opacity-20">
-                            <Music size={40} />
-                            <p className="text-[10px] font-black mt-4 uppercase tracking-widest text-center">Favori yo ap disponib talè nan H-MIZIK</p>
-                        </div>
-                    )}
+
+                                {/* Lis Album yo */}
+                                {albums?.map((album) => (
+                                    <motion.div
+                                        key={album.id}
+                                        layout
+                                        onClick={() => navigate(`/album?id=${album.id}`)}
+                                        className="flex flex-col gap-3 group cursor-pointer relative"
+                                    >
+                                        <div className="relative aspect-square overflow-hidden rounded-[2.5rem] shadow-xl">
+                                            <img
+                                                src={album.coverUrl || "/default-album.png"}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                alt={album.title}
+                                            />
+
+                                            {/* Bouton Delete sou Album nan */}
+                                            <div className="absolute top-4 right-4 z-20">
+                                                <motion.button
+                                                    whileTap={{ scale: 0.8 }}
+                                                    disabled={deletingAlbumId === album.id}
+                                                    onClick={(e) => handleDeleteAlbum(e, album.id)}
+                                                    className="w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-red-600 transition-colors shadow-lg"
+                                                >
+                                                    {deletingAlbumId === album.id ? (
+                                                        <Loader2 size={14} className="text-white animate-spin" />
+                                                    ) : (
+                                                        <Trash2 size={14} className="text-white" />
+                                                    )}
+                                                </motion.button>
+                                            </div>
+
+                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all" />
+                                            <div className="absolute bottom-4 right-4 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all shadow-lg">
+                                                <Play size={18} className="fill-white text-white" />
+                                            </div>
+                                        </div>
+                                        <div className="px-1 text-left">
+                                            <h4 className="text-[11px] font-black uppercase italic truncate">{album.title}</h4>
+                                            <p className="text-[9px] text-zinc-500 font-bold uppercase mt-0.5">{album.trackCount || 0} Mizik</p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        ) : (
+                            /* TAB: FAVORI (LIKES) */
+                            <div className="">
+
+                                <ArtistAnalytics tracks={tracks} />
+                            </div>
+                        )}
                 </AnimatePresence>
             </div>
         </div>

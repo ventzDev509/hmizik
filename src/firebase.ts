@@ -17,5 +17,5 @@ const firebaseConfig = {
 // Inisyalize Firebase
 const app: FirebaseApp = initializeApp(firebaseConfig);
 
-// Ekspòte messaging pou React ka sèvi avè l
+// Ekspòte messaging pou React 
 export const messaging: Messaging = getMessaging(app);

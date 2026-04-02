@@ -6,7 +6,6 @@ const ArtistSection = () => {
     const { allProfiles, fetchAllProfiles, loading } = useProfile();
 
     useEffect(() => {
-        // Rale 10 atis si lis la vid
         if (allProfiles?.length === 0) {
             fetchAllProfiles(1, 10);
 
@@ -25,7 +24,6 @@ const ArtistSection = () => {
                     </div>
                 ))}
                 
-                {/* Si w ap chaje plis, ou ka mete yon loader isit la */}
                 {loading && <div className="min-w-[110px] h-24 rounded-full bg-white/5 animate-pulse" />}
             </div>
         </section>

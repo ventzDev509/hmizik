@@ -33,17 +33,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
 
     // 2. Tcheke otomatikman si user a konekte (Check Auth)
-    // Grasi ak Axios Interceptor, nou pa bezwen voye Token nan Header isit la ankò
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem('h_mizik_token');
             if (token) {
                 try {
-                    // Nou itilize 'api' olye de 'axios'
                     const { data } = await api.get('/users/me');
                     setUser(data);
                 } catch (err) {
-                    // Interceptor a deja jere 401, men nou mete sa pou sekirite
                     setUser(null);
                 }
             }
@@ -52,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkAuth();
     }, []);
 
-    // 3. FONKSYON LOGIN KLASIK
+    // 3. FONKSYON LOGIN 
     const login = async (credentials: any) => {
 
         try {
@@ -76,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    // 4. FONKSYON REGISTER KLASIK
+    // 4. FONKSYON REGISTER 
     const register = async (formData: any) => {
         try {
             const { data } = await api.post('/users/register', formData);
@@ -87,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    // 5. FONKSYON MAGIC LINK
+    // 5. FONKSYON MAGIC 
     const magicLink = async (email: string) => {
         try {
             await api.post('/users/magic-register', { email });
@@ -100,7 +97,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // 6. FONKSYON GOOGLE (Redireksyon dirèk)
     const loginWithGoogle = () => {
-        // Nou itilize baseURL la si nou bezwen l, oswa nou ekri l an dirèk
         // window.location.href = 'http://localhost:3000/users/google';
         window.location.href = 'https://hmizikbackend-1.onrender.com/users/google';
     };

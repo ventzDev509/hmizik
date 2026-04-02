@@ -12,7 +12,7 @@ import api from '../../../api/axios';
 import { useImageColors } from "../../utils/GetColor";
 import { useAudio } from '../../../provider/PlayerContext';
 import { useLikes } from '../../../context/LikeContext';
-import { useFollow } from '../../../context/FollowContext'; // Import useFollow
+import { useFollow } from '../../../context/FollowContext'; 
 
 // Components
 import BottomMenu from '../menu/BottomMenu';
@@ -26,7 +26,7 @@ const ArtistPageMobile = () => {
     const navigate = useNavigate();
     const { allProfiles, fetchAllProfiles } = useProfile();
     
-    // Follow Context pou jere chif abòne yo
+    // Follow Context 
     const { followersCounts, updateFollowersCount } = useFollow();
 
     // Audio Context
@@ -60,11 +60,11 @@ const ArtistPageMobile = () => {
                 setLoading(true);
                 if (allProfiles.length === 0) await fetchAllProfiles(1, 20);
                 
-                // Fetch pwofil la
+                // Fetch pwofil 
                 const { data } = await api.get(`/profiles/p/${id}`);
                 setExtraData(data);
 
-                // Fetch kantite followers (Wout nou sot kreye a)
+                // Fetch kantite followers 
                 const countRes = await api.get(`/follow/count/${data.id || id}`);
                 updateFollowersCount(data.id || id, countRes.data.count);
 
@@ -208,7 +208,6 @@ const ArtistPageMobile = () => {
                     </div>
 
                     <div className="flex gap-5">
-                        {/* KANTITE ABONE (Soti nan Context la) */}
                         <div className="flex flex-col text-center">
                             <span className="text-lg font-black">
                                 {(followersCounts[displayData.id] || 0).toLocaleString()}
