@@ -13,6 +13,25 @@ export interface Track {
     genre: string;
     playCount: number;
     duration: number;
+    artist: {
+        username: string;
+        user: {
+            name: string,
+            profile: {
+                name: string;
+                customTarif:number;
+                payoutThreshold:number
+            };
+        };
+
+    };
+
+    plays: {
+        trackId: string;
+        userId: string;
+        userIp: string;
+        city: string
+    }
 }
 
 export interface Album {

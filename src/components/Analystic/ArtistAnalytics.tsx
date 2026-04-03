@@ -1,4 +1,4 @@
-import  { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
     TrendingUp,
@@ -7,7 +7,6 @@ import {
     ArrowUpRight,
     BarChart3,
     Wallet,
-    Info,
     MapPin,
     Lightbulb
 } from 'lucide-react';
@@ -18,10 +17,11 @@ interface AnalyticsProps {
 }
 
 export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
-    // 1. KONFIGIRASYON MONETIZASYON
-    const TARIF_HTG = 0.20;
-    const SEUIL_PEMAN = 2500; // Papòt pou retire kòb (HTG)
+    const artistProfile = tracks[0]?.artist?.user?.profile;
 
+    const TARIF_HTG = artistProfile?.customTarif ?? 0.20;
+    const SEUIL_PEMAN = artistProfile?.payoutThreshold ?? 2500;
+    // 1. KALKIL STATS JENERAL
     const stats = useMemo(() => {
         const totalPlays = tracks.reduce((acc, track) => acc + (track.playCount || 0), 0);
         const totalEarningsHTG = totalPlays * TARIF_HTG;
@@ -37,15 +37,40 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
         };
     }, [tracks]);
 
-    const topTracks = [...tracks]
-        .sort((a, b) => (b.playCount || 0) - (a.playCount || 0))
-        .slice(0, 5);
+    // 2. LIS TOP 5 MIZIK
+    const topTracks = useMemo(() => {
+        return [...tracks]
+            .sort((a, b) => (b.playCount || 0) - (a.playCount || 0))
+            .slice(0, 5);
+    }, [tracks]);
+
+    const cityStats = useMemo(() => {
+        const allPlays = tracks.flatMap(t => t.plays || []);
+        if (allPlays.length === 0) return [];
+
+        const counts = allPlays.reduce((acc: Record<string, number>, play: any) => {
+            const cityName = play.city || "Lòt bò dlo";
+            acc[cityName] = (acc[cityName] || 0) + 1;
+            return acc;
+        }, {});
+
+        return Object.entries(counts)
+            .map(([v, count]) => ({
+                v,
+                count,
+                p: Math.round((count / allPlays.length) * 100)
+            }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 4);
+    }, [tracks]);
+
+    const topCityName = cityStats[0]?.v || "Haiti";
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className=" space-y-8"
+            className="space-y-8 pb-10"
         >
             {/* HEADER */}
             <div className="flex flex-col gap-1">
@@ -71,7 +96,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 <StatCard
                     icon={<Wallet className="text-green-500" size={20} />}
                     label="Revni (HTG)"
-                    value={`${stats.totalEarningsHTG.toLocaleString()} HTG`}
+                    value={`${stats.totalEarningsHTG.toLocaleString()} G`}
                     color="bg-green-500/10"
                 />
                 <StatCard
@@ -102,7 +127,6 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                         <p className="text-xs font-black text-orange-600">{stats.remainingHTG.toLocaleString()} HTG</p>
                     </div>
                 </div>
-
                 <div className="h-3 w-full bg-black/40 rounded-full overflow-hidden p-0.5 border border-white/5">
                     <motion.div
                         initial={{ width: 0 }}
@@ -118,11 +142,11 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
 
             {/* TOP TRACKS & VIL YO */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* LIS TOP 5 */}
+                {/* LIS TOP 5 REYÈL */}
                 <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03]">
                     <h3 className="text-sm font-black uppercase italic flex items-center gap-2 text-white mb-8">
                         <BarChart3 size={18} className="text-orange-600" />
-                        Top 5 Mizik yo
+                        Mizik ki pi popilè
                     </h3>
                     <div className="space-y-6">
                         {topTracks.length > 0 ? topTracks.map((track, index) => (
@@ -144,46 +168,45 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                     </div>
                 </div>
 
-                {/* VIL YO & KONSÈY */}
+                {/* VIL YO REYÈL */}
                 <div className="space-y-4">
                     <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03]">
-                        <h4 className="text-[10px] font-black uppercase text-zinc-500 mb-6 flex items-center gap-2">
+                        <h4 className="text-[10px] font-black uppercase text-zinc-500 mb-6 flex items-center gap-2 text-left">
                             <MapPin size={14} className="text-orange-600" />
-                            Top Vil kote yo koute w
+                            Top Lokalizasyon
                         </h4>
                         <div className="space-y-4">
-                            {[
-                                { v: 'Pòtoprens', p: '45%' },
-                                { v: 'Okap', p: '32%' },
-                                { v: 'Jakmèl', p: '12%' },
-                                { v: 'Lòt bò dlo', p: '11%' }
-                            ].map((loc) => (
+                            {cityStats.length > 0 ? cityStats.map((loc) => (
                                 <div key={loc.v} className="flex items-center justify-between">
-                                    <span className="text-[10px] font-bold text-white uppercase w-20">{loc.v}</span>
+                                    <span className="text-[10px] font-bold text-white uppercase w-24 truncate text-left">{loc.v}</span>
                                     <div className="flex-1 px-4">
                                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div className="h-full bg-zinc-600 rounded-full" style={{ width: loc.p }} />
+                                            <div className="h-full bg-zinc-600 rounded-full" style={{ width: `${loc.p}%` }} />
                                         </div>
                                     </div>
-                                    <span className="text-[10px] font-black text-zinc-500">{loc.p}</span>
+                                    <span className="text-[10px] font-black text-zinc-500 w-8 text-right">{loc.p}%</span>
                                 </div>
-                            ))}
+                            )) : (
+                                <p className="text-zinc-600 text-[10px] font-black uppercase py-4">Poko gen done lokalizasyon</p>
+                            )}
                         </div>
                     </div>
 
+                    {/* KONSÈY DINAMIK */}
                     <div className="bg-orange-600/5 rounded-[2.5rem] p-8 border border-orange-600/10 flex flex-col justify-center text-left">
-                        <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-orange-600/20">
+                        <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-4">
                             <Lightbulb size={20} className="text-black" />
                         </div>
                         <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest italic">Konsèy pou ou</p>
                         <p className="text-xs font-bold text-zinc-300 mt-2 leading-relaxed italic">
-                            Mizik ou yo ap "boule" nan <span className="text-white">Okap</span> mwa sa a. Pataje lyen an plis nan zòn sa a pou w rive nan peman an pi vit!
+                            Mizik ou yo ap domine nan zòn <span className="text-white underline decoration-orange-600">{topCityName}</span>.
+                            Fè plis pwomosyon la pou w ka triple revni w!
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* BOUTON PEMAN FINAL */}
+            {/* BOUTON PEMAN */}
             <div className="bg-orange-600 rounded-[2.5rem] p-10 text-black relative overflow-hidden shadow-2xl shadow-orange-600/30">
                 <div className="relative z-10 text-left">
                     <p className="text-[10px] font-black uppercase tracking-widest bg-black/10 inline-block px-3 py-1 rounded-full mb-3">Retrè MonCash</p>
@@ -191,7 +214,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                         Fè kòb ak vwa ou. <br /> Resevwa HTG pa w la.
                     </h3>
                     <p className="text-[11px] font-bold mt-4 opacity-80 max-w-[300px]">
-                        Peman yo deklanche otomatikman via MonCash chak fwa ou rive nan papòt 2,500 HTG a.
+                        Lè w rive nan 2,500 HTG, bouton an ap aktive pou w ka resevwa kòb ou sou MonCash.
                     </p>
                     <button
                         disabled={stats.totalEarningsHTG < SEUIL_PEMAN}
@@ -204,15 +227,6 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                     </button>
                 </div>
                 <Wallet size={160} className="absolute -right-8 -bottom-8 opacity-10 rotate-12" />
-            </div>
-
-            {/* REMAK SEKIRITE */}
-            <div className="flex items-start gap-4 bg-white/5 p-6 rounded-[2rem] border border-white/5 text-left">
-                <Info size={18} className="text-zinc-600 mt-0.5 flex-shrink-0" />
-                <p className="text-[9px] text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">
-                    H-MIZIK Verifye: Done yo filtre pou evite fwod (fòs ekout). Se sèlman moun ki tande plis pase 30 segond ki konte.
-                    Frè sèvis 5% dedui sou chak peman pou kouvri depans tranzaksyon yo.
-                </p>
             </div>
         </motion.div>
     );

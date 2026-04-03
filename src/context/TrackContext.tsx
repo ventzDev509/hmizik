@@ -13,8 +13,21 @@ interface Track {
     playCount: number;
     artist: {
         username: string;
-        user: { name: string };
+        user: {
+            name: string,
+            profile: {
+                name: string;
+                customTarif: number;
+                payoutThreshold: number
+            };
+        };
     };
+    plays: {
+        trackId: string;
+        userId: string;
+        userIp: string;
+        city: string
+    }
 }
 
 interface TrackContextType {
@@ -187,7 +200,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } catch (error: any) {
             console.error("H-MIZIK DELETE ERROR:", error);
             // const message = error.response?.data?.message || "Nou pa ka efase mizik sa a.";
-           
+
         } finally {
             setLoading(false);
         }

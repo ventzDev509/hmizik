@@ -64,7 +64,7 @@ export const ProfileContent = ({
                         className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-600' : 'text-zinc-600'
                             }`}
                     >
-                        {tab === 'uploads' ? 'Mizik' : tab === 'playlists' ? 'Album yo' : 'Favori'}
+                        {tab === 'uploads' ? 'Statistik' : tab === 'playlists' ? 'Album yo' : 'Mizik'}
                         {activeTab === tab && (
                             <motion.div
                                 layoutId="activeTab"
@@ -81,74 +81,13 @@ export const ProfileContent = ({
 
                     {/* TAB: MIZIK (UPLOADS) */}
                     {activeTab === 'uploads' ? (
-                        <motion.div
-                            key="tracks"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="space-y-3"
-                        >
-                            {tracksLoading ? (
-                                // Loader pandan mizik yo ap chaje
-                                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                                    <Loader2 className="text-orange-600 animate-spin" size={32} />
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Chajman mizik yo...</p>
-                                </div>
-                            ) : tracks.length > 0 ? (
-                                tracks.map((track) => (
-                                    <motion.div
-                                        key={track.id}
-                                        layout
-                                        className="flex items-center gap-4 bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-all group cursor-pointer border border-white/[0.02]"
-                                    >
-                                        <div className="relative w-14 h-14 flex-shrink-0">
-                                            <img
-                                                src={track.coverUrl || "/default-music.png"}
-                                                className="w-full h-full object-cover rounded-xl shadow-lg"
-                                                alt={track.title}
-                                            />
-                                            <div className="absolute inset-0 bg-orange-600/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
-                                                <Play size={20} className="fill-white text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 min-w-0 text-left">
-                                            <h4 className="text-sm font-black truncate uppercase italic tracking-tight">{track.title}</h4>
-                                            <div className="flex items-center gap-3 mt-1">
-                                                <span className="text-[9px] text-orange-600 font-black uppercase tracking-widest">{track.genre}</span>
-                                                <div className="flex items-center gap-1 text-[9px] text-zinc-500 font-bold uppercase">
-                                                    <Headphones size={10} /> {track.playCount?.toLocaleString() || 0}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-[10px] font-mono text-zinc-500">
-                                                {formatDuration(track.duration)}
-                                            </span>
+                        <div className="">
 
-                                            <motion.button
-                                                whileTap={{ scale: 0.9 }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    deleteTrack(track.id);
-                                                }}
-                                                className="p-2 hover:bg-red-500/10 rounded-full group/del transition-colors"
-                                            >
-                                                <Trash2 size={16} className="text-zinc-600 group-hover/del:text-red-500 transition-colors" />
-                                            </motion.button>
+                            <ArtistAnalytics tracks={tracks} />
+                        </div>
 
-                                            <button className="p-2 hover:bg-white/5 rounded-full">
-                                                <MoreVertical size={16} className="text-zinc-500" />
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                ))
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-20 opacity-20">
-                                    <Music size={40} />
-                                    <p className="text-[10px] font-black mt-4 uppercase">Poko gen okenn mizik</p>
-                                </div>
-                            )}
-                        </motion.div>
+
+
                     ) :
 
                         /* TAB: ALBUM YO (PLAYLISTS) */
@@ -216,11 +155,74 @@ export const ProfileContent = ({
                                 ))}
                             </motion.div>
                         ) : (
-                            /* TAB: FAVORI (LIKES) */
-                            <div className="">
+                            <motion.div
+                                key="tracks"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-3"
+                            >
+                                {tracksLoading ? (
+                                    // Loader pandan mizik yo ap chaje
+                                    <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                        <Loader2 className="text-orange-600 animate-spin" size={32} />
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Chajman mizik yo...</p>
+                                    </div>
+                                ) : tracks.length > 0 ? (
+                                    tracks.map((track) => (
+                                        <motion.div
+                                            key={track.id}
+                                            layout
+                                            className="flex items-center gap-4 bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-all group cursor-pointer border border-white/[0.02]"
+                                        >
+                                            <div className="relative w-14 h-14 flex-shrink-0">
+                                                <img
+                                                    src={track.coverUrl || "/default-music.png"}
+                                                    className="w-full h-full object-cover rounded-xl shadow-lg"
+                                                    alt={track.title}
+                                                />
+                                                <div className="absolute inset-0 bg-orange-600/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                                                    <Play size={20} className="fill-white text-white" />
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 min-w-0 text-left">
+                                                <h4 className="text-sm font-black truncate uppercase italic tracking-tight">{track.title}</h4>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <span className="text-[9px] text-orange-600 font-black uppercase tracking-widest">{track.genre}</span>
+                                                    <div className="flex items-center gap-1 text-[9px] text-zinc-500 font-bold uppercase">
+                                                        <Headphones size={10} /> {track.playCount?.toLocaleString() || 0}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[10px] font-mono text-zinc-500">
+                                                    {formatDuration(track.duration)}
+                                                </span>
 
-                                <ArtistAnalytics tracks={tracks} />
-                            </div>
+                                                <motion.button
+                                                    whileTap={{ scale: 0.9 }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteTrack(track.id);
+                                                    }}
+                                                    className="p-2 hover:bg-red-500/10 rounded-full group/del transition-colors"
+                                                >
+                                                    <Trash2 size={16} className="text-zinc-600 group-hover/del:text-red-500 transition-colors" />
+                                                </motion.button>
+
+                                                <button className="p-2 hover:bg-white/5 rounded-full">
+                                                    <MoreVertical size={16} className="text-zinc-500" />
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center py-20 opacity-20">
+                                        <Music size={40} />
+                                        <p className="text-[10px] font-black mt-4 uppercase">Poko gen okenn mizik</p>
+                                    </div>
+                                )}
+                            </motion.div>
                         )}
                 </AnimatePresence>
             </div>

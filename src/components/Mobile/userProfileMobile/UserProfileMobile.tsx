@@ -95,7 +95,7 @@ const UserProfile = () => {
             document.head.appendChild(metaThemeColor);
         }
 
-        metaThemeColor.setAttribute('content', bgColor || '#121212');
+        metaThemeColor.setAttribute('content', '#121212');
 
         return () => {
             const meta = document.querySelector('meta[name="theme-color"]');
@@ -119,7 +119,7 @@ const UserProfile = () => {
 
             {/* 1. HEADER */}
             <ProfileHeader
-                profile={profile} bgColor={bgColor} navOpacity={navOpacity}
+                profile={profile} bgColor={"#121212"} navOpacity={navOpacity}
                 headerScale={headerScale} socialLinks={socialLinks}
                 getPlatformIcon={getPlatformIcon}
                 navigate={navigate} imgRef={imgRef} setIsAlbumModalOpen={setIsAlbumModalOpen}
