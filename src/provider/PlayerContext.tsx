@@ -152,12 +152,14 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 await audio.play();
                 setIsPlaying(true);
                 setIsBuffering(false);
+                localStorage.setItem("lastTrackId",song.id)
             } catch (err) {
                 console.warn("Autoplay blocked or failed:", err);
                 setIsPlaying(false);
                 setIsBuffering(false);
             }
         };
+
 
         // Si se yon Blob oswa URL Supabase, li ka pran yon ti tan pou l "mount"
         audio.oncanplay = () => {
