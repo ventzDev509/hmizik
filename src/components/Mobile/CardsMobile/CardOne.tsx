@@ -18,7 +18,7 @@ function CardOne() {
 
     return (
         <section className="mt-8">
-            <h2 className="text-xl font-bold mb-4 px-1 text-white/90">Mizik ki fèk ajoute</h2>
+            <h2 className="text-xl font-bold mb-4 px-1 text-white/90"></h2>
 
             <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide px-1">
                 {tracks.map((track) => {

@@ -55,11 +55,17 @@ function Main() {
 
         <TradingTrack />
 
+        <div className="flex pt-5 items-center justify-between mb-6">
+          <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
+            Mizik ki fèk  <span className="text-orange-500">ajoute</span>
+          </h2>
+
+        </div>
         <CardOne />
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex pt-5 items-center justify-between mb-6">
           <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
-            Mizik ki fet  <span className="text-orange-500">pou ou</span>
+            Mizik ki fèk  <span className="text-orange-500">pou ou</span>
           </h2>
 
         </div>

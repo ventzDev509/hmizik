@@ -1,4 +1,5 @@
 import { Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface TrackProps {
   track: {
@@ -11,9 +12,10 @@ interface TrackProps {
 }
 
 export default function RecommendationCard({ track }: TrackProps) {
+     const navigate = useNavigate();
   return (
     <div className="flex-none w-36 group snap-start">
-      <div className="relative aspect-square mb-3 overflow-hidden rounded-2xl bg-zinc-900 shadow-lg border border-white/5">
+      <div onClick={() => navigate(`/song?id=${track.id}`)} className="relative aspect-square mb-3 overflow-hidden rounded-2xl bg-zinc-900 shadow-lg border border-white/5">
         <img 
           src={track.coverUrl || "/default-cover.jpg"} 
           alt={track.title}
