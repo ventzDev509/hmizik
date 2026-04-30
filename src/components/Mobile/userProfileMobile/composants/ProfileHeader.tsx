@@ -52,12 +52,12 @@ export const ProfileHeader = ({
                     <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">{profile?.user.name}</h1>
                     {profile?.isArtist && <span className="bg-orange-600 text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-widest">ATIS</span>}
                 </div>
-                <p className="text-orange-600 font-bold text-xs mb-4">@{profile?.username}</p>
+                <p className="text-orange-500 font-bold text-xs mb-4">@{profile?.username}</p>
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6">
                     {profile?.location && (
                         <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-400">
-                            <MapPin size={12} className="text-orange-600" />
+                            <MapPin size={12} className="text-orange-500" />
                             <span className="text-[9px] font-black uppercase tracking-widest">{profile.location}</span>
                         </div>
                     )}
@@ -72,7 +72,7 @@ export const ProfileHeader = ({
                                     rel="noreferrer"
                                     className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-300"
                                 >
-                                    <span className="text-orange-600">
+                                    <span className="text-orange-500">
                                         {getPlatformIcon(String(url))}
                                     </span>
 
@@ -86,7 +86,7 @@ export const ProfileHeader = ({
                     ) : (
                         Object.entries(socialLinks).map(([key, url]) => (
                             <motion.a key={key} href={String(url)} className="...">
-                                <span className="text-orange-600">{getPlatformIcon(String(url))}</span>
+                                <span className="text-orange-500">{getPlatformIcon(String(url))}</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest">{key}</span>
                             </motion.a>
                         ))
@@ -98,7 +98,7 @@ export const ProfileHeader = ({
                 <div className="flex flex-col gap-3">
                     <div onClick={() => navigate("/editeProfile")} className="w-full text-center py-4 bg-zinc-900 border border-white/10 rounded-2xl font-black text-[10px] tracking-[0.2em]">MODIFYE PWOFIL</div>
                     {profile?.isArtist && (
-                        <div onClick={() => setIsAlbumModalOpen(true)} className="w-full py-4 bg-orange-600/10 border border-orange-600/20 rounded-2xl font-black text-[10px] tracking-[0.2em] text-orange-600 flex items-center justify-center gap-2">
+                        <div onClick={() => setIsAlbumModalOpen(true)} className="w-full py-4 bg-orange-600/10 border border-orange-600/20 rounded-2xl font-black text-[10px] tracking-[0.2em] text-orange-500 flex items-center justify-center gap-2">
                             <Disc size={16} /> KREYE YON ALBUM
                         </div>
                     )}

@@ -88,7 +88,7 @@ const PlaylistModals: React.FC<PlaylistModalsProps> = ({
                                 onClick={handlePlaylistClick} 
                                 className="w-full flex items-center gap-4 p-5 bg-white/5 rounded-2xl text-white active:scale-95 transition text-left"
                             >
-                                <PlusSquare size={22} className="text-orange-600" />
+                                <PlusSquare size={22} className="text-orange-500" />
                                 <span className="font-black text-lg italic uppercase text-zinc-200">Ajoute nan Playlist</span>
                             </button>
                         </div>

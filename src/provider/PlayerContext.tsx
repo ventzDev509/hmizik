@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useRef, useState, useEffect } from "react";
 import { useTracks } from "../context/TrackContext";
+import { useRecommendation } from "../context/RecommendationProvider";
 
 interface Song {
     id: string;
@@ -20,7 +21,7 @@ interface AudioContextType {
     volume: number;
     isShuffle: boolean;
     repeatMode: 'none' | 'one' | 'all';
-    queue: Song[]; 
+    queue: Song[];
     addToQueue: (song: Song) => void;
     removeFromQueue: (songId: string) => void;
     playSong: (song: Song, playlist?: Song[]) => void;
@@ -54,7 +55,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [isShuffle, setIsShuffle] = useState(false);
     const [repeatMode, setRepeatMode] = useState<'none' | 'one' | 'all'>('none');
     const [hasCountedPlay, setHasCountedPlay] = useState(false);
-
+    const { sendFeedback } = useRecommendation();
     useEffect(() => {
         if (!audioRef.current) {
             audioRef.current = new Audio();
@@ -126,9 +127,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!audio) return;
 
     try {
-        // 1. Netwaye ansyen eta a
+        // 1. Netwaye ansyen eta ak ansyen event listeners
         audio.pause();
-        audio.removeAttribute('src'); // Fòse navigatè a jete ansyen kach la
+        audio.ontimeupdate = null; // Retire ansyen siveyans si te gen youn
+        audio.removeAttribute('src');
         audio.load();
 
         setIsPlaying(false);
@@ -142,32 +144,41 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         // 3. Konfigirasyon Audio
         audio.src = song.audioUrl;
-        audio.crossOrigin = "anonymous"; // Trè enpòtan pou Supabase
+        audio.crossOrigin = "anonymous";
         audio.preload = "auto";
 
-        // 4. JWE (ak sekirite pou Refresh)
-        // Nou itilize oncanplay pito pou n asire URL la pare
+        // 4. JWE
         const startPlay = async () => {
             try {
                 await audio.play();
                 setIsPlaying(true);
                 setIsBuffering(false);
-                localStorage.setItem("lastTrackId",song.id)
+                localStorage.setItem("lastTrackId", song.id);
+
+                // --- LOJIK FEEDBACK 20 SEGONE ---
+                let feedbackSent = false;
+                audio.ontimeupdate = () => {
+                    if (audio.currentTime >= 20 && !feedbackSent) {
+                        sendFeedback(song.id, 1);
+                        feedbackSent = true; 
+                        audio.ontimeupdate = null; // Nou sispann siveye yon fwa li voye
+                        console.log("Feedback 1 voye apre 20 segonn");
+                    }
+                };
+                // -------------------------------
+
             } catch (err) {
-                console.warn("Autoplay blocked or failed:", err);
+                console.warn("Autoplay blocked:", err);
                 setIsPlaying(false);
                 setIsBuffering(false);
             }
         };
 
-
-        // Si se yon Blob oswa URL Supabase, li ka pran yon ti tan pou l "mount"
         audio.oncanplay = () => {
             startPlay();
-            audio.oncanplay = null; // Netwaye event la
+            audio.oncanplay = null;
         };
 
-        // Sekirite si oncanplay pa deklanche vit ase
         audio.load();
 
     } catch (err) {
@@ -175,7 +186,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsBuffering(false);
     }
 };
-
     const togglePlay = async () => {
         const audio = audioRef.current;
         if (!audio || !currentSong) return;
@@ -207,6 +217,9 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setQueue(prev => prev.slice(1));
             playSong(nextInQueue, originalPlaylist);
             return;
+        }
+        if (currentSong && audioRef.current && audioRef.current.currentTime < 20) {
+            sendFeedback(currentSong?.id, -1);
         }
 
         // 2. Sinon, playlist nòmal

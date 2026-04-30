@@ -88,7 +88,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
             {/* GRID KAT STATS */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
-                    icon={<Headphones className="text-orange-600" size={20} />}
+                    icon={<Headphones className="text-orange-500" size={20} />}
                     label="Total Ekout"
                     value={stats.totalPlays.toLocaleString()}
                     color="bg-orange-600/10"
@@ -124,7 +124,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                     </div>
                     <div className="text-right">
                         <p className="text-[10px] font-black text-zinc-500 uppercase">Rete</p>
-                        <p className="text-xs font-black text-orange-600">{stats.remainingHTG.toLocaleString()} HTG</p>
+                        <p className="text-xs font-black text-orange-500">{stats.remainingHTG.toLocaleString()} HTG</p>
                     </div>
                 </div>
                 <div className="h-3 w-full bg-black/40 rounded-full overflow-hidden p-0.5 border border-white/5">
@@ -145,7 +145,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 {/* LIS TOP 5 REYÈL */}
                 <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03]">
                     <h3 className="text-sm font-black uppercase italic flex items-center gap-2 text-white mb-8">
-                        <BarChart3 size={18} className="text-orange-600" />
+                        <BarChart3 size={18} className="text-orange-500" />
                         Mizik ki pi popilè
                     </h3>
                     <div className="space-y-6">
@@ -172,7 +172,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 <div className="space-y-4">
                     <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03]">
                         <h4 className="text-[10px] font-black uppercase text-zinc-500 mb-6 flex items-center gap-2 text-left">
-                            <MapPin size={14} className="text-orange-600" />
+                            <MapPin size={14} className="text-orange-500" />
                             Top Lokalizasyon
                         </h4>
                         <div className="space-y-4">
@@ -197,7 +197,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                         <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-4">
                             <Lightbulb size={20} className="text-black" />
                         </div>
-                        <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest italic">Konsèy pou ou</p>
+                        <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest italic">Konsèy pou ou</p>
                         <p className="text-xs font-bold text-zinc-300 mt-2 leading-relaxed italic">
                             Mizik ou yo ap domine nan zòn <span className="text-white underline decoration-orange-600">{topCityName}</span>.
                             Fè plis pwomosyon la pou w ka triple revni w!

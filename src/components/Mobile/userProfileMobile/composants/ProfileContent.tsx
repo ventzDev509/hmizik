@@ -61,7 +61,7 @@ export const ProfileContent = ({
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-600' : 'text-zinc-600'
+                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-500' : 'text-zinc-600'
                             }`}
                     >
                         {tab === 'uploads' ? 'Statistik' : tab === 'playlists' ? 'Album yo' : 'Mizik'}
@@ -106,7 +106,7 @@ export const ProfileContent = ({
                                     className="aspect-square bg-white/[0.03] rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center p-6 text-center group cursor-pointer hover:border-orange-600/30 transition-all"
                                 >
                                     <div className="w-12 h-12 rounded-full bg-orange-600/10 flex items-center justify-center mb-3">
-                                        <Plus size={24} className="text-orange-600" />
+                                        <Plus size={24} className="text-orange-500" />
                                     </div>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Nouvo Album</p>
                                 </motion.div>
@@ -165,7 +165,7 @@ export const ProfileContent = ({
                                 {tracksLoading ? (
                                     // Loader pandan mizik yo ap chaje
                                     <div className="flex flex-col items-center justify-center py-20 gap-4">
-                                        <Loader2 className="text-orange-600 animate-spin" size={32} />
+                                        <Loader2 className="text-orange-500 animate-spin" size={32} />
                                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Chajman mizik yo...</p>
                                     </div>
                                 ) : tracks.length > 0 ? (
@@ -188,7 +188,7 @@ export const ProfileContent = ({
                                             <div className="flex-1 min-w-0 text-left">
                                                 <h4 className="text-sm font-black truncate uppercase italic tracking-tight">{track.title}</h4>
                                                 <div className="flex items-center gap-3 mt-1">
-                                                    <span className="text-[9px] text-orange-600 font-black uppercase tracking-widest">{track.genre}</span>
+                                                    <span className="text-[9px] text-orange-500 font-black uppercase tracking-widest">{track.genre}</span>
                                                     <div className="flex items-center gap-1 text-[9px] text-zinc-500 font-bold uppercase">
                                                         <Headphones size={10} /> {track.playCount?.toLocaleString() || 0}
                                                     </div>

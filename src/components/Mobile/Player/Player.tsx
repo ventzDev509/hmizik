@@ -97,7 +97,7 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
     if (!currentSong) {
         return (
             <div className="fixed inset-0 z-[1000] bg-[#121212] flex items-center justify-center">
-                <Loader2 className="text-orange-600 animate-spin" size={40} />
+                <Loader2 className="text-orange-500 animate-spin" size={40} />
             </div>
         );
     }

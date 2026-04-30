@@ -139,7 +139,7 @@ const AddMusicMobile: React.FC = () => {
                         <div className="w-full max-w-xs space-y-8 text-center">
                             <div className="relative flex justify-center">
                                 <div className="relative">
-                                    <Loader2 className="animate-spin text-orange-600 opacity-20" size={100} strokeWidth={1} />
+                                    <Loader2 className="animate-spin text-orange-500 opacity-20" size={100} strokeWidth={1} />
                                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                                         <span className="text-2xl font-black font-mono text-orange-500">
                                             {uploadProgress}%
@@ -174,7 +174,7 @@ const AddMusicMobile: React.FC = () => {
                 <div onClick={() => navigate(-1)} className="p-2 bg-zinc-900 rounded-lg cursor-pointer">
                     <X className="text-zinc-400" size={18} />
                 </div>
-                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 italic">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 italic">
                     {isAddingToAlbum ? "Add to Album" : "Upload Single"}
                 </h2>
                 <div className="w-10"></div> {/* Spacer */}
@@ -228,8 +228,8 @@ const AddMusicMobile: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        {audioFile && !isProcessingAudio && <CheckCircle2 className="text-orange-600" size={20} />}
-                        {isProcessingAudio && <Loader2 className="animate-spin text-orange-600" size={20} />}
+                        {audioFile && !isProcessingAudio && <CheckCircle2 className="text-orange-500" size={20} />}
+                        {isProcessingAudio && <Loader2 className="animate-spin text-orange-500" size={20} />}
                         <input type="file" ref={audioInputRef} onChange={handleAudioChange} accept="audio/*" className="hidden" />
                     </div>
                 </div>

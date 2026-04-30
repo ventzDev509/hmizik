@@ -72,7 +72,7 @@ const Auth: React.FC = () => {
               className="bg-[#121212] p-8 rounded-[2.5rem] border border-white/10 flex flex-col items-center shadow-2xl"
             >
               <div className="relative">
-                <Loader2 className="animate-spin text-orange-600 mb-4" size={45} />
+                <Loader2 className="animate-spin text-orange-500 mb-4" size={45} />
                 <div className="absolute inset-0 blur-xl bg-orange-600/20 animate-pulse"></div>
               </div>
               <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] text-center">
@@ -93,7 +93,7 @@ const Auth: React.FC = () => {
         <div className="text-center mb-10">
           <motion.h1
             layout
-            className="text-orange-600 text-5xl font-black tracking-tighter mb-2 italic"
+            className="text-orange-500 text-5xl font-black tracking-tighter mb-2 italic"
           >
             H-MIZIK
           </motion.h1>
@@ -201,7 +201,7 @@ const Auth: React.FC = () => {
             {isLogin ? "Ou pa gen kont?" : "Ou gen yon kont deja?"}{' '}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-orange-600 hover:text-orange-500 font-black transition-all ml-1 uppercase text-xs tracking-wider"
+              className="text-orange-500 hover:text-orange-500 font-black transition-all ml-1 uppercase text-xs tracking-wider"
             >
               {isLogin ? 'Enskri' : 'Konekte'}
             </button>

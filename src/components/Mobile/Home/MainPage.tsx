@@ -4,44 +4,25 @@ import TradingTrack from "../CardsMobile/TradSong";
 import { DownloadCloud, Loader2 } from "lucide-react";
 import { usePWA } from "../hooks/usePWA";
 import { useAlbum } from "../../../context/AlbumContext";
-import { useEffect, useState } from "react";
 import AlbumCard from "../album/AlbumCard";
 import ArtistSection from "../Artise/ArtisteSection";
-import axios from "axios";
 import RecommendationCard from "../RecommendedSection/RecommendedSection";
+import { useRecommendation } from "../../../context/RecommendationProvider";
+import { useEffect } from "react";
+import DiscoveryWeekly from "../DiscoveryWeekly/DiscoveryWeekly";
 
 function Main() {
   const { isInstallable, installApp } = usePWA();
   const { albums, getAlbums, loading } = useAlbum();
-  const [recommended, setRecommended] = useState([]);
-  const [_, setRecLoading] = useState(false);
 
+  const { fetchRecommendations, recommendedTracks } = useRecommendation()
   useEffect(() => {
     getAlbums();
     fetchRecommendations();
   }, []);
 
-  const fetchRecommendations = async () => {
-    try {
-      setRecLoading(true);
-      // Nou ka pran ID yon mizik itilizatè a te koute dènyèman
-      const lastTrackId = localStorage.getItem("lastTrackId") || "e7f164ec-0ab5-4637-8dcd-25f307a64b92";
-      const res = await axios.get(`https://hmizikbackend-1.onrender.com/recommendation/suggest/${lastTrackId}`);
-      setRecommended(res.data);
-      console.log(res)
-    } catch (err) {
-      console.error("Pa kapab jwenn rekòmandasyon", err);
-    } finally {
-      setRecLoading(false);
-    }
-  };
-  useEffect(() => {
-    getAlbums();
 
-  }, []);
-
-
-  if (loading) return <Loader2 className="animate-spin text-orange-600 mx-auto mt-10" />;
+  if (loading) return <Loader2 className="animate-spin text-orange-500 mx-auto mt-10" />;
   return (
     <div className="bg-[#121212] min-h-screen overflow-y-scroll text-white font-sans relative overflow-x-hidden">
 
@@ -63,14 +44,14 @@ function Main() {
         </div>
         <CardOne />
 
-        <div className="flex pt-7 items-center justify-between mb-6">
+        <div className="flex pt-8 items-center justify-between mb-6">
           <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
             Mizik ki fèk  <span className="text-orange-500">pou ou</span>
           </h2>
 
         </div>
         <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide snap-x">
-          {recommended.map((track: any) => (
+          {recommendedTracks.map((track: any) => (
             <RecommendationCard key={track.id} track={track} />
           ))}
         </div>
@@ -86,13 +67,14 @@ function Main() {
               Wè tout
             </button>
           </div>
-
+          <DiscoveryWeekly />
           {/* GRID LA */}
           <div className="flex overflow-x-auto gap-4  pb-6 scrollbar-hide snap-x">
             {albums.map((album) => (
               <AlbumCard key={album.id} album={album} />
             ))}
           </div>
+
 
         </section>
 

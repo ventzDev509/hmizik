@@ -15,6 +15,7 @@ import { AlbumProvider } from './context/AlbumContext.tsx'
 import { DownloadProvider } from './context/DownloadContext.tsx'
 import { SearchProvider } from './context/SearchContext.tsx'
 import { FollowProvider } from './context/FollowContext.tsx'
+import { RecommendationProvider } from './context/RecommendationProvider.tsx'
 
 const updateSW = registerSW({
   immediate: true, // Sa a enpòtan pou l detekte PWA a vit
@@ -32,24 +33,27 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <AuthProvider>
         <ProfileProvider>
+          <RecommendationProvider>
+            <TrackProvider>
+              <LikeProvider>
+                <PlaylistProvider>
+                  <AudioProvider>
+                    <AlbumProvider>
+                      <DownloadProvider>
+                        <SearchProvider>
+                          <FollowProvider>
 
-          <TrackProvider>
-            <LikeProvider>
-              <PlaylistProvider>
-                <AudioProvider>
-                  <AlbumProvider>
-                    <DownloadProvider>
-                      <SearchProvider>
-                        <FollowProvider>
-                          <App />
-                        </FollowProvider>
-                      </SearchProvider>
-                    </DownloadProvider>
-                  </AlbumProvider>
-                </AudioProvider>
-              </PlaylistProvider>
-            </LikeProvider>
-          </TrackProvider>
+                            <App />
+
+                          </FollowProvider>
+                        </SearchProvider>
+                      </DownloadProvider>
+                    </AlbumProvider>
+                  </AudioProvider>
+                </PlaylistProvider>
+              </LikeProvider>
+            </TrackProvider>
+          </RecommendationProvider>
         </ProfileProvider>
       </AuthProvider>
     </Provider>

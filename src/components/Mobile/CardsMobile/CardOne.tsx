@@ -51,7 +51,7 @@ function CardOne() {
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
                                             >
-                                                <Loader2 size={30} className="text-orange-600 animate-spin" />
+                                                <Loader2 size={30} className="text-orange-500 animate-spin" />
                                             </motion.div>
                                         ) : isThisTrackActive ? (
                                             <motion.div

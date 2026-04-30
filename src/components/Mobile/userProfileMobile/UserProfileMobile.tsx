@@ -108,7 +108,7 @@ const UserProfile = () => {
     if (profileLoading) {
         return (
             <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center gap-4">
-                <Loader2 className="text-orange-600 animate-spin" size={40} />
+                <Loader2 className="text-orange-500 animate-spin" size={40} />
                 <p className="text-[10px] font-black uppercase tracking-[0.3em]">Chaje pwofil...</p>
             </div>
         );

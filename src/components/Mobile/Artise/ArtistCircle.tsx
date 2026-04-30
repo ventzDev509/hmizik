@@ -24,7 +24,7 @@ const ArtistCircle = ({ artist }: ArtistProps) => {
         <div className="min-w-[110px] flex flex-col items-center group">
             <div
                 onClick={() => navigate(`/atis/${artist?.userId}`)}
-                className="relative w-24 h-24 rounded-full mb-2 overflow-hidden shadow-2xl border-2 border-transparent group-hover:border-orange-500 cursor-pointer active:scale-95 transition-all duration-300 bg-zinc-900"
+                className="relative w-34 h-34 rounded-full mb-2 overflow-hidden shadow-2xl border-2 border-transparent group-hover:border-orange-500 cursor-pointer active:scale-95 transition-all duration-300 bg-zinc-900"
             >
                 <img
                     crossOrigin="anonymous"

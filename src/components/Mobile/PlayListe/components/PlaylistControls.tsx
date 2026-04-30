@@ -16,6 +16,8 @@ interface PlaylistControlsProps {
 const PlaylistControls: React.FC<PlaylistControlsProps> = ({
     track, isScrolled, isLiked, isPlaying, onToggleLike, onPlayToggle, onOpenMenu
 }) => {
+
+    
     return (
         <div className={`sticky top-16 z-40 flex justify-between items-center px-6 py-4 transition-colors duration-300 ${isScrolled ? 'bg-[#121212]' : 'bg-transparent'}`}>
             <div className="flex items-center gap-6 text-zinc-400">

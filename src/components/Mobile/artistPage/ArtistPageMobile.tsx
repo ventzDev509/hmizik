@@ -242,7 +242,7 @@ const ArtistPageMobile = () => {
                 {/* LIST MIZIK */}
                 <div style={{ background: `linear-gradient(to bottom, transparent, ${bgColor}10, #121212)` }} className="px-4 pt-8 pb-10">
                     <h3 className="px-2 text-lg font-black italic uppercase tracking-tighter flex items-center gap-2 mb-6 text-left">
-                        <Headset className="text-orange-600" size={18} /> Popilè
+                        <Headset className="text-orange-500" size={18} /> Popilè
                     </h3>
                     <div className="space-y-1">
                         {allTracks.map((track, index) => (
@@ -266,7 +266,7 @@ const ArtistPageMobile = () => {
                 <div className="px-6 pb-40">
                     <div className="bg-white/5 rounded-3xl p-6 border border-white/10 backdrop-blur-md">
                         <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2 mb-4">
-                            <Info className="text-orange-600" size={20} /> À propos
+                            <Info className="text-orange-500" size={20} /> À propos
                         </h3>
                         <div className="flex items-center gap-4 mb-4">
                              <img src={displayData.avatarUrl} className="w-16 h-16 rounded-full object-cover border-2 border-orange-600" alt={displayData.username} />
