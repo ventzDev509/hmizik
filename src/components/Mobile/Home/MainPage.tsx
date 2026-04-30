@@ -63,7 +63,7 @@ function Main() {
         </div>
         <CardOne />
 
-        <div className="flex pt-5 items-center justify-between mb-6">
+        <div className="flex pt-7 items-center justify-between mb-6">
           <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
             Mizik ki fèk  <span className="text-orange-500">pou ou</span>
           </h2>
