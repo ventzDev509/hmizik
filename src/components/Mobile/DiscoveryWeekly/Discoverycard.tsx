@@ -1,46 +1,62 @@
 import { Play } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useAudio } from "../../../provider/PlayerContext";
+import Equalizer from "../../buffer/Equalizer";
 
 interface TrackProps {
-  track: {
-    id: string;
-    title: string;
-    artist: any; 
-    coverUrl: string;
-    genre: string;
-  };
+  track: any;
+  suggestions: any[]; // Nou ajoute sa pou nou ka pase lis la bay playSong
 }
 
-export default function DiscoveryCard({ track }: TrackProps) {
-  const navigate = useNavigate();
+export default function DiscoveryCard({ track, suggestions }: TrackProps) {
+  const { currentSong, isPlaying, playSong } = useAudio();
 
-  // Nou rale non atis la nan objè a (Prisma include)
+  // Tcheke si se mizik sa a k ap jwe kounye a
+  const isActive = currentSong?.id === track.id;
+  
+  // Rale non atis la ak sekirite
   const artistName = track.artist?.user?.name || track.artist?.username || "Atis Enkoni";
 
+  const handlePlay = () => {
+    // Nou pase de agiman yo jan sa te mande a: mizik la ak lis la
+    playSong(track, suggestions);
+  };
+
   return (
-    <div className="flex-none w-full group cursor-pointer">
-      <div 
-        onClick={() => navigate(`/song?id=${track.id}`)} 
-        className="relative aspect-square mb-3 overflow-hidden rounded-2xl bg-zinc-900 shadow-lg border border-white/5"
-      >
+    <div 
+      onClick={handlePlay}
+      className={`group flex items-center gap-4 p-2 rounded-xl transition-all cursor-pointer border border-transparent 
+        ${isActive ? 'bg-orange-500/10 border-orange-500/20' : 'hover:bg-white/5 hover:border-white/10'}`}
+    >
+      {/* SEKSYON IMAJ */}
+      <div className="relative h-12 w-12 flex-none overflow-hidden rounded-lg bg-zinc-900 border border-white/5">
         <img 
           src={track.coverUrl || "/default-cover.jpg"} 
           alt={track.title}
-          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+          className={`object-cover w-full h-full transition-transform duration-500 
+            ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
         />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <div className="bg-orange-500 p-3 rounded-full shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
-            <Play fill="white" size={24} />
-          </div>
+        
+        {/* Overlay: Equalizer si l ap jwe, Play si l an poz oswa hover */}
+        <div className={`absolute inset-0 bg-black/40 transition-opacity flex items-center justify-center 
+          ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+          
+          {isActive && isPlaying ? (
+            <Equalizer /> 
+          ) : (
+            <Play fill="white" size={14} className="text-white" />
+          )}
         </div>
       </div>
-      
-      <h3 className="font-bold text-sm truncate text-white mb-0.5">{track.title}</h3>
-      <p className="text-xs text-zinc-500 truncate mb-2">{artistName}</p>
-      
-      <span className="text-[10px] px-2 py-0.5 bg-white/5 rounded text-orange-400 font-bold uppercase tracking-widest">
-        {track.genre}
-      </span>
+
+      {/* SEKSYON ENFÒMASYON */}
+      <div className="flex-1 min-w-0">
+        <h3 className={`font-bold text-sm truncate transition-colors ${isActive ? 'text-orange-500' : 'text-white'}`}>
+          {track.title}
+        </h3>
+        <p className="text-[11px] text-zinc-500 truncate">{artistName}</p>
+      </div>
+
+     
     </div>
   );
 }

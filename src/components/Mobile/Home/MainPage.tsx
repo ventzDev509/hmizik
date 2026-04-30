@@ -57,8 +57,11 @@ function Main() {
         </div>
 
         <ArtistSection />
-
+        <div className="my-6">
+          <DiscoveryWeekly />
+        </div>
         <section className="px-2 py-8">
+
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
               Album <span className="text-orange-500">Popilè</span>
@@ -67,7 +70,7 @@ function Main() {
               Wè tout
             </button>
           </div>
-          <DiscoveryWeekly />
+
           {/* GRID LA */}
           <div className="flex overflow-x-auto gap-4  pb-6 scrollbar-hide snap-x">
             {albums.map((album) => (
