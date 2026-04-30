@@ -26,7 +26,7 @@ function Main() {
       setRecLoading(true);
       // Nou ka pran ID yon mizik itilizatè a te koute dènyèman
       const lastTrackId = localStorage.getItem("lastTrackId") || "some-default-id";
-      const res = await axios.get(`http://localhost:3000/recommendation/suggest/${lastTrackId}`);
+      const res = await axios.get(`https://hmizikbackend-1.onrender.com/recommendation/suggest/${lastTrackId}`);
       setRecommended(res.data);
       console.log(res)
     } catch (err) {
