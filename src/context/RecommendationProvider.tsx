@@ -38,13 +38,13 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
 
         try {
             setLoading(true);
-            
+
             // Rekipere dènye track ID a nan localStorage
             const lastTrackId = localStorage.getItem("lastTrackId") || "e7f164ec-0ab5-4637-8dcd-25f307a64b92";
-            
+
             // Rele Backend NestJS la ki pral kontakte Python AI a
             const { data } = await api.get(`/recommendation/suggest/${lastTrackId}`);
-            
+
             setRecommendedTracks(data);
         } catch (err) {
             console.error("Pa kapab jwenn rekòmandasyon", err);
@@ -64,7 +64,7 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
                 trackId: trackId,
                 rating: rating
             });
-            
+
             console.log(`Feedback ${rating} voye pou ${trackId}`);
         } catch (err) {
             console.error("Erè nan voye feedback:", err);
@@ -74,8 +74,21 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
     // Chaje rekòmandasyon yo otomatikman lè Provider a moute oswa lè itilizatè a chanje
     useEffect(() => {
         fetchRecommendations();
+        const r = api.post(`/recommendation/train`)
+        console.log(r)
     }, [fetchRecommendations]);
+    useEffect(() => {
+        const trainAI = async () => {
+            try {
+                const response = await api.post(`/recommendation/train`);
+                console.log("AI Training Result:", response.data);
+            } catch (err) {
+                console.error("Training Error:", err);
+            }
+        };
 
+        trainAI();
+    }, []); // [] asire l kouri yon sèl fwa nan montaj la
     return (
         <RecommendationContext.Provider
             value={{
