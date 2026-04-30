@@ -57,6 +57,18 @@ function Main() {
 
         <CardOne />
 
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
+            Mizik ki fet  <span className="text-orange-500">pou ou</span>
+          </h2>
+
+        </div>
+        <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide snap-x">
+          {recommended.map((track: any) => (
+            <RecommendationCard key={track.id} track={track} />
+          ))}
+        </div>
+
         <ArtistSection />
 
         <section className="px-2 py-8">
@@ -76,11 +88,6 @@ function Main() {
             ))}
           </div>
 
-          <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide snap-x">
-              {recommended.map((track:any) => (
-                <RecommendationCard key={track.id} track={track} />
-              ))}
-            </div>
         </section>
 
         <div className="mt-12 px-1 text-[#b3b3b3] text-sm space-y-6 border-t border-white/5 pt-8">
