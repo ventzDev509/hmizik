@@ -4,13 +4,37 @@ import TradingTrack from "../CardsMobile/TradSong";
 import { DownloadCloud, Loader2 } from "lucide-react";
 import { usePWA } from "../hooks/usePWA";
 import { useAlbum } from "../../../context/AlbumContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AlbumCard from "../album/AlbumCard";
 import ArtistSection from "../Artise/ArtisteSection";
+import axios from "axios";
+import RecommendationCard from "../RecommendedSection/RecommendedSection";
 
 function Main() {
   const { isInstallable, installApp } = usePWA();
   const { albums, getAlbums, loading } = useAlbum();
+  const [recommended, setRecommended] = useState([]);
+  const [_, setRecLoading] = useState(false);
+
+  useEffect(() => {
+    getAlbums();
+    fetchRecommendations();
+  }, []);
+
+  const fetchRecommendations = async () => {
+    try {
+      setRecLoading(true);
+      // Nou ka pran ID yon mizik itilizatè a te koute dènyèman
+      const lastTrackId = localStorage.getItem("lastTrackId") || "some-default-id";
+      const res = await axios.get(`http://localhost:3000/recommendation/suggest/${lastTrackId}`);
+      setRecommended(res.data);
+      console.log(res)
+    } catch (err) {
+      console.error("Pa kapab jwenn rekòmandasyon", err);
+    } finally {
+      setRecLoading(false);
+    }
+  };
   useEffect(() => {
     getAlbums();
 
@@ -51,6 +75,12 @@ function Main() {
               <AlbumCard key={album.id} album={album} />
             ))}
           </div>
+
+          <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide snap-x">
+              {recommended.map((track:any) => (
+                <RecommendationCard key={track.id} track={track} />
+              ))}
+            </div>
         </section>
 
         <div className="mt-12 px-1 text-[#b3b3b3] text-sm space-y-6 border-t border-white/5 pt-8">
