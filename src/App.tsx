@@ -24,6 +24,7 @@ import AlbumDetailPage from "./components/Mobile/album/AlbumDetailPage";
 import { getToken } from "firebase/messaging";
 import { messaging } from './firebase';
 import api from "./api/axios";
+import BecomeArtist from "./components/Mobile/BecomeArtist/BecomeArtist";
 function App() {
   // 1. Nou kreye yon eta pou detekte si moun lan online
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
@@ -160,6 +161,8 @@ function App() {
         <div className=""><>{isMobile ? <AlbumDetailPage /> : ""}</></div>
       </>, withBottomNav: true
     },
+
+    { path: "/devniAtis", element: <BecomeArtist />, withBottomNav: true },
   ];
 
   return (
