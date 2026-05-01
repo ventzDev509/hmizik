@@ -1,6 +1,7 @@
 import { motion, MotionValue } from 'framer-motion';
-import { CheckCircle, MapPin, Settings, Share2, ChevronLeft, Disc } from 'lucide-react';
+import { CheckCircle, MapPin, Settings, Share2, ChevronLeft, Disc, Link as LinkIcon } from 'lucide-react';
 import React from 'react';
+
 interface ProfileHeaderProps {
     profile: any;
     bgColor: string;
@@ -16,94 +17,159 @@ interface ProfileHeaderProps {
 export const ProfileHeader = ({
     profile, bgColor, navOpacity, headerScale, socialLinks,
     getPlatformIcon, navigate, imgRef, setIsAlbumModalOpen
-}: ProfileHeaderProps) => (
-    <>
-        <motion.nav
-            style={{ backgroundColor: bgColor || '#121212', opacity: navOpacity }}
-            className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-4 border-b border-white/5"
-        >
-            <div className="flex items-center gap-4">
-                <ChevronLeft size={24} onClick={() => navigate(-1)} className="cursor-pointer" />
-                <h2 className="text-xs font-black truncate max-w-[150px] uppercase tracking-tighter italic">{profile?.user.name}</h2>
-            </div>
-            <div className="flex items-center gap-4">
-                <Share2 size={18} className="text-zinc-400" />
-                <Settings size={18} onClick={() => navigate("/settings")} className="text-zinc-400 cursor-pointer" />
-            </div>
-        </motion.nav>
+}: ProfileHeaderProps) => {
+    
+    // Fonksyon pou netwaye non kle sosyal yo (ex: instagram -> INSTAGRAM)
+    const formatKey = (key: string) => key.replace(/([A-Z])/g, ' $1').trim().toUpperCase();
 
-        <div className="relative h-64 w-full">
-            <img ref={imgRef} src={profile?.bannerUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17"} className="absolute inset-0 w-full h-full object-cover" alt="banner" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#121212]/60 to-[#121212]" />
-        </div>
-
-        <main className="relative z-10 -mt-24 px-6">
-            <motion.div style={{ scale: headerScale }} className="flex flex-col">
-                <div className="relative w-32 h-32 mb-6">
-                    <img src={profile?.avatarUrl || "/default-avatar.png"} className="w-full h-full rounded-full border-[6px] border-[#121212] object-cover shadow-2xl rotate-2" alt="avatar" />
-                    {profile?.verified && (
-                        <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1.5 border-[4px] border-[#121212]">
-                            <CheckCircle size={16} className="text-white fill-current" />
-                        </div>
-                    )}
+    return (
+        <>
+            {/* --- STICKY NAVIGATION --- */}
+            <motion.nav
+                style={{ backgroundColor: bgColor || '#09090b', opacity: navOpacity }}
+                className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-6 backdrop-blur-md border-b border-white/5"
+            >
+                <div className="flex items-center gap-4">
+                    <div 
+                        onClick={() => navigate(-1)} 
+                        className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                    >
+                        <ChevronLeft size={22} className="text-white" />
+                    </div>
+                    <h2 className="text-[10px] font-black truncate max-w-[150px] uppercase tracking-[0.2em] italic text-white/90">
+                        {profile?.user?.name}
+                    </h2>
                 </div>
-
-                <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">{profile?.user.name}</h1>
-                    {profile?.isArtist && <span className="bg-orange-600 text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-widest">ATIS</span>}
+                <div className="flex items-center gap-5">
+                    <Share2 size={18} className="text-zinc-400 hover:text-white transition-colors" />
+                    <Settings 
+                        size={18} 
+                        onClick={() => navigate("/settings")} 
+                        className="text-zinc-400 hover:text-white cursor-pointer transition-colors" 
+                    />
                 </div>
-                <p className="text-orange-500 font-bold text-xs mb-4">@{profile?.username}</p>
+            </motion.nav>
 
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6">
-                    {profile?.location && (
-                        <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-400">
-                            <MapPin size={12} className="text-orange-500" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">{profile.location}</span>
+            {/* --- HERO BANNER --- */}
+            <div className="relative h-72 w-full overflow-hidden">
+                <motion.img 
+                    ref={imgRef} 
+                    src={profile?.bannerUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17"} 
+                    className="absolute inset-0 w-full h-full object-cover shadow-inner" 
+                    alt="banner" 
+                />
+                {/* Gradient Overlay pou pi bon lizibilite */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#09090b]/40 to-[#09090b]" />
+            </div>
+
+            {/* --- PROFILE CONTENT --- */}
+            <main className="relative z-10 -mt-20 px-6">
+                <motion.div style={{ scale: headerScale }} className="flex flex-col">
+                    
+                    {/* Avatar & Verification */}
+                    <div className="relative w-32 h-32 mb-5 group">
+                        <div className="w-full h-full rounded-3xl overflow-hidden border-[4px] border-[#09090b] bg-zinc-800 shadow-2xl rotate-3 group-hover:rotate-0 transition-transform duration-400">
+                            <img 
+                                src={profile?.avatarUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17"} 
+                                className="w-full h-full object-cover" 
+                                alt="avatar" 
+                            />
                         </div>
-                    )}
-                    {Array.isArray(socialLinks) ? (
-                        socialLinks.map((url, index) => (
+                        {profile?.verified && (
+                            <div className="absolute -bottom-2 -right-2 bg-blue-400 rounded-full p-1.5 border-[4px] border-[#09090b] shadow-lg">
+                                <CheckCircle size={14} className="text-white fill-current" />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Name & Badge */}
+                    <div className="flex items-end gap-3 mb-1">
+                        <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none text-white">
+                            {profile?.user?.name}
+                        </h1>
+                        {profile?.isArtist && (
+                            <span className="mb-1 bg-gradient-to-r from-orange-400 to-orange-400 text-[7px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest text-white">
+                                ATIS
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-orange-400 font-black text-[10px] tracking-widest uppercase mb-6">
+                        @{profile?.username || 'username'}
+                    </p>
+
+                    {/* Info Chips (Location & Socials) */}
+                    <div className="flex flex-wrap items-center gap-2 mb-6">
+                        {profile?.location && (
+                            <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-300 backdrop-blur-sm">
+                                <MapPin size={11} className="text-orange-400" />
+                                <span className="text-[9px] font-bold uppercase tracking-wider">{profile.location}</span>
+                            </div>
+                        )}
+
+                        {/* Dinamik Social Links */}
+                        {socialLinks && Object.entries(socialLinks).map(([key, url]) => (
                             url && (
                                 <motion.a
-                                    key={index}
-                                    whileHover={{ y: -2 }}
-                                    href={String(url)}
+                                    key={key}
+                                    whileTap={{ scale: 0.95 }}
+                                    href={String(url).startsWith('http') ? String(url) : `https://${url}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-zinc-300"
+                                    className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-300 hover:bg-white/10 transition-all"
                                 >
-                                    <span className="text-orange-500">
-                                        {getPlatformIcon(String(url))}
+                                    <span className="text-orange-400">
+                                        {getPlatformIcon(key) || <LinkIcon size={11} />}
                                     </span>
-
-                                    <span className="text-[9px] font-black uppercase tracking-widest">
-                                       
-                                        Link {index + 1}
+                                    <span className="text-[9px] font-bold uppercase tracking-wider">
+                                        {formatKey(key)}
                                     </span>
                                 </motion.a>
                             )
-                        ))
-                    ) : (
-                        Object.entries(socialLinks).map(([key, url]) => (
-                            <motion.a key={key} href={String(url)} className="...">
-                                <span className="text-orange-500">{getPlatformIcon(String(url))}</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest">{key}</span>
-                            </motion.a>
-                        ))
-                    )}
-                </div>
+                        ))}
+                    </div>
 
-                <p className="text-sm text-zinc-400 leading-relaxed mb-8 italic line-clamp-2">{profile?.bio || "Mizisyen H-MIZIK."}</p>
+                    {/* Bio Section */}
+                    <div className="relative mb-8">
+                        <div className="absolute left-0 top-0 w-1 h-full bg-orange-400/30 rounded-full" />
+                        <p className="pl-4 text-sm text-zinc-400 leading-relaxed italic font-medium">
+                            {profile?.bio || "Mizisyen H-MIZIK. Pasyone pa kreyasyon son ak melodi."}
+                        </p>
+                    </div>
 
-                <div className="flex flex-col gap-3">
-                    <div onClick={() => navigate("/editeProfile")} className="w-full text-center py-4 bg-zinc-900 border border-white/10 rounded-2xl font-black text-[10px] tracking-[0.2em]">MODIFYE PWOFIL</div>
-                    {profile?.isArtist && (
-                        <div onClick={() => setIsAlbumModalOpen(true)} className="w-full py-4 bg-orange-600/10 border border-orange-600/20 rounded-2xl font-black text-[10px] tracking-[0.2em] text-orange-500 flex items-center justify-center gap-2">
-                            <Disc size={16} /> KREYE YON ALBUM
-                        </div>
-                    )}
-                </div>
-            </motion.div>
-        </main>
-    </>
-);
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-1 gap-3 ">
+                        <motion.button
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => navigate("/editeProfile")}
+                            className="w-full py-4 bg-zinc-900 border border-white/5 rounded-2xl font-black text-[9px] tracking-[0.2em] text-white hover:bg-zinc-800 transition-colors uppercase shadow-xl"
+                        >
+                            Modifye Pwofil
+                        </motion.button>
+
+                        {profile?.isArtist && (
+                            <motion.button
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => setIsAlbumModalOpen(true)}
+                                className="w-full py-4 bg-gradient-to-r from-orange-400 to-orange-400 rounded-2xl font-black text-[9px] tracking-[0.2em] text-white flex items-center justify-center gap-3 shadow-lg shadow-orange-400/20 uppercase"
+                            >
+                                <Disc size={16} className="animate-spin-slow" /> 
+                                Kreye yon Album
+                            </motion.button>
+                        )}
+                    </div>
+                </motion.div>
+            </main>
+
+            {/* Custom CSS pou animasyon spin lan si w vle */}
+            <style>{`
+                .animate-spin-slow {
+                    animation: spin 6s linear infinite;
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+            `}</style>
+        </>
+    );
+};

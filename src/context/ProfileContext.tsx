@@ -13,7 +13,14 @@ interface ProfileData {
     location: string | null;
     isArtist: boolean;
     verified: boolean;
-    socialLinks: string[];
+    socialLinks:
+    {
+        instagram: string;
+        youtube: string;
+        tiktok: string;
+        facebook: string;
+    }
+    ;
     updatedAt: string;
     user: {
         id: string;
@@ -42,6 +49,7 @@ interface ProfileContextType {
     // --------------------------
     refreshProfile: () => Promise<void>;
     updateProfile: (data: any | FormData) => Promise<boolean>;
+    becomeArtist: (data: { stageName: string; bio?: string; location?: string; socialLinks?: any }) => Promise<boolean>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -106,6 +114,32 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
+
+    const becomeArtist = async (artistData: {
+        stageName: string;
+        bio?: string;
+        location?: string;
+        socialLinks?: any
+    }): Promise<boolean> => {
+        try {
+            setLoading(true);
+            // Nou rele wout nou te kreye nan NestJS la
+            const { data } = await api.post('/profiles/become-artist', artistData);
+
+            // Nou mete ajou pwofil lokal la ak nouvo done yo (isArtist ap vin true)
+            setProfile(data);
+
+            toast.success("Felisitasyon! Ou se yon atis ofisyèl kounye a.");
+            return true;
+        } catch (error: any) {
+            console.error("Erè lè w ap vin atis:", error);
+            const message = error.response?.data?.message || "Echèk nan kreyasyon pwofil atis la";
+            toast.error(message);
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <ProfileContext.Provider
             value={{
@@ -115,7 +149,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 profilesMeta,
                 fetchAllProfiles,
                 refreshProfile: fetchProfile,
-                updateProfile
+                updateProfile,
+                becomeArtist
             }}
         >
             {children}

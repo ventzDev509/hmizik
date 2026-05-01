@@ -149,7 +149,7 @@ const UserProfile = () => {
                     <motion.div
                         whileTap={{ scale: 0.9 }}
                         onClick={() => navigate("/nouvoson")}
-                        className="fixed bottom-32 right-6 w-16 h-16 bg-orange-600 rounded-[2rem] flex items-center justify-center shadow-2xl z-[90] border-2 border-white/10 text-white"
+                        className="fixed bottom-40 right-6 w-16 h-16 bg-orange-500 rounded-[2rem] flex items-center justify-center shadow-2xl z-[90] border-2 border-white/10 text-white"
                     >
                         <Plus size={32} strokeWidth={3} />
                     </motion.div>

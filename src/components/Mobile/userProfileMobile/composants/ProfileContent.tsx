@@ -61,14 +61,14 @@ export const ProfileContent = ({
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-500' : 'text-zinc-600'
+                        className={`flex-1 py-5 text-[10px] font-black uppercase tracking-[0.2em] relative ${activeTab === tab ? 'text-orange-500' : 'text-zinc-500'
                             }`}
                     >
                         {tab === 'uploads' ? 'Statistik' : tab === 'playlists' ? 'Album yo' : 'Mizik'}
                         {activeTab === tab && (
                             <motion.div
                                 layoutId="activeTab"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600"
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500"
                             />
                         )}
                     </button>
@@ -103,9 +103,9 @@ export const ProfileContent = ({
                                 <motion.div
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setIsAlbumModalOpen(true)}
-                                    className="aspect-square bg-white/[0.03] rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center p-6 text-center group cursor-pointer hover:border-orange-600/30 transition-all"
+                                    className="aspect-square bg-white/[0.03] rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center p-6 text-center group cursor-pointer hover:border-orange-500/30 transition-all"
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-orange-600/10 flex items-center justify-center mb-3">
+                                    <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mb-3">
                                         <Plus size={24} className="text-orange-500" />
                                     </div>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Nouvo Album</p>
@@ -132,7 +132,7 @@ export const ProfileContent = ({
                                                     whileTap={{ scale: 0.8 }}
                                                     disabled={deletingAlbumId === album.id}
                                                     onClick={(e) => handleDeleteAlbum(e, album.id)}
-                                                    className="w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-red-600 transition-colors shadow-lg"
+                                                    className="w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-red-500 transition-colors shadow-lg"
                                                 >
                                                     {deletingAlbumId === album.id ? (
                                                         <Loader2 size={14} className="text-white animate-spin" />
@@ -143,7 +143,7 @@ export const ProfileContent = ({
                                             </div>
 
                                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all" />
-                                            <div className="absolute bottom-4 right-4 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all shadow-lg">
+                                            <div className="absolute bottom-4 right-4 w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all shadow-lg">
                                                 <Play size={18} className="fill-white text-white" />
                                             </div>
                                         </div>
@@ -181,7 +181,7 @@ export const ProfileContent = ({
                                                     className="w-full h-full object-cover rounded-xl shadow-lg"
                                                     alt={track.title}
                                                 />
-                                                <div className="absolute inset-0 bg-orange-600/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                                                <div className="absolute inset-0 bg-orange-500/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
                                                     <Play size={20} className="fill-white text-white" />
                                                 </div>
                                             </div>
@@ -207,7 +207,7 @@ export const ProfileContent = ({
                                                     }}
                                                     className="p-2 hover:bg-red-500/10 rounded-full group/del transition-colors"
                                                 >
-                                                    <Trash2 size={16} className="text-zinc-600 group-hover/del:text-red-500 transition-colors" />
+                                                    <Trash2 size={16} className="text-zinc-500 group-hover/del:text-red-500 transition-colors" />
                                                 </motion.button>
 
                                                 <button className="p-2 hover:bg-white/5 rounded-full">

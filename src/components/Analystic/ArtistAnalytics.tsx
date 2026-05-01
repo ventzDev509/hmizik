@@ -8,7 +8,9 @@ import {
     BarChart3,
     Wallet,
     MapPin,
-    Lightbulb
+    Lightbulb,
+    Banknote,
+    Sparkles
 } from 'lucide-react';
 import type { Track } from '../types/Profile';
 
@@ -207,27 +209,77 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
             </div>
 
             {/* BOUTON PEMAN */}
-            <div className="bg-orange-600 rounded-[2.5rem] p-10 text-black relative overflow-hidden shadow-2xl shadow-orange-600/30">
-                <div className="relative z-10 text-left">
-                    <p className="text-[10px] font-black uppercase tracking-widest bg-black/10 inline-block px-3 py-1 rounded-full mb-3">Retrè MonCash</p>
-                    <h3 className="text-2xl font-black uppercase italic leading-none">
-                        Fè kòb ak vwa ou. <br /> Resevwa HTG pa w la.
-                    </h3>
-                    <p className="text-[11px] font-bold mt-4 opacity-80 max-w-[300px]">
-                        Lè w rive nan 2,500 HTG, bouton an ap aktive pou w ka resevwa kòb ou sou MonCash.
-                    </p>
-                    <button
-                        disabled={stats.totalEarningsHTG < SEUIL_PEMAN}
-                        className={`mt-8 px-10 py-5 rounded-full flex items-center gap-3 text-[11px] font-black uppercase transition-all shadow-xl ${stats.totalEarningsHTG >= SEUIL_PEMAN
-                                ? 'bg-black text-white hover:scale-105 active:scale-95'
-                                : 'bg-black/20 text-black/40 cursor-not-allowed'
-                            }`}
-                    >
-                        Retire Kòb Ou <ArrowUpRight size={16} />
-                    </button>
-                </div>
-                <Wallet size={160} className="absolute -right-8 -bottom-8 opacity-10 rotate-12" />
+           <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-gradient-to-br from-orange-500 to-orange-400 rounded-[2.5rem] p-8 text-black relative overflow-hidden border border-white/20"
+>
+    {/* --- DEKORASYON BACKGROUND --- */}
+    <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16 blur-3xl" />
+    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-2xl" />
+    
+    <div className="relative z-10">
+        {/* Badge estati */}
+        <div className="flex items-center gap-2 mb-6">
+            <div className="bg-black/10 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 border border-black/5">
+                <div className={`w-2 h-2 rounded-full animate-pulse ${stats.totalEarningsHTG >= SEUIL_PEMAN ? 'bg-green-600' : 'bg-black/40'}`} />
+                <span className="text-[9px] font-black uppercase tracking-[0.15em]">Retrè MonCash</span>
             </div>
+            
+            {stats.totalEarningsHTG >= SEUIL_PEMAN && (
+                <motion.div 
+                    initial={{ scale: 0 }} animate={{ scale: 1 }}
+                    className="bg-white/30 backdrop-blur-md p-1.5 rounded-full"
+                >
+                    <Sparkles size={12} className="text-white" />
+                </motion.div>
+            )}
+        </div>
+
+        {/* Tit prensipal */}
+        <div className="space-y-1">
+            <h3 className="text-3xl font-black uppercase italic leading-[0.9] tracking-tighter">
+                Fè kòb ak <span className="text-white drop-shadow-sm">vwa ou</span>.
+            </h3>
+            <h3 className="text-xl font-black uppercase italic opacity-90">
+                Resevwa HTG pa w la.
+            </h3>
+        </div>
+
+        {/* Deskripsyon ak Progrè */}
+        <div className="mt-6 space-y-4">
+            <p className="text-[11px] font-bold leading-relaxed opacity-80 max-w-[260px]">
+                {stats.totalEarningsHTG >= SEUIL_PEMAN 
+                    ? "Felisitasyon! Limit la atenn. Ou ka transfere kòb ou kounye a." 
+                    : `Lè w rive nan ${SEUIL_PEMAN.toLocaleString()} HTG, bouton an ap aktive pou MonCash.`}
+            </p>
+
+           
+        </div>
+
+        {/* Bouton Aksyon */}
+        <motion.button
+            whileHover={stats.totalEarningsHTG >= SEUIL_PEMAN ? { scale: 1.02 } : {}}
+            whileTap={stats.totalEarningsHTG >= SEUIL_PEMAN ? { scale: 0.98 } : {}}
+            disabled={stats.totalEarningsHTG < SEUIL_PEMAN}
+            className={`mt-8 px-8 py-4 rounded-2xl flex items-center gap-3 text-[12px] font-black uppercase transition-all group shadow-2xl ${
+                stats.totalEarningsHTG >= SEUIL_PEMAN
+                    ? 'bg-black text-white shadow-black/30'
+                    : 'bg-black/10 text-black/30 cursor-not-allowed border border-black/5'
+            }`}
+        >
+            <Banknote size={18} className={stats.totalEarningsHTG >= SEUIL_PEMAN ? 'text-orange-400' : 'text-black/20'} />
+            <span>Retire Kòb Ou</span>
+            <ArrowUpRight size={18} className={`transition-transform duration-300 ${stats.totalEarningsHTG >= SEUIL_PEMAN ? 'group-hover:translate-x-1 group-hover:-translate-y-1' : ''}`} />
+        </motion.button>
+    </div>
+
+    {/* Ikon dekoratif floating */}
+    <Wallet 
+        size={180} 
+        className="absolute -right-10 -bottom-10 opacity-[0.07] -rotate-12 pointer-events-none" 
+    />
+</motion.div>
         </motion.div>
     );
 };
