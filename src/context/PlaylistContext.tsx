@@ -25,22 +25,30 @@ interface Playlist {
     isPublic: boolean;
     userId: string;
     createdAt: string;
-    tracks: Track[]; // Sèvi ak interface Track nou an
+    tracks: Track[];
+    // Ajoute de sa yo pou yo matche ak sa Card la bezwen:
+    totalLikesCount: number;
+    user: {
+        name: string;
+        username?: string; // Opsyonèl si w bezwen l pi devan
+    };
     _count?: {
         tracks: number;
     };
 }
-
 interface PlaylistContextType {
-    playlists: Playlist[];
+    playlists: Playlist[]; // Playlist itilizatè a
+    trendingPlaylists: Playlist[]; // Playlist ki nan akèy la (nouvo)
     loading: boolean;
     refreshPlaylists: () => Promise<void>;
+    getTrendingPlaylists: () => Promise<void>; // Pou paj akèy la
+    getPlaylistById: (id: string) => Promise<Playlist | null>;
     createPlaylist: (data: { name: string; description?: string, coverUrl?: string }) => Promise<boolean>;
     addTrackToPlaylist: (playlistId: string, trackId: string) => Promise<boolean>;
     removeTrackFromPlaylist: (playlistId: string, trackId: string) => Promise<boolean>;
     deletePlaylist: (id: string) => Promise<boolean>;
-    updatePlaylist: (id: string, name: string) => Promise<boolean>;
-    incrementTrackPlay: (trackId: string) => Promise<void>; // Fonksyon Solid la
+    updatePlaylist: (id: string, data: { name?: string, description?: string, isPublic?: boolean }) => Promise<boolean>;
+    incrementTrackPlay: (trackId: string) => Promise<void>;
 }
 
 const PlaylistContext = createContext<PlaylistContextType | undefined>(undefined);
@@ -48,122 +56,144 @@ const PlaylistContext = createContext<PlaylistContextType | undefined>(undefined
 export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
+    const [trendingPlaylists, setTrendingPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // FETCH PLAYLISTS
+    // 1. FETCH PERSONAL PLAYLISTS
     const fetchPlaylists = useCallback(async () => {
-        if (!user) {
-            setPlaylists([]);
-            setLoading(false);
-            return;
-        }
+        if (!user) return;
         try {
             setLoading(true);
-            const { data } = await api.get('/playlists/me');
+            const { data } = await api.get('/playlists/my-library');
             setPlaylists(data);
         } catch (error) {
-            console.error("Erè nan chaje playlists:", error);
+            console.error("Erè playlists pèsonèl:", error);
         } finally {
             setLoading(false);
         }
     }, [user]);
 
+    // 2. FETCH TRENDING (RANKING) - Pou paj Akèy
+    const getTrendingPlaylists = async () => {
+        try {
+            const { data } = await api.get('/playlists/trending');
+            setTrendingPlaylists(data);
+        } catch (error) {
+            console.error("Erè trending playlists:", error);
+        }
+    };
+
+    // 3. FETCH SINGLE PLAYLIST (AK TOUT MIZIK LI YO)
+    const getPlaylistById = async (id: string): Promise<Playlist | null> => {
+        try {
+            const { data } = await api.get(`/playlists/${id}`);
+            return data;
+        } catch (error) {
+            toast.error("Nou pa ka jwenn playlist sa a");
+            return null;
+        }
+    };
+
     useEffect(() => {
         fetchPlaylists();
+        getTrendingPlaylists();
     }, [fetchPlaylists]);
 
-    // CREATE PLAYLIST
+    // 4. CREATE PLAYLIST
     const createPlaylist = async (createData: { name: string; description?: string, coverUrl?: string }): Promise<boolean> => {
         try {
             const { data } = await api.post('/playlists', createData);
             setPlaylists((prev) => [data, ...prev]);
-            toast.success("Playlist kreye ak siksè!");
+            toast.success("Playlist kreye!");
             return true;
         } catch (error) {
-            toast.error("Echèk nan kreyasyon playlist la");
+            toast.error("Echèk kreyasyon");
             return false;
         }
     };
 
-    // DELETE PLAYLIST
+    // 5. UPDATE PLAYLIST (FULL VERSION)
+    const updatePlaylist = async (id: string, updateData: { name?: string, description?: string, isPublic?: boolean }) => {
+        try {
+            const { data } = await api.patch(`/playlists/${id}`, updateData);
+            setPlaylists((prev) =>
+                prev.map(p => p.id === id ? { ...p, ...data } : p)
+            );
+            toast.success("Mizajou fèt!");
+            return true;
+        } catch (error) {
+            toast.error("Echèk mizajou");
+            return false;
+        }
+    };
+
+    // 6. DELETE PLAYLIST
     const deletePlaylist = async (id: string) => {
         try {
             await api.delete(`/playlists/${id}`);
             setPlaylists((prev) => prev.filter(p => p.id !== id));
-            toast.success("Playlist la efase");
-            return true;
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Erè nan sipresyon");
-            return false;
-        }
-    };
-
-    // UPDATE PLAYLIST (CHANGE NAME)
-    const updatePlaylist = async (id: string, name: string) => {
-        try {
-            const { data } = await api.patch(`/playlists/${id}`, { name });
-            setPlaylists((prev) =>
-                prev.map(p => p.id === id ? { ...p, name: data.name } : p)
-            );
-            toast.success("Non an chanje!");
+            toast.success("Playlist efase");
             return true;
         } catch (error) {
-            toast.error("Echèk nan chanje non an");
+            toast.error("Erè nan sipresyon");
             return false;
         }
     };
 
-    // ADD TRACK TO PLAYLIST
+    
     const addTrackToPlaylist = async (playlistId: string, trackId: string): Promise<boolean> => {
         try {
-            await api.post(`/playlists/${playlistId}/tracks`, { trackId });
-            await fetchPlaylists(); // Rafrechi pou wè nouvo track la ak kontè yo
+            // Si API a mande trackId nan URL la (jan erè a montre l la):
+            await api.post(`/playlists/${playlistId}/tracks/${trackId}`);
+
+            // Si API a mande l nan BODY a, se ta: 
+            // await api.post(`/playlists/${playlistId}/tracks`, { trackId });
+
+            await fetchPlaylists();
             toast.success("Mizik la ajoute!");
             return true;
-        } catch (error) {
-            toast.error("Mizik la deja la oswa gen yon erè");
+        } catch (error: any) {
+            if (error.response?.status === 403) {
+                toast.error("Ou pa gen dwa modifye playlist sa a");
+            } else {
+                toast.error("Mizik la deja la oswa gen yon erè");
+            }
             return false;
         }
     };
-
-    // REMOVE TRACK FROM PLAYLIST
+    // 8. REMOVE TRACK FROM PLAYLIST
     const removeTrackFromPlaylist = async (playlistId: string, trackId: string): Promise<boolean> => {
         try {
             await api.delete(`/playlists/${playlistId}/tracks/${trackId}`);
             setPlaylists((prev) =>
-                prev.map(p => p.id === playlistId ? { 
-                    ...p, 
-                    tracks: p.tracks.filter(t => t.id !== trackId) 
+                prev.map(p => p.id === playlistId ? {
+                    ...p,
+                    tracks: p.tracks?.filter(t => t.id !== trackId)
                 } : p)
             );
-            toast.success("Mizik la retire!");
+            toast.success("Mizik retire!");
             return true;
         } catch (error) {
-            toast.error("Echèk nan retire mizik la");
+            toast.error("Echèk retire mizik la");
             return false;
         }
     };
 
-    // NOUVO: INCREMENT TRACK PLAY (SOLID)
-    // Fonksyon sa ap ogmante playCount la nan Back-end epi ajou UI tout playlist yo
+    // 9. INCREMENT TRACK PLAY
     const incrementTrackPlay = async (trackId: string) => {
         try {
-            // Rele Back-end la (li gen cooldown ak IP check deja)
             await api.post(`/tracks/${trackId}/play`);
+            // Mizajou UI local pou tout kote mizik la parèt
+            const updateTracksInList = (list: Playlist[]) =>
+                list.map(pl => ({
+                    ...pl,
+                    tracks: pl.tracks?.map(t => t.id === trackId ? { ...t, playCount: (t.playCount || 0) + 1 } : t)
+                }));
 
-            // Mizajou lokal nan tout playlists yo pou UI a toujou "sync"
-            setPlaylists((prev) =>
-                prev.map((playlist) => ({
-                    ...playlist,
-                    tracks: playlist.tracks?.map((t) =>
-                        t.id === trackId 
-                            ? { ...t, playCount: (t.playCount || 0) + 1 } 
-                            : t
-                    ),
-                }))
-            );
+            setPlaylists(prev => updateTracksInList(prev));
+            setTrendingPlaylists(prev => updateTracksInList(prev));
         } catch (error) {
-            console.error("Erè increment play:", error);
+            console.error("Erè increment:", error);
         }
     };
 
@@ -171,14 +201,17 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         <PlaylistContext.Provider
             value={{
                 playlists,
+                trendingPlaylists,
                 loading,
-                deletePlaylist,
-                updatePlaylist,
                 refreshPlaylists: fetchPlaylists,
+                getTrendingPlaylists,
+                getPlaylistById,
                 createPlaylist,
                 addTrackToPlaylist,
                 removeTrackFromPlaylist,
-                incrementTrackPlay // Esansyèl pou Solid Playback
+                deletePlaylist,
+                updatePlaylist,
+                incrementTrackPlay
             }}
         >
             {children}
