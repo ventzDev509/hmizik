@@ -80,7 +80,7 @@ function Main() {
           </div>
         </section>
 
-        <section className="mt-10">
+        <section className="mt-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
               Mizik <span className="text-orange-500">pou ou</span>
