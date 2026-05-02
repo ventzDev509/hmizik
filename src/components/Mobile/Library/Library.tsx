@@ -92,7 +92,7 @@ const LibraryPage: React.FC = () => {
     const handleUpdate = async () => {
         if (!editName.trim() || !selectedItem) return;
         setIsUpdating(true);
-        const success = await updatePlaylist(selectedItem.id, editName);
+        const success = await updatePlaylist(selectedItem.id, { name: editName });
         setIsUpdating(false);
         if (success) {
             toast.success("Non an chanje!");
@@ -244,20 +244,20 @@ const LibraryPage: React.FC = () => {
                                 <div className="space-y-4">
                                     <div className={`w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl font-black ${getRandomColor(selectedItem.id)}`}>{selectedItem.title.charAt(0)}</div>
                                     <h3 className="text-center text-xl font-black uppercase italic mb-6">{selectedItem.title}</h3>
-                                    <button disabled={isDeleting}  onClick={() => setIsEditing(true)} className="w-full py-4  rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                                    <button disabled={isDeleting} onClick={() => setIsEditing(true)} className="w-full py-4  rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
                                         <Edit2 size={18} className="text-orange-500 " /> Modifye non
                                     </button>
-                                    <button disabled={isDeleting} onClick={handleDelete}  className="w-full py-4 bg-red-500/10 text-red-500 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                                    <button disabled={isDeleting} onClick={handleDelete} className="w-full py-4 bg-red-500/10 text-red-500 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
                                         {isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />} {isDeleting ? 'Ap efase...' : 'Siprime'}
                                     </button>
                                 </div>
                             ) : (
                                 <div>
                                     <h3 className="text-center font-black uppercase italic mb-6 text-orange-500">Chanje non an</h3>
-                                    <input  disabled={isUpdating} autoFocus type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full bg-white/5 border border-orange-500/30 rounded-2xl px-5 py-4 text-white outline-none mb-6 focus:border-orange-500 transition-colors disabled:opacity-50" />
+                                    <input disabled={isUpdating} autoFocus type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full bg-white/5 border border-orange-500/30 rounded-2xl px-5 py-4 text-white outline-none mb-6 focus:border-orange-500 transition-colors disabled:opacity-50" />
                                     <div className="flex gap-3">
-                                        <button  disabled={isUpdating} onClick={() => setIsEditing(false)} className="flex-1 py-4 font-bold text-zinc-500 disabled:opacity-50">Anile</button>
-                                        <button disabled={isUpdating} onClick={handleUpdate}  className="flex-1 py-4 bg-orange-500 btn-primary  rounded-2xl font-black uppercase text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50">
+                                        <button disabled={isUpdating} onClick={() => setIsEditing(false)} className="flex-1 py-4 font-bold text-zinc-500 disabled:opacity-50">Anile</button>
+                                        <button disabled={isUpdating} onClick={handleUpdate} className="flex-1 py-4 bg-orange-500 btn-primary  rounded-2xl font-black uppercase text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50">
                                             {isUpdating ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} anrejistre
                                         </button>
                                     </div>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { usePlaylists } from '../../../context/PlaylistContext';
 import { useNavigate } from 'react-router-dom';
-import { Volume2 } from 'lucide-react';
 import { useAudio } from '../../../provider/PlayerContext';
 import Equalizer from '../../buffer/Equalizer';
 
