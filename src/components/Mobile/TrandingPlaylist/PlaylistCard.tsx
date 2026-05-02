@@ -49,7 +49,6 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
     if (playlist.tracks && playlist.tracks.length > 0) {
       const firstTrackId = playlist.tracks[0].id;
       incrementTrackPlay(firstTrackId);
-      // Itilize fonksyon playTrack ou a isit la si ou genyen l nan context
     }
   };
 
@@ -74,6 +73,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
               }`}
             >
               <img
+               onClick={() => navigate(`/playlist/${playlist.id}`)}
                 src={track.coverUrl}
                 alt="track cover"
                 className={`w-full h-full object-cover transition-transform duration-700 ${
@@ -91,10 +91,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         {/* 4. ENDIKATÈ ANIMASYON (Equalizer) */}
         {isThisPlaylistPlaying && (
           <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center">
-           
               <Equalizer/>
-            
-           
           </div>
         )}
 
