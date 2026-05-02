@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { usePlaylists } from '../../../context/PlaylistContext';
 import { useNavigate } from 'react-router-dom';
 import { useAudio } from '../../../provider/PlayerContext';
 import Equalizer from '../../buffer/Equalizer';
-import { Heart } from 'lucide-react'; // Import Heart icon
 
 interface Track {
   id: string;
@@ -24,11 +23,11 @@ interface PlaylistCardProps {
 const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const { incrementTrackPlay } = usePlaylists();
   const navigate = useNavigate();
-  const { currentSong, isPlaying } = useAudio();
   
-  // State lokal pou like la (pou fè l santi l rapid)
-  const [isLiked, setIsLiked] = useState(false);
+  // 2. Aksè ak eta Player la
+  const { currentSong, isPlaying } = useAudio();
 
+  // 3. Verifikasyon si yon mizik nan playlist sa a ap jwe kounye a
   const isThisPlaylistPlaying = isPlaying && 
     playlist.tracks?.some(track => track.id === currentSong?.id);
 
@@ -53,37 +52,18 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
     }
   };
 
-  const handleLike = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsLiked(!isLiked);
-    // Isit la ou ka rele fonksyon API pou like playlist la
-    console.log("Like playlist:", playlist.id);
-  };
-
   return (
     <div
       className={`group relative p-3 rounded-2xl border transition-all duration-300 cursor-pointer ${
         isThisPlaylistPlaying 
-          ? "bg-zinc-800/40 border-orange-500/20" 
+          ? "bg-zinc-900/40 border-white/5 hover:bg-zinc-800/60" 
           : "bg-zinc-900/40 border-white/5 hover:bg-zinc-800/60"
       }`}
       onClick={() => navigate(`/playlist/${playlist.id}`)}
     >
-      
+
       {/* GRID DINAMIK */}
       <div className={`relative aspect-square rounded-xl overflow-hidden mb-4 shadow-2xl bg-zinc-800 grid gap-[1px] ${getGridClass()}`}>
-        
-        {/* BOUTON KÈ (Heart) - Anlè a dwat */}
-        <button 
-          onClick={handleLike}
-          className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-black/20 backdrop-blur-md border border-white/10 hover:scale-110 transition-transform active:scale-95"
-        >
-          <Heart 
-            size={14} 
-            className={isLiked || playlist.totalLikesCount > 0 ? "fill-orange-500 text-orange-500" : "text-white/70"} 
-          />
-        </button>
-
         {count > 0 ? (
           tracksToShow.map((track, index) => (
             <div
@@ -93,6 +73,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
               }`}
             >
               <img
+               onClick={() => navigate(`/playlist/${playlist.id}`)}
                 src={track.coverUrl}
                 alt="track cover"
                 className={`w-full h-full object-cover transition-transform duration-700 ${
@@ -107,17 +88,17 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
           </div>
         )}
 
-        {/* EQUALIZER OVERLAY */}
+        {/* 4. ENDIKATÈ ANIMASYON (Equalizer) */}
         {isThisPlaylistPlaying && (
-          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10">
+          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center">
               <Equalizer/>
           </div>
         )}
 
-        {/* Play Button Overlay */}
+        {/* Play Button Overlay (Kache si l ap jwe deja) */}
         {!isThisPlaylistPlaying && (
           <div
-            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10"
+            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
             onClick={handlePlayPlaylist}
           >
             <div className="bg-orange-500 p-3 rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
@@ -131,9 +112,11 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
 
       {/* TEXT INFO */}
       <div className="space-y-1">
-        <h3 className={`text-[11px] font-black uppercase italic tracking-tight truncate ${isThisPlaylistPlaying ? "text-orange-500" : "text-white"}`}>
-          {playlist.name}
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3 className={`text-[11px] font-black uppercase italic tracking-tight truncate ${isThisPlaylistPlaying ? "text-orange-500" : "text-white"}`}>
+            {playlist.name}
+          </h3>
+        </div>
         
         <p className="text-[9px] font-bold text-zinc-500 uppercase">
           {playlist.user.name}
@@ -143,14 +126,9 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
           <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest">
             {playlist._count?.tracks || count} Tracks
           </span>
-          
-          {/* LIKE COUNT DISPLAY */}
-          <div className="flex items-center gap-1">
-             <span className={`text-[8px] font-black uppercase italic ${isThisPlaylistPlaying ? "text-orange-400" : "text-orange-500"}`}>
-               {playlist.totalLikesCount}
-             </span>
-             <Heart size={8} className={isLiked || playlist.totalLikesCount > 0 ? "fill-orange-500 text-orange-500" : "text-zinc-500"} />
-          </div>
+          <span className={`text-[8px] font-black uppercase italic ${isThisPlaylistPlaying ? "text-orange-400" : "text-orange-500"}`}>
+            🔥 {playlist.totalLikesCount} Likes
+          </span>
         </div>
       </div>
     </div>
