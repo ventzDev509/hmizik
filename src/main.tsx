@@ -18,7 +18,7 @@ import { FollowProvider } from './context/FollowContext.tsx'
 import { RecommendationProvider } from './context/RecommendationProvider.tsx'
 
 const updateSW = registerSW({
-  immediate: true, // Sa a enpòtan pou l detekte PWA a vit
+  immediate: true, 
   onNeedRefresh() {
     if (confirm('Nouvo vèsyon disponib. Rafrechi?')) {
       updateSW(true)
@@ -32,28 +32,26 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <AuthProvider>
-        <ProfileProvider>
-          <RecommendationProvider>
-            <TrackProvider>
-              <LikeProvider>
-                <PlaylistProvider>
-                  <AudioProvider>
-                    <AlbumProvider>
+        <ProfileProvider> 
+          <FollowProvider> 
+            <RecommendationProvider>
+              <TrackProvider>
+                <AlbumProvider>
+                  <PlaylistProvider>
+                    <LikeProvider>
                       <DownloadProvider>
                         <SearchProvider>
-                          <FollowProvider>
-
+                          <AudioProvider> 
                             <App />
-
-                          </FollowProvider>
+                          </AudioProvider>
                         </SearchProvider>
                       </DownloadProvider>
-                    </AlbumProvider>
-                  </AudioProvider>
-                </PlaylistProvider>
-              </LikeProvider>
-            </TrackProvider>
-          </RecommendationProvider>
+                    </LikeProvider>
+                  </PlaylistProvider>
+                </AlbumProvider>
+              </TrackProvider>
+            </RecommendationProvider>
+          </FollowProvider>
         </ProfileProvider>
       </AuthProvider>
     </Provider>

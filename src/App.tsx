@@ -25,6 +25,7 @@ import { getToken } from "firebase/messaging";
 import { messaging } from './firebase';
 import api from "./api/axios";
 import BecomeArtist from "./components/Mobile/BecomeArtist/BecomeArtist";
+import ConfirmEmail from "./components/Mobile/ConfirmEmail/ConfirmEmail";
 function App() {
   // 1. Nou kreye yon eta pou detekte si moun lan online
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
@@ -49,13 +50,13 @@ function App() {
         if (permission === 'granted') {
           // Rale Token an
           const token = await getToken(messaging, {
-            vapidKey: "BK6mtK2hIrhmuNNd7JqltgQ3Vzqpakgf73Yf5lyqn_hc2U5759oJy2mbEIuEPjtq86GTE1B5CC5dLtuvSPYjvuE" 
+            vapidKey: "BK6mtK2hIrhmuNNd7JqltgQ3Vzqpakgf73Yf5lyqn_hc2U5759oJy2mbEIuEPjtq86GTE1B5CC5dLtuvSPYjvuE"
           });
 
           if (token) {
             // Sove Token nan nan DB (Supabase via NestJS)
             await api.post('/notifications/update-token', { token });
-            console.log("Push Token sove ak siksè!" ,token);
+            console.log("Push Token sove ak siksè!", token);
           }
         }
       } catch (error) {
@@ -68,25 +69,25 @@ function App() {
 
   const routes = [
     {
-      path: "/", 
+      path: "/",
       element: (
         <>
-          {/* 2. Si li offline, nou montre OfflineMusic dirèkteman sou "/" */}
+
           {!isOnline && isMobile ? (
             <OfflineMusic isRedirected={true} />
           ) : (
-            !isMobile ? <Home /> : <HomeMobile />
+            !isMobile ? <Home /> : ""
           )}
         </>
-      ), 
-      withBottomNav: true 
+      ),
+      withBottomNav: true
     },
 
     { path: "/playlist", element: <PlayList />, withBottomNav: true },
     {
       path: "/atis/:id", element:
         <>
-          {isMobile ? <ArtistPageMobile /> : <ArtistePage />}
+          {isMobile ? <ArtistPageMobile /> : ""}
         </>
       , withBottomNav: true
     },
@@ -113,21 +114,21 @@ function App() {
     {
       path: "/profile", element: <>
         <div className=""><>
-          {isMobile ? <UserProfile /> : <UserProfilePC />}
+          {isMobile ? <UserProfile /> : ""}
         </></div>
       </>, withBottomNav: true
     },
     {
       path: "/editeProfile", element: <>
         <div className=""><>
-          {isMobile ? <EditProfileMobile /> : <UserProfilePC />}
+          {isMobile ? <EditProfileMobile /> : ""}
         </></div>
       </>, withBottomNav: true
     },
     {
       path: "/settings", element: <>
         <div className=""><>
-          {isMobile ? <SettingsPage /> : <UserProfilePC />}
+          {isMobile ? <SettingsPage /> : ""}
         </></div>
       </>, withBottomNav: true
     },
@@ -141,6 +142,12 @@ function App() {
         <div className=""><>{isMobile ? <Register /> : ""}</></div>
       </>, withBottomNav: true
     },
+    {
+      path: "/confirm", element: <>
+        <div className=""><>{isMobile ? <ConfirmEmail /> : ""}</></div>
+      </>, withBottomNav: true
+    },
+
     {
       path: "/playlist/:id", element: <>
         <div className=""><>{isMobile ? <PlaylistDetailPage /> : ""}</></div>
@@ -176,7 +183,7 @@ function App() {
               <div className={`${withBottomNav ? " pb-20" : ""}`}>
                 {/* 3. Si li offline epi l ap eseye ale nan yon lòt paj ki pa "/", nou ka fòse l wè OfflineMusic tou */}
                 {!isOnline && isMobile && path !== "/" ? (
-                   <OfflineMusic isRedirected={true} />
+                  <OfflineMusic isRedirected={true} />
                 ) : (
                   React.cloneElement(element)
                 )}
