@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Contexts & API
+
 import { useProfile } from '../../../context/ProfileContext';
 import api from '../../../api/axios';
 import { useImageColors } from "../../utils/GetColor";
@@ -14,7 +14,7 @@ import { useAudio } from '../../../provider/PlayerContext';
 import { useLikes } from '../../../context/LikeContext';
 import { useFollow } from '../../../context/FollowContext'; 
 
-// Components
+
 import BottomMenu from '../menu/BottomMenu';
 import TrackItem from './TrackItem';
 import PlaylistModals from '../PlayListe/components/PlaylistModals';
@@ -26,22 +26,22 @@ const ArtistPageMobile = () => {
     const navigate = useNavigate();
     const { allProfiles, fetchAllProfiles } = useProfile();
     
-    // Follow Context 
+    
     const { followersCounts, updateFollowersCount } = useFollow();
 
-    // Audio Context
+    
     const { currentSong, isPlaying, isBuffering, playSong, togglePlay, addToQueue } = useAudio();
 
-    // States
+    
     const [extraData, setExtraData] = useState<any>(null);
     const [allTracks, setAllTracks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isScrolled, setIsScrolled] = useState(false);
 
-    // Like Context
+    
     const { isLiked, toggleLike } = useLikes();
 
-    // States pou Playlists & Modals
+    
     const [showActionModal, setShowActionModal] = useState(false);
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [selectedTrackForActions, setSelectedTrackForActions] = useState<any>(null);
@@ -52,7 +52,7 @@ const ArtistPageMobile = () => {
         return allProfiles.find(p => p.id === id || p.username === id);
     }, [allProfiles, id]);
 
-    // 1. Fetch Done Atis + Followers Count
+    
     useEffect(() => {
         const fetchFullDetails = async () => {
             if (!id) return;
@@ -60,11 +60,11 @@ const ArtistPageMobile = () => {
                 setLoading(true);
                 if (allProfiles.length === 0) await fetchAllProfiles(1, 20);
                 
-                // Fetch pwofil 
+                
                 const { data } = await api.get(`/profiles/p/${id}`);
                 setExtraData(data);
 
-                // Fetch kantite followers 
+                
                 const countRes = await api.get(`/follow/count/${data.id || id}`);
                 updateFollowersCount(data.id || id, countRes.data.count);
 
@@ -85,11 +85,11 @@ const ArtistPageMobile = () => {
     const displayData = extraData || artistFromContext;
     const artistImg = displayData?.bannerUrl || displayData?.avatarUrl || "https://via.placeholder.com/800x400";
 
-    // 2. Koulè dinamik & Scroll
+    
     const { bgColor, imgRef } = useImageColors(artistImg);
     const { scrollY } = useScroll();
 
-    // 3. EFFECT POU THEME-COLOR
+    
     useEffect(() => {
         const themeColor = "#121212";
         let meta = document.querySelector('meta[name="theme-color"]');
@@ -102,7 +102,7 @@ const ArtistPageMobile = () => {
         return () => meta?.setAttribute('content', '#121212');
     }, [isScrolled, bgColor]);
 
-    // 4. Lojik Playlists
+    
     const fetchMyPlaylists = async () => {
         try {
             const { data } = await api.get('/playlists/me');
@@ -117,7 +117,7 @@ const ArtistPageMobile = () => {
         setShowPlaylistModal(true);
     };
 
-    // 5. Memoized States
+    
     const isThisArtistPlaying = useMemo(() => {
         return allTracks.some(t => t.id === currentSong?.id) && isPlaying;
     }, [allTracks, currentSong, isPlaying]);
@@ -126,7 +126,7 @@ const ArtistPageMobile = () => {
         return allTracks.reduce((acc, track) => acc + (track.playCount || 0), 0);
     }, [allTracks]);
 
-    // 6. Audio Handlers
+    
     const handleHeroPlay = () => {
         if (allTracks.length > 0) {
             const isArtistInQueue = allTracks.some(t => t.id === currentSong?.id);
@@ -147,7 +147,7 @@ const ArtistPageMobile = () => {
         fetchMyPlaylists();
     };
 
-    // 7. Animations
+    
     const headerOpacity = useTransform(scrollY, [0, 250], [1, 0]);
     const navOpacity = useTransform(scrollY, [200, 300], [0, 1]);
     const bannerScale = useTransform(scrollY, [-100, 0, 100], [1.2, 1, 1]);
@@ -163,7 +163,7 @@ const ArtistPageMobile = () => {
     return (
         <div className="min-h-screen bg-[#121212] text-white font-sans relative overflow-x-hidden">
 
-            {/* NAV BAR */}
+            {}
             <motion.nav
                 style={{ backgroundColor: "#121212", opacity: navOpacity }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-4"
@@ -178,7 +178,7 @@ const ArtistPageMobile = () => {
                 <Share2 size={20} className="mr-2" />
             </motion.nav>
 
-            {/* BANNER */}
+            {}
             <div className="absolute top-0 left-0 right-0 h-[50vh] overflow-hidden z-0">
                 <motion.img
                     style={{ scale: bannerScale }}
@@ -191,7 +191,7 @@ const ArtistPageMobile = () => {
             </div>
 
             <main className="relative z-10">
-                {/* HERO INFO */}
+                {}
                 <motion.div style={{ opacity: headerOpacity }} className="h-[50vh] flex flex-col justify-end px-6 pb-8 text-left">
                     <div className="flex items-center gap-1.5 mb-2">
                         {displayData.verified && <Verified size={18} className="text-blue-400 fill-blue-400" />}
@@ -226,7 +226,7 @@ const ArtistPageMobile = () => {
                     </div>
                 </motion.div>
 
-                {/* STICKY PLAY div */}
+                {}
                 <div className={`sticky top-16 z-40  px-6 py-4 transition-all duration-500 ${isScrolled ? 'bg-[#121212]/95 backdrop-blur-xl border-b border-white/5' : ''}`}>
                     <div className="flex items-center justify-between">
                        
@@ -239,7 +239,7 @@ const ArtistPageMobile = () => {
                     </div>
                 </div>
 
-                {/* LIST MIZIK */}
+                {}
                 <div style={{ background: `linear-gradient(to bottom, transparent, ${bgColor}10, #121212)` }} className="px-4 pt-8 pb-10">
                     <h3 className="px-2 text-lg font-black italic uppercase tracking-tighter flex items-center gap-2 mb-6 text-left">
                         <Headset className="text-orange-500" size={18} /> Popilè
@@ -262,7 +262,7 @@ const ArtistPageMobile = () => {
                     </div>
                 </div>
 
-                {/* --- SEKSYON A PROPOS --- */}
+                {}
                 <div className="px-6 pb-40">
                     <div className="bg-white/5 rounded-3xl p-6 border border-white/10 backdrop-blur-md">
                         <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2 mb-4">

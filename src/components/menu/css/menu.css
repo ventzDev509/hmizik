@@ -1,4 +1,4 @@
-/* left menu  */
+
 
 html #root #ItemMenu {
     -webkit-font-smoothing: antialiased;
@@ -79,7 +79,7 @@ html #root #ItemMenu {
 }
 
 
-/* main menu  */
+
 #main-menu {
     position: relative;
     width: 100%;
@@ -126,14 +126,14 @@ html #root #ItemMenu {
     clip-path: circle();
 }
 
-/* menu responseive  */
+
 #dashboardMenue {
     display: none;
 }
 
 #main-menu {
     display: none;
-    /* background-color: #000000da; */
+    
 }
 
 .slider {
@@ -154,7 +154,7 @@ body .css-1160xiw-MuiPaper-root-MuiDrawer-paper{
 @media screen and (max-width:600px) {
     #main-menu {
         display: none;
-        /* background-color: #000000da; */
+        
     }
 
     /* #slider {

@@ -11,7 +11,7 @@ interface PlaylistModalsProps {
     song: any;
     isAdding: boolean;
     onAddToQueue: () => void;
-    // Nou ajoute 2 sa yo kòm opsyonèl (?) pou TypeScript pa fache
+    
     userPlaylists?: any[]; 
     onOpenPlaylistSelection?: () => void;
 }
@@ -24,17 +24,17 @@ const PlaylistModals: React.FC<PlaylistModalsProps> = ({
     song, 
     isAdding, 
     onAddToQueue,
-    onOpenPlaylistSelection // Nou ka itilize sa a si nou vle
+    onOpenPlaylistSelection 
 }) => {
     if (!song) return null;
 
-    // Fonksyon pou jere klik sou bouton Playlist la
+    
     const handlePlaylistClick = () => {
         if (onOpenPlaylistSelection) {
-            // Si nou nan paj Atis la ki gen fonksyon sa a
+            
             onOpenPlaylistSelection();
         } else {
-            // Si nou nan paj Playlist la ki itilize metòd klasik la
+            
             setShowAction(false); 
             setTimeout(() => setShowPlaylist(true), 300);
         }
@@ -96,7 +96,7 @@ const PlaylistModals: React.FC<PlaylistModalsProps> = ({
                 </div>
             )}
 
-            {/* Si showPlaylist se true, li louvri lòt modal separe a */}
+            {}
             {showPlaylist && <AddToPlaylistModal trackId={song.id} onClose={() => setShowPlaylist(false)} />}
         </AnimatePresence>
     );

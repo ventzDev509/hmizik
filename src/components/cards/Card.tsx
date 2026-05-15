@@ -24,7 +24,7 @@ export default function Card({ id, image, title, subtitle, song, setSelect }: Ca
             className={`rounded-lg ${colors.grayOpacity} relative p-3 flex flex-col gap-2 cursor-pointer hover:bg-gray-600/30 transition group`}
 
         >
-            {/* Image avec bouton Play */}
+            {}
             <div className="relative w-full h-40 rounded-lg overflow-hidden">
                 <img
                 crossOrigin="anonymous"
@@ -34,7 +34,7 @@ export default function Card({ id, image, title, subtitle, song, setSelect }: Ca
                     className="w-full h-full object-cover rounded-lg transform group-hover:scale-105 transition duration-300"
                 />
 
-                {/* Bouton Play en overlay */}
+                {}
                 <div
 
                     className={`absolute ${currentSong?.id === id ? '    bg-green-500 w-11 h-11 bottom-2  rounded-full ' : 'bottom-2 opacity-0 bg-green-500 group-hover:opacity-100 transition  duration-300  text-white rounded-full shadow-lg'} right-2 p-3   `}
@@ -52,7 +52,7 @@ export default function Card({ id, image, title, subtitle, song, setSelect }: Ca
                 </div>
             </div>
 
-            {/* Infos */}
+            {}
             <div className="flex flex-col">
                 <span className="text-white font-semibold truncate">{title}</span>
                 {subtitle && (

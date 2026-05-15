@@ -39,7 +39,7 @@ interface AlbumContextType {
     getAlbums: () => Promise<void>;
     fetchUserAlbums: (userId: string) => Promise<void>;
     deleteAlbum: (albumId: string) => Promise<void>;
-    updateAlbum: (albumId: string, formData: FormData) => Promise<void>; // Pou tit ak cover
+    updateAlbum: (albumId: string, formData: FormData) => Promise<void>; 
     deleteTrack: (trackId: string) => Promise<void>;
     finalizeAlbum: (albumId: string) => Promise<void>;
 
@@ -63,7 +63,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setError(null);
     };
 
-    // 1. KREYE ALBUM
+    
     const createAlbum = async (formData: FormData) => {
         setIsUploading(true);
         setError(null);
@@ -81,7 +81,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 2. MODIFYE ALBUM (TIT OSWA COVER)
+    
     const updateAlbum = async (albumId: string, formData: FormData) => {
         setIsUploading(true);
         setError(null);
@@ -89,7 +89,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             const { data } = await api.patch(`/album/${albumId}`, formData, {
                 onUploadProgress: (p) => setUploadProgress(Math.round((p.loaded * 100) / p.total!)),
             });
-            // Nou mete ajou album nan state la
+            
             setCurrentAlbum(data);
             setAlbums(prev => prev.map(a => a.id === albumId ? data : a));
         } catch (err: any) {
@@ -101,12 +101,12 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 3. EFASE YON MIZIK NAN ALBUM LAN
+    
     const deleteTrack = async (trackId: string) => {
         setError(null);
         try {
             await api.delete(`/album/tracks/${trackId}`);
-            // Nou retire track la nan UI a otomatikman
+            
             if (currentAlbum) {
                 setCurrentAlbum({
                     ...currentAlbum,
@@ -119,7 +119,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 4. AJOUTE TRACK
+    
     const addTrack = async (albumId: string, formData: FormData) => {
         setIsUploading(true);
         setError(null);
@@ -138,13 +138,13 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 5. FINALIZE ALBUM
+    
     const finalizeAlbum = async (albumId: string) => {
         setIsUploading(true);
         setError(null);
         try {
             const { data } = await api.patch(`/album/${albumId}/finalize`);
-            setCurrentAlbum(data); // Backend an voye album nan ak isPublished: true
+            setCurrentAlbum(data); 
         } catch (err: any) {
             setError(err.response?.data?.message || "Nou pa ka finalize album nan");
             throw err;
@@ -153,7 +153,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 6. JWENN YON SÈL ALBUM
+    
     const getAlbum = async (albumId: string) => {
         setLoading(true);
         setError(null);
@@ -167,7 +167,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 7. JWENN TOUT ALBUM YO
+    
     const getAlbums = async () => {
         setLoading(true);
         setError(null);
@@ -181,7 +181,7 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 8. JWENN ALBUM YON ATIS
+    
     const fetchUserAlbums = async (userId: string) => {
         setLoading(true);
         setError(null);
@@ -199,20 +199,20 @@ export const AlbumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLoading(true);
         setError(null);
         try {
-            // Nou rele endpoint DELETE nou te kreye nan Backend lan
+            
             await api.delete(`/album/${albumId}`);
 
-            // Nou retire l nan lis albums ki nan state la
+            
             setAlbums(prev => prev.filter(a => a.id !== albumId));
 
-            // Si se album n ap gade a ki efase, nou reset currentAlbum
+            
             if (currentAlbum?.id === albumId) {
                 setCurrentAlbum(null);
             }
         } catch (err: any) {
             const errorMsg = err.response?.data?.message || "Nou pa ka efase album sa a";
             setError(errorMsg);
-            throw err; // Nou re-voye l pou Component lan ka montre yon Toast si l vle
+            throw err; 
         } finally {
             setLoading(false);
         }

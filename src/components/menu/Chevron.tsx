@@ -5,12 +5,12 @@ import type { RootState } from "../../store/store";
 export default function PushStateBtn() {
   const colors = useSelector((state: RootState) => state.theme.colors);
 
-  // const backHistory = () => {
-  //   history.back();
-  // };
-  // const nextHistry = () => {
-  //   history.forward();
-  // };
+  
+  
+  
+  
+  
+  
 
 
   return (

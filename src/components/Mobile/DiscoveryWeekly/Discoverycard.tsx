@@ -4,20 +4,20 @@ import Equalizer from "../../buffer/Equalizer";
 
 interface TrackProps {
   track: any;
-  suggestions: any[]; // Nou ajoute sa pou nou ka pase lis la bay playSong
+  suggestions: any[]; 
 }
 
 export default function DiscoveryCard({ track, suggestions }: TrackProps) {
   const { currentSong, isPlaying, playSong } = useAudio();
 
-  // Tcheke si se mizik sa a k ap jwe kounye a
+  
   const isActive = currentSong?.id === track.id;
   
-  // Rale non atis la ak sekirite
+  
   const artistName = track.artist?.user?.name || track.artist?.username || "Atis Enkoni";
 
   const handlePlay = () => {
-    // Nou pase de agiman yo jan sa te mande a: mizik la ak lis la
+    
     playSong(track, suggestions);
   };
 
@@ -27,7 +27,7 @@ export default function DiscoveryCard({ track, suggestions }: TrackProps) {
       className={`group flex items-center gap-4 p-2 rounded-xl transition-all cursor-pointer border border-transparent 
         ${isActive ? 'bg-orange-500/10 border-orange-500/20' : 'hover:bg-white/5 hover:border-white/10'}`}
     >
-      {/* SEKSYON IMAJ */}
+      {}
       <div className="relative h-12 w-12 flex-none overflow-hidden rounded-lg bg-zinc-900 border border-white/5">
         <img 
           src={track.coverUrl || "/default-cover.jpg"} 
@@ -36,7 +36,7 @@ export default function DiscoveryCard({ track, suggestions }: TrackProps) {
             ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
         />
         
-        {/* Overlay: Equalizer si l ap jwe, Play si l an poz oswa hover */}
+        {}
         <div className={`absolute inset-0 bg-black/40 transition-opacity flex items-center justify-center 
           ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
           
@@ -48,7 +48,7 @@ export default function DiscoveryCard({ track, suggestions }: TrackProps) {
         </div>
       </div>
 
-      {/* SEKSYON ENFÒMASYON */}
+      {}
       <div className="flex-1 min-w-0">
         <h3 className={`font-bold text-sm truncate transition-colors ${isActive ? 'text-orange-500' : 'text-white'}`}>
           {track.title}

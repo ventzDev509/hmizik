@@ -44,28 +44,28 @@ export default defineConfig({
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
-            // POU AUDIO: Nou kite kòd download nou an jere kach la
-            // Men nou di Workbox pou l sèvi ak CacheFirst si l bezwen li l
+            
+            
             urlPattern: ({ request }) => request.destination === 'audio',
             handler: 'CacheFirst',
             options: {
               cacheName: 'music-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jou
+                maxAgeSeconds: 60 * 60 * 24 * 30, 
               },
               cacheableResponse: {
                 statuses: [0, 200]
               },
-              rangeRequests: true // OBLIGATWA pou audio ka avanse (seek)
+              rangeRequests: true 
             }
           },
           {
-            // POU IMAJ: Nou itilize NetworkFirst pou n asire nou pa bloke
+            
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'music-cache', // Nou itilize menm kach la pou tout bagay offline yo
+              cacheName: 'music-cache', 
               expiration: {
                 maxEntries: 100
               },

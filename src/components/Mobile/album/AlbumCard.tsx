@@ -27,7 +27,7 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
         <div className="flex-shrink-0 w-[160px] snap-start p2">
             <motion.div
                 whileTap={{ scale: 0.96 }}
-                whileHover={{ y: -5 }} // Ti animasyon monte lè w pase sourit
+                whileHover={{ y: -5 }} 
                 onClick={() => navigate(`/album?id=${album.id}`)}
                 className={`group relative  rounded-md transition-all duration-300 cursor-pointer overflow-hidden ${
                     isThisAlbumActive 
@@ -35,7 +35,7 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
                     : "bg-zinc-900/40 border-white/5 hover:bg-zinc-800/60"
                 } border`}
             >
-                {/* IMAJ COVER LA */}
+                {}
                 <div className="relative  aspect-square mb-3 overflow-hidden rounded-md shadow-sm">
                     <img
                         src={album.coverUrl}
@@ -45,14 +45,14 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
                         }`}
                     />
 
-                    {/* BADGE KANTITE MIZIK (Ti detay ki fè l bèl) */}
+                    {}
                     <div className="absolute top-2 right-2 px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg border border-white/10">
                         <p className="text-[8px] font-black text-white/90 uppercase italic">
                             {album.tracks?.length || 0} Tracks
                         </p>
                     </div>
 
-                    {/* CONTROLS OVERLAY */}
+                    {}
                     <div className="absolute inset-0  flex items-center justify-center">
                         <AnimatePresence mode="wait">
                             {isThisAlbumActive ? (
@@ -84,7 +84,7 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
                     </div>
                 </div>
 
-                {/* ENFÒMASYON TÈKS */}
+                {}
                 <div className="space-y-1 px-3 pb-2">
                     <h3 className={`text-[14px] font-black truncate uppercase italic tracking-tighter leading-tight ${
                         isThisAlbumActive ? "text-orange-500" : "text-zinc-100"
@@ -92,7 +92,7 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
                         {album.title}
                     </h3>
                     <div className="flex items-center gap-1.5">
-                         {/* {isPlaying  &&<div className="w-1.5 h-1.5 bg-orange-600 rounded-full animate-pulse" />} */}
+                         {}
                          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest truncate">
                             {typeof album.artist === 'object' ? album.artist.username : (album.artist || 'Atis')}
                         </p>

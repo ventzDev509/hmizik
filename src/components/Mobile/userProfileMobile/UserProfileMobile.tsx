@@ -3,11 +3,11 @@ import { Plus, Loader2, LinkIcon, FilePlay } from 'lucide-react';
 import { useScroll, useTransform, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-// Enpòtasyon konpozan nou separe yo
+
 import { ProfileHeader } from './composants/ProfileHeader';
 import AlbumModal from './composants/AlbumModal';
 
-// Contexts & Utils
+
 import { useProfile } from '../../../context/ProfileContext';
 import { useTracks } from '../../../context/TrackContext';
 import { useAlbum } from '../../../context/AlbumContext';
@@ -20,12 +20,12 @@ import { FiFacebook, FiInstagram, FiTwitter, FiYoutube } from 'react-icons/fi';
 const UserProfile = () => {
     const navigate = useNavigate();
 
-    // CONTEXTS
+    
     const { profile, loading: profileLoading } = useProfile();
     const { tracks, fetchUserTracks, loading: tracksLoading, incrementPlay } = useTracks();
     const { albums, deleteAlbum, createAlbum, isUploading, uploadProgress, error, fetchUserAlbums } = useAlbum();
 
-    // STATES
+    
     const [activeTab, setActiveTab] = useState('uploads');
     const [isAlbumModalOpen, setIsAlbumModalOpen] = useState(false);
     const [albumForm, setAlbumForm] = useState<AlbumFormState>({
@@ -41,13 +41,13 @@ const UserProfile = () => {
         if (u.includes('tiktok.com') || u.includes('tik.com')) return <FilePlay size={14} />;
         return <LinkIcon size={14} />;
     };
-    // DESIGN & ANIMATION
+    
     const { bgColor, imgRef } = useImageColors(profile?.avatarUrl ?? undefined);
     const { scrollY } = useScroll();
     const navOpacity = useTransform(scrollY, [80, 150], [0, 1]);
     const headerScale = useTransform(scrollY, [0, 100], [1, 0.95]);
 
-    // INITIAL FETCH
+    
     useEffect(() => {
         if (profile?.user?.id) {
             fetchUserTracks(profile.user.id, 1);
@@ -56,7 +56,7 @@ const UserProfile = () => {
 
     }, [profile?.user?.id]);
 
-    // HANDLERS
+    
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -117,7 +117,7 @@ const UserProfile = () => {
     return (
         <div className="min-h-screen bg-[#121212] text-white overflow-x-hidden relative">
 
-            {/* 1. HEADER */}
+            {}
             <ProfileHeader
                 profile={profile} bgColor={"#121212"} navOpacity={navOpacity}
                 headerScale={headerScale} socialLinks={socialLinks}
@@ -126,7 +126,7 @@ const UserProfile = () => {
             />
 
             <div className="p-8">
-                {/* 2. CONTENT (TABS & LIS) */}
+                {}
                 <ProfileContent
                     activeTab={activeTab} setActiveTab={setActiveTab}
                     tracks={tracks} albums={albums}
@@ -135,7 +135,7 @@ const UserProfile = () => {
                     setIsAlbumModalOpen={setIsAlbumModalOpen} navigate={navigate}
                 />
 
-                {/* 3. MODAL */}
+                {}
                 <AlbumModal
                     isOpen={isAlbumModalOpen} onClose={() => setIsAlbumModalOpen(false)}
                     albumForm={albumForm} setAlbumForm={setAlbumForm}
@@ -144,7 +144,7 @@ const UserProfile = () => {
                     handleFileChange={handleFileChange}
                 />
 
-                {/* 4. FAB BUTTON */}
+                {}
                 {profile?.isArtist && (
                     <motion.div
                         whileTap={{ scale: 0.9 }}

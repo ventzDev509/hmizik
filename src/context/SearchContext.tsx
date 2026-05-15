@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import api from '../api/axios';
 
-// 1. DEFINI TIP YO
+
 interface SearchResults {
     tracks: any[];
     artists: any[];
@@ -16,7 +16,7 @@ interface SearchContextType {
     error: string | null;
     recentSearches: string[];
     
-    // Fonksyon prensipal
+    
     searchGlobal: (q: string) => Promise<void>;
     setQuery: (q: string) => void;
     clearSearch: () => void;
@@ -38,13 +38,13 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
-    // Nou ka sove istorik rechèch la nan LocalStorage
+    
     const [recentSearches, setRecentSearches] = useState<string[]>(() => {
         const saved = localStorage.getItem('h_mizik_recent_searches');
         return saved ? JSON.parse(saved) : [];
     });
 
-    // 2. FONKSYON RECHÈCH LA
+    
     const searchGlobal = useCallback(async (q: string) => {
         if (!q.trim() || q.length < 2) {
             setResults({ tracks: [], artists: [], albums: [], playlists: [] });
@@ -78,12 +78,12 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setError(null);
     };
 
-    // 3. JESYON ISTORIK (RECENT SEARCHES)
+    
     const addRecentSearch = (term: string) => {
         if (!term.trim()) return;
         setRecentSearches(prev => {
-            const filtered = prev.filter(t => t !== term); // Retire l si l te la deja
-            const updated = [term, ...filtered].slice(0, 10); // Kenbe 10 dènye yo
+            const filtered = prev.filter(t => t !== term); 
+            const updated = [term, ...filtered].slice(0, 10); 
             localStorage.setItem('h_mizik_recent_searches', JSON.stringify(updated));
             return updated;
         });

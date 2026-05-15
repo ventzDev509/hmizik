@@ -27,7 +27,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
             className={`flex items-center gap-4 p-2 rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10' : 'active:bg-white/5'
                 }`}
         >
-            {/* 1. INDEX / EQUALIZER / LOADING */}
+            {}
             <div className="text-xs text-zinc-600 w-5 flex justify-center font-black">
                 {isActive && isBuffering ? (
                     <Loader2 size={14} className="text-orange-500 animate-spin" />
@@ -38,7 +38,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
                 )}
             </div>
 
-            {/* 2. COVER & PLAY OVERLAY */}
+            {}
             <div className="relative w-14 h-14 flex-shrink-0 cursor-pointer group" onClick={onPlay}>
                 <img
                     crossOrigin="anonymous"
@@ -57,7 +57,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
                 )}
             </div>
 
-            {/* 3. INFO MIZIK */}
+            {}
             <div className="flex-1 overflow-hidden cursor-pointer" onClick={onPlay}>
                 <h4 className={`text-sm font-black truncate uppercase tracking-tight ${isActive ? 'text-orange-500' : 'text-white'}`}>
                     {track.title}
@@ -75,9 +75,9 @@ const TrackItem: React.FC<TrackItemProps> = ({
                 </div>
             </div>
 
-            {/* 4. ACTIONS (Download, Like, Menu) */}
+            {}
             <div className="flex items-center gap-3">
-                {/* Bouton Telechaje */}
+                {}
                 <DownloadButton
                     trackId={track.id}
                     audioUrl={track.audioUrl}
@@ -85,7 +85,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
                     title={track.title}
                 />
 
-                {/* Bouton Like */}
+                {}
                 <motion.div whileTap={{ scale: 0.8 }}>
                     <Heart
                         onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
@@ -94,7 +94,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
                     />
                 </motion.div>
 
-                {/* Bouton Menu (Twa pwen) */}
+                {}
                 <div
                     onClick={(e) => { e.stopPropagation(); onOpenMenu(e); }}
                     className="p-1 hover:bg-white/10 rounded-full transition cursor-pointer"

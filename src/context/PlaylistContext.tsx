@@ -3,14 +3,14 @@ import { useAuth } from './AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
-// 1. Defini estrikti Track anndan yon Playlist
+
 interface Track {
     id: string;
     title: string;
     duration: number;
     audioUrl: string;
     coverUrl: string;
-    playCount: number; // Solid: nou sèvi ak playCount olye de plays
+    playCount: number; 
     artist: {
         username: string;
         user: { name: string };
@@ -26,22 +26,22 @@ interface Playlist {
     userId: string;
     createdAt: string;
     tracks: Track[];
-    // Ajoute de sa yo pou yo matche ak sa Card la bezwen:
+    
     totalLikesCount: number;
     user: {
         name: string;
-        username?: string; // Opsyonèl si w bezwen l pi devan
+        username?: string; 
     };
     _count?: {
         tracks: number;
     };
 }
 interface PlaylistContextType {
-    playlists: Playlist[]; // Playlist itilizatè a
-    trendingPlaylists: Playlist[]; // Playlist ki nan akèy la (nouvo)
+    playlists: Playlist[]; 
+    trendingPlaylists: Playlist[]; 
     loading: boolean;
     refreshPlaylists: () => Promise<void>;
-    getTrendingPlaylists: () => Promise<void>; // Pou paj akèy la
+    getTrendingPlaylists: () => Promise<void>; 
     getPlaylistById: (id: string) => Promise<Playlist | null>;
     createPlaylist: (data: { name: string; description?: string, coverUrl?: string }) => Promise<boolean>;
     addTrackToPlaylist: (playlistId: string, trackId: string) => Promise<boolean>;
@@ -59,7 +59,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [trendingPlaylists, setTrendingPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // 1. FETCH PERSONAL PLAYLISTS
+    
     const fetchPlaylists = useCallback(async () => {
         if (!user) return;
         try {
@@ -73,7 +73,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     }, [user]);
 
-    // 2. FETCH TRENDING (RANKING) - Pou paj Akèy
+    
     const getTrendingPlaylists = async () => {
         try {
             const { data } = await api.get('/playlists/trending');
@@ -83,7 +83,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    // 3. FETCH SINGLE PLAYLIST (AK TOUT MIZIK LI YO)
+    
     const getPlaylistById = async (id: string): Promise<Playlist | null> => {
         try {
             const { data } = await api.get(`/playlists/${id}`);
@@ -99,7 +99,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         getTrendingPlaylists();
     }, [fetchPlaylists]);
 
-    // 4. CREATE PLAYLIST
+    
     const createPlaylist = async (createData: { name: string; description?: string, coverUrl?: string }): Promise<boolean> => {
         try {
             const { data } = await api.post('/playlists', createData);
@@ -112,7 +112,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    // 5. UPDATE PLAYLIST (FULL VERSION)
+    
     const updatePlaylist = async (id: string, updateData: { name?: string, description?: string, isPublic?: boolean }) => {
         try {
             const { data } = await api.patch(`/playlists/${id}`, updateData);
@@ -127,7 +127,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    // 6. DELETE PLAYLIST
+    
     const deletePlaylist = async (id: string) => {
         try {
             await api.delete(`/playlists/${id}`);
@@ -143,11 +143,11 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     
     const addTrackToPlaylist = async (playlistId: string, trackId: string): Promise<boolean> => {
         try {
-            // Si API a mande trackId nan URL la (jan erè a montre l la):
+            
             await api.post(`/playlists/${playlistId}/tracks/${trackId}`);
 
-            // Si API a mande l nan BODY a, se ta: 
-            // await api.post(`/playlists/${playlistId}/tracks`, { trackId });
+            
+            
 
             await fetchPlaylists();
             toast.success("Mizik la ajoute!");
@@ -161,7 +161,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             return false;
         }
     };
-    // 8. REMOVE TRACK FROM PLAYLIST
+    
     const removeTrackFromPlaylist = async (playlistId: string, trackId: string): Promise<boolean> => {
         try {
             await api.delete(`/playlists/${playlistId}/tracks/${trackId}`);
@@ -179,11 +179,11 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    // 9. INCREMENT TRACK PLAY
+    
     const incrementTrackPlay = async (trackId: string) => {
         try {
             await api.post(`/tracks/${trackId}/play`);
-            // Mizajou UI local pou tout kote mizik la parèt
+            
             const updateTracksInList = (list: Playlist[]) =>
                 list.map(pl => ({
                     ...pl,

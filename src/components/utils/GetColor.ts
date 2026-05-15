@@ -21,10 +21,10 @@ export function useImageColors(imageSrc?: string): UseImageColorsResult {
     const handleLoad = () => {
       try {
         const colorThief = new ColorThief();
-        const palette = colorThief.getPalette(img, 8); // top 8 couleurs
+        const palette = colorThief.getPalette(img, 8); 
         if (!palette) return;
 
-        // Fonction pour calculer la saturation d'une couleur RGB
+        
         const getSaturation = ([r, g, b]: number[]) => {
           const max = Math.max(r, g, b);
           const min = Math.min(r, g, b);
@@ -32,7 +32,7 @@ export function useImageColors(imageSrc?: string): UseImageColorsResult {
           return ((max - min) / max) * 100;
         };
 
-        // Trouver la couleur la plus vive
+        
         const mostVividColor = palette.reduce((prev, curr) =>
           getSaturation(curr) > getSaturation(prev) ? curr : prev
         );
@@ -40,7 +40,7 @@ export function useImageColors(imageSrc?: string): UseImageColorsResult {
         const rgb = `rgb(${mostVividColor[0]}, ${mostVividColor[1]}, ${mostVividColor[2]})`;
         setBgColor(rgb);
 
-        // Déterminer si le texte doit être clair ou foncé
+        
         const luminance =
           (0.299 * mostVividColor[0] +
             0.587 * mostVividColor[1] +

@@ -23,20 +23,20 @@ const BottomMPlayerMobile: React.FC = () => {
 
   return (
     <>
-      {/* 1. ANIMASYON POU PARÈT/DISPARÈT MINI PLAYER A */}
+      {}
       <AnimatePresence>
         {currentSong && (
           <motion.div 
-            initial={{ y: 100, opacity: 0 }} // Kòmanse anba epi envizib
-            animate={{ y: 0, opacity: 1 }}   // Moute epi parèt
-            exit={{ y: 100, opacity: 0 }}    // Desann epi disparèt si currentSong vin null
+            initial={{ y: 100, opacity: 0 }} 
+            animate={{ y: 0, opacity: 1 }}   
+            exit={{ y: 100, opacity: 0 }}    
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="fixed bottom-[80px] left-2 right-2 z-50" 
             onClick={() => setShowPlayer(true)}
           >
             <div className="bg-zinc-900/95 backdrop-blur-lg rounded-xl p-2 flex items-center justify-between shadow-2xl border border-white/10 relative overflow-hidden">
               
-              {/* Enfòmasyon Chanson */}
+              {}
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <img
                 crossOrigin="anonymous"
@@ -57,7 +57,7 @@ const BottomMPlayerMobile: React.FC = () => {
                 </div>
               </div>
 
-              {/* Kontwòl */}
+              {}
               <div className="flex items-center gap-4 px-2">
                 <div
                   onClick={(e) => {
@@ -76,7 +76,7 @@ const BottomMPlayerMobile: React.FC = () => {
                 </div>
               </div>
 
-              {/* Bar Pwogresyon */}
+              {}
               <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-white/10">
                 <motion.div
                   className="h-full bg-orange-500"
@@ -89,7 +89,7 @@ const BottomMPlayerMobile: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 2. GWO PLAYER A (FULL SCREEN) */}
+      {}
       <AnimatePresence>
         {showPlayer && (
           <motion.div

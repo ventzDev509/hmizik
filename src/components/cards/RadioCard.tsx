@@ -25,11 +25,11 @@ const navigate=useNavigate()
         const palette = colorThief.getPalette(img, 5); 
         if (!palette) return;
 
-        // choisir la couleur la plus “chaude” (plus rouge)
+        
         let warmest = palette[0];
         let maxRed = 0;
         palette.forEach(([r, g, b]) => {
-          const redScore = r - (g + b) / 1 ; //2 plus r est élevé par rapport à g/b, plus c'est chaud
+          const redScore = r - (g + b) / 1 ; 
           if (redScore > maxRed) {
             maxRed = redScore;
             warmest = [r, g, b];
@@ -39,7 +39,7 @@ const navigate=useNavigate()
         const rgb = `rgb(${warmest[0]}, ${warmest[1]}, ${warmest[2]})`;
         setBgColor(rgb);
 
-        // --- Calcul luminance pour texte clair/foncé ---
+        
         const luminance =
           (0.299 * warmest[0] + 0.587 * warmest[1] + 0.114 * warmest[2]) / 255;
         setTextColor(luminance > 0.6 ? "black" : "white");
@@ -58,13 +58,13 @@ const navigate=useNavigate()
       style={{ backgroundColor: bgColor }}
       onClick={()=>navigate("/artiste")}
     >
-      {/* TOP (logo Spotify + RADIO) */}
+      {}
       <div className={`flex justify-between items-center text-xs mb-1`} style={{ color: textColor }}>
         <span>🎵</span>
         <span className="uppercase tracking-widest font-semibold">Radio</span>
       </div>
 
-      {/* IMAGE */}
+      {}
       <img
       crossOrigin="anonymous"
         ref={imgRef}
@@ -73,7 +73,7 @@ const navigate=useNavigate()
         className="w-32 h-32 object-cover rounded-full mx-auto shadow"
       />
 
-      {/* TEXTE */}
+      {}
       <h3
         className="text-lg font-bold mt-1 truncate"
         style={{ color: textColor }}

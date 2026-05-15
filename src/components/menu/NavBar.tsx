@@ -6,7 +6,7 @@ import type { RootState } from "../../store/store";
 import PushStateBtn from "./Chevron";
 
 type NavbarProps = {
-  bgColor?: string; // couleur à utiliser quand on scroll
+  bgColor?: string; 
 };
 
 export default function Navbar({ bgColor  }: NavbarProps) {
@@ -52,7 +52,7 @@ export default function Navbar({ bgColor  }: NavbarProps) {
           />
         </div>
 
-        {/* Profil utilisateur */}
+        {}
         <div
           className={`flex items-center gap-2 bg-white px-3 py-1 rounded text-black cursor-pointer transition`}
         >

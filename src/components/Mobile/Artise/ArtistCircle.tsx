@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-// Nou itilize menm interface ki nan Context la pou evite konfizyon
+
 interface ArtistProps {
     artist: {
         id: string;
@@ -15,7 +15,7 @@ interface ArtistProps {
 const ArtistCircle = ({ artist }: ArtistProps) => {
     const navigate = useNavigate();
 
-    // Fallback si avatarUrl la null oswa vid
+    
     const avatarSrc = artist.avatarUrl
         ? artist.avatarUrl
         : `https://api.dicebear.com/7.x/micah/svg?seed=${artist.username}`;
@@ -34,7 +34,7 @@ const ArtistCircle = ({ artist }: ArtistProps) => {
                     loading="lazy"
                 />
 
-                {/* Overlay pou entèraksyon */}
+                {}
                 <div className="absolute inset-0 bg-black/10 group-active:bg-orange-500/10 transition-colors" />
             </div>
 
@@ -43,7 +43,7 @@ const ArtistCircle = ({ artist }: ArtistProps) => {
                     {artist.username}
                 </span>
 
-                {/* Ti endikatè si li verifye */}
+                {}
                 {artist.verified && (
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1 shadow-[0_0_5px_rgba(59,130,246,0.8)]" />
                 )}

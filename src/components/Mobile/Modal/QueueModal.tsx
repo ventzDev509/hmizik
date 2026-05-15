@@ -15,7 +15,7 @@ const QueueModal = ({ onClose }: { isOpen: boolean, onClose: () => void }) => {
 
   return (
     <div className="fixed inset-0 z-[2000] flex items-end justify-center sm:items-center sm:justify-end">
-      {/* Overlay Background */}
+      {}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -24,7 +24,7 @@ const QueueModal = ({ onClose }: { isOpen: boolean, onClose: () => void }) => {
         className="absolute inset-0 bg-black/90 backdrop-blur-sm"
       />
 
-      {/* Modal Card */}
+      {}
       <motion.div
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
@@ -40,12 +40,12 @@ const QueueModal = ({ onClose }: { isOpen: boolean, onClose: () => void }) => {
         onDragEnd={handleDragEnd}
         className="relative w-full max-w-md bg-[#0D0D0D] h-[85vh] sm:h-[90vh] rounded-t-[40px] sm:rounded-l-[40px] sm:rounded-tr-none p-6 flex flex-col overflow-hidden border-t border-white/5 shadow-2xl"
       >
-        {/* Drag Handle */}
+        {}
         <div className="w-full flex justify-center mb-6 sm:hidden cursor-grab">
           <div className="w-12 h-1 bg-white/10 rounded-full" />
         </div>
 
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between mb-8">
           <div className="flex flex-col">
             <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
@@ -62,7 +62,7 @@ const QueueModal = ({ onClose }: { isOpen: boolean, onClose: () => void }) => {
         </div>
 
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          {/* Current Song Section */}
+          {}
           <div className="mb-10">
             <p className="text-white/40 text-[10px] mb-4 font-black uppercase tracking-[0.2em] italic">K ap jwe kounye a</p>
             {currentSong && (
@@ -96,7 +96,7 @@ const QueueModal = ({ onClose }: { isOpen: boolean, onClose: () => void }) => {
             )}
           </div>
 
-          {/* Next Up Section */}
+          {}
           <div>
             <div className="flex justify-between items-center mb-4">
                <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.2em] italic">Mizik ki nan tann</p>

@@ -24,12 +24,12 @@ const LibraryPage: React.FC = () => {
 
     const [filter, setFilter] = useState<string>('Tout');
 
-    // States pou KREYASYON
+    
     const [isCreating, setIsCreating] = useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const [isCreatingLoading, setIsCreatingLoading] = useState(false);
 
-    // States pou MODAL AKSYON (Edit/Delete)
+    
     const [selectedItem, setSelectedItem] = useState<LibraryItem | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState('');
@@ -113,7 +113,7 @@ const LibraryPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#121212] text-white pb-32">
-            {/* HEADER */}
+            {}
             <header className="sticky top-0 z-50 bg-[#121212]/95 backdrop-blur-md px-4 pt-6 pb-4">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ const LibraryPage: React.FC = () => {
                 <ListFilter size={18} />
             </div>
 
-            {/* LIST ITEMS */}
+            {}
             <div className="px-4 space-y-1">
                 {playlistLoading && playlists.length === 0 ? (
                     <div className="py-10 flex justify-center"><Loader2 className="animate-spin text-orange-500" /></div>
@@ -202,7 +202,7 @@ const LibraryPage: React.FC = () => {
                 )}
             </div>
 
-            {/* MODAL KREYASYON */}
+            {}
             <AnimatePresence>
                 {isCreating && (
                     <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
@@ -234,7 +234,7 @@ const LibraryPage: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* MODAL AKSYON (Edit/Delete) */}
+            {}
             <AnimatePresence>
                 {selectedItem && (
                     <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">

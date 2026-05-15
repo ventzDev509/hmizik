@@ -15,7 +15,7 @@ const Auth: React.FC = () => {
   });
 
   const [loading, setLoading] = useState<boolean>(false);
-  // const [magicLoading, setMagicLoading] = useState<boolean>(false);
+  
 
   const isProcessing = loading;
 
@@ -36,28 +36,28 @@ const Auth: React.FC = () => {
         await register(formData);
       }
     } catch (error) {
-      // Erè jere nan Provider
+      
     } finally {
       setLoading(false);
     }
   };
 
-  // const handleMagicLinkSubmit = async () => {
-  //   if (!formData.email) return;
-  //   setMagicLoading(true);
-  //   try {
-  //     await magicLink(formData.email);
-  //   } catch (error) {
-  //   } finally {
-  //     setMagicLoading(false);
-  //   }
-  // };
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 font-sans py-20 bg-black overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
 
-      {/* --- LOADER OVERLAY (Orange Theme) --- */}
+      {}
       <AnimatePresence>
         {isProcessing && (
           <motion.div
@@ -160,7 +160,7 @@ const Auth: React.FC = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isProcessing}
-            style={{ backgroundColor: "#ea580c" }} // orange-600 hex
+            style={{ backgroundColor: "#ea580c" }} 
             className="w-full text-white font-black py-4 rounded-2xl mt-4 transition-all disabled:opacity-50 flex items-center justify-center uppercase tracking-[0.2em] text-xs shadow-lg shadow-orange-600/20"
           >
             {isLogin ? 'KONEKTE' : 'ENSRI'}

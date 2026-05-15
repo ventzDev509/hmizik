@@ -1,4 +1,4 @@
-// src/data/data.ts
+
 
 import im from "../assets/OIP.webp";
 import im1 from "../assets/t2.webp";
@@ -6,7 +6,7 @@ import im2 from "../assets/baky.webp";
 import im3 from "../assets/t.webp";
 import im4 from "../assets/toby.webp";
 
-// Type pour structurer une musique
+
 export interface Music {
   id: number;
   title: string;
@@ -23,11 +23,11 @@ type Track = {
   title: string;
   artist: string;
   album: string;
-  duration: string; // format mm:ss
+  duration: string; 
   cover?: string;
   src:string;
 };
-// Playlists
+
 export const playlists: Music[] = [
   {
     id: 1,
@@ -46,9 +46,9 @@ export const TRACKS: Track[] = [
   { id: 3, title: "Nuit De Ville", artist: "Troubleboy", album: "City Vibes", duration: "4:02", cover:im2 ,src:''},
   { id: 4, title: "Zouk Flow", artist: "Hitmaker", album: "Summer 20", duration: "3:28", cover: im3 ,src:""},
   { id: 5, title: "Bèl Jou", artist: "Baky", album: "M'vle Avèw", duration: "3:01", cover: im4,src:""},
-  // ajoute autant de pistes que tu veux
+  
 ];
-// Radios
+
 export const radios: Music[] = [
   {
     id: 10,
@@ -97,7 +97,7 @@ export const radios: Music[] = [
   },
 ];
 
-// Tracks (musiques individuelles)
+
 export const Music: Music[] = [
   {
     id: 20,

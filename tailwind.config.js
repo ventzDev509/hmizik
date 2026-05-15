@@ -4,9 +4,9 @@ export default defineConfig({
   theme: {
     extend: {
       colors: {
-        primary: "#1DB954",   // vert Spotify
-        secondary: "#191414", // noir Spotify
-        accent: "#ffffff",    // blanc
+        primary: "#1DB954",   
+        secondary: "#191414", 
+        accent: "#ffffff",    
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],

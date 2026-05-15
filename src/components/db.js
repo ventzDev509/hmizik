@@ -1,8 +1,8 @@
 const LINImage="../src/assets/medias/"
-// const LINImage="../images/"
+
 
 const LINKSONG="../src/assets/songs/"
-// const LINKSONG="../songs/"
+
 export const Artiste=[
     {
         id:"jsdfhkw4jjw4",

@@ -12,7 +12,7 @@ export default function ArtistBanner() {
         if (!closedDate) {
             setIsVisible(true);
         } else {
-            // Kalkile si 3 jou pase (3 jou * 24 h * 60 min * 60 s * 1000 ms)
+            
             const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
             const now = new Date().getTime();
             const timePassed = now - parseInt(closedDate);
@@ -28,7 +28,7 @@ export default function ArtistBanner() {
         e.stopPropagation();
         setIsVisible(false);
 
-        // Sere dat jodi a pou n ka konte 3 jou yo
+        
         const now = new Date().getTime().toString();
         localStorage.setItem("artistBannerClosedAt", now);
     };
@@ -43,7 +43,7 @@ export default function ArtistBanner() {
                     className=" py-4 overflow-hidden"
                 >
                     <div className="relative overflow-hidden rounded-3xl bg-zinc-900 border border-white/5">
-                        {/* Bouton X pou fèmen */}
+                        {}
                         <button
                             onClick={handleClose}
                             className="absolute top-3 right-3 z-20 p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white/70 hover:text-white transition-colors"
@@ -51,12 +51,12 @@ export default function ArtistBanner() {
                             <X size={16} />
                         </button>
 
-                        {/* Efè koulè background */}
+                        {}
                         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/15 to-transparent z-0" />
 
                         <div className="relative z-10 flex items-center justify-between p-6 gap-6">
 
-                            {/* Teks ak Bouton */}
+                            {}
                             <div className="flex-1 text-left">
                                 <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-bold mb-3 uppercase tracking-widest">
                                     <Mic2 size={12} />
@@ -77,7 +77,7 @@ export default function ArtistBanner() {
                                 </h4>
                             </div>
 
-                            {/* IMAJ LA (Li la, li pap kache) */}
+                            {}
                             <div className="relative w-24 h-24 md:w-36 md:h-36 flex-none">
                                 <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 rotate-3">
                                     <img
@@ -87,7 +87,7 @@ export default function ArtistBanner() {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                 </div>
-                                {/* Ti limyè dèyè imaj la */}
+                                {}
                                 <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-orange-500/20 blur-3xl rounded-full -z-10" />
                             </div>
 

@@ -13,7 +13,7 @@ const LikedSongsPage = () => {
     const { likedTrackIds, toggleLike } = useLikes();
     const { playSong, isPlaying, currentSong, togglePlay, isBuffering } = useAudio();
 
-    // 1. Filtre mizik ki like yo
+    
     const likedTracks = useMemo(() => {
         return tracks.filter(track => likedTrackIds.includes(track.id));
     }, [tracks, likedTrackIds]);
@@ -39,7 +39,7 @@ const LikedSongsPage = () => {
             
            
         }, []);
-    // Fonksyon pou Shuffle
+    
     const handleShufflePlay = () => {
         if (likedTracks.length > 0) {
             const shuffled = [...likedTracks].sort(() => Math.random() - 0.5);
@@ -51,7 +51,7 @@ const LikedSongsPage = () => {
     return (
         <div className="bg-[#121212] min-h-screen text-white relative pb-32 overflow-x-hidden">
 
-            {/* TOP NAVIGATION */}
+            {}
             <motion.nav
                 style={{ opacity: navBgOpacity }}
                 className="fixed top-0 left-0 right-0 h-20 bg-[#121212]/90 backdrop-blur-xl border-b border-white/5 z-[100] flex items-center px-4 shadow-2xl pointer-events-none"
@@ -66,7 +66,7 @@ const LikedSongsPage = () => {
 
             <main className="relative z-10 pt-10 px-6">
 
-                {/* HEADER */}
+                {}
                 <motion.header
                     style={{ opacity: headerOpacity, scale: titleScale }}
                     className="flex flex-col items-center mb-8"
@@ -92,10 +92,10 @@ const LikedSongsPage = () => {
                     </div>
                 </motion.header>
 
-                {/* PLAY & SHUFFLE CONTROLS */}
+                {}
                 <div className="flex justify-between items-center mb-10">
                     <div className="flex items-center gap-4">
-                        {/* Bouton Shuffle */}
+                        {}
                         <motion.div
                             whileTap={{ scale: 0.8 }}
                             onClick={handleShufflePlay}
@@ -109,7 +109,7 @@ const LikedSongsPage = () => {
                         </div>
                     </div>
 
-                    {/* Gwo Bouton Play/Pause */}
+                    {}
                     <motion.button
                         style={{ border: "none", outline: "none", backgroundColor: "#fff" ,borderRadius:"100%",color:"black"}}
                         whileHover={{ scale: 1.05 }}
@@ -142,7 +142,7 @@ const LikedSongsPage = () => {
                     </motion.button>
                 </div>
 
-                {/* LIST MIZIK YO */}
+                {}
                 <div className="space-y-3 relative">
                     {likedTracks.length === 0 ? (
                         <div className="py-20 flex flex-col items-center text-zinc-600 italic">

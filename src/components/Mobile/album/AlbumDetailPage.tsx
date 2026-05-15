@@ -3,13 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Loader2, Play, Pause, Heart, MoreVertical, Edit3, Save, X, PlusSquare } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 
-// Konpozan nou dekoupe yo
+
 import AlbumHeader from './AlbumHeader';
 import TrackItem from './TrackItem';
 import AlbumModals from './AlbumModals';
 import BottomMenu from '../menu/BottomMenu';
 
-// Hooks ak Contexts
+
 import { useImageColors } from "../../utils/GetColor";
 import { useAudio } from '../../../provider/PlayerContext';
 import { useAlbum } from '../../../context/AlbumContext';
@@ -30,13 +30,13 @@ const AlbumDetailPage = () => {
     const { playSong, isPlaying, currentSong, addToQueue, togglePlay } = useAudio();
     const { user } = useAuth();
 
-    // States pou Modifikasyon
+    
     const [isEditMode, setIsEditMode] = useState(false);
     const [editedTitle, setEditedTitle] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-    // States pou Modals
+    
     const [showActionModal, setShowActionModal] = useState(false);
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [selectedSongForActions, setSelectedSongForActions] = useState<any>(null);
@@ -46,22 +46,22 @@ const AlbumDetailPage = () => {
 
     const [localIsLiked, setLocalIsLiked] = useState(false);
 
-    // 2. Senkronize li ak valè reyèl la lè album nan chaje
+    
     useEffect(() => {
         if (albumId) {
             setLocalIsLiked(isLiked(albumId, 'album'));
         }
     }, [albumId, currentAlbum]);
 
-    // 3. Fonksyon pou klike a
+    
     const handleLikeClick = () => {
         if (!albumId) return;
 
-        // Chanje UI a imedyatman san tann
+        
         setLocalIsLiked(!localIsLiked);
         triggerVibration(15);
 
-        // Rele fonksyon reyèl la an background
+        
         toggleLike(albumId, "album");
     };
     useEffect(() => {
@@ -76,7 +76,7 @@ const AlbumDetailPage = () => {
         }
     }, [currentAlbum]);
 
-    // Koulè ak Animasyon Scroll
+    
     const { bgColor, imgRef } = useImageColors(previewUrl || currentAlbum?.coverUrl || "");
     const { scrollY } = useScroll();
     const imgOpacity = useTransform(scrollY, [0, 200], [1, 0]);
@@ -125,7 +125,7 @@ const AlbumDetailPage = () => {
     return (
         <div className="bg-[#121212] text-white font-sans relative overflow-x-hidden min-h-screen pb-32">
 
-            {/* 1. Navbar Fiks */}
+            {}
             <motion.nav
                 style={{ backgroundColor: bgColor, opacity: navOpacity }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4 gap-4 shadow-xl pointer-events-none"
@@ -139,12 +139,12 @@ const AlbumDetailPage = () => {
                 </div>
             </motion.nav>
 
-            {/* Background Gradient */}
+            {}
                <div className="absolute top-0 left-0 right-0 h-[50vh] z-0" 
                  style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
 
             <main className="relative z-10 pt-12">
-                {/* 2. Album Header (Foto + Tit) */}
+                {}
                 <AlbumHeader
                     album={currentAlbum}
                     isEditMode={isEditMode}
@@ -158,7 +158,7 @@ const AlbumDetailPage = () => {
                     bgColor={bgColor}
                 />
 
-                {/* 3. Kontwòl Prensipal (Play/Like) */}
+                {}
                 <div className="flex justify-between items-center px-8 py-4 mb-4">
                     <div className="flex items-center gap-8 text-zinc-400">
                         <motion.div whileTap={{ scale: 0.8 }} onClick={handleLikeClick} className="cursor-pointer">
@@ -175,15 +175,15 @@ const AlbumDetailPage = () => {
                     <motion.div
                         whileTap={{ scale: 0.9 }}
                         onClick={() => {
-                            if (isEditMode) return; // Pa fè anyen si n ap modifye
+                            if (isEditMode) return; 
 
                             const isThisAlbumPlaying = currentAlbum?.tracks?.some(t => t.id === currentSong?.id);
 
                             if (isThisAlbumPlaying) {
-                                // Si album sa a t ap jwe deja, jis fè l sispann oswa kontinye
+                                
                                 togglePlay();
                             } else if (currentAlbum?.tracks?.[0]) {
-                                // Si se yon lòt bagay ki t ap jwe, kòmanse premye mizik album sa a
+                                
                                 playSong(currentAlbum.tracks[0] as any, currentAlbum.tracks as any);
                             }
                         }}
@@ -196,7 +196,7 @@ const AlbumDetailPage = () => {
                     </motion.div>
                 </div>
 
-                {/* 4. Lis Mizik yo */}
+                {}
                 <div className="px-4 mt-4 space-y-1">
                     {currentAlbum?.tracks?.map((track, index) => (
                         <TrackItem
@@ -240,7 +240,7 @@ const AlbumDetailPage = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            {/* 5. Floating Button pou Edit Mode */}
+            {}
             {isOwner && (
                 <div className="fixed bottom-44 right-6 z-[150] flex flex-col items-end gap-3">
                     <AnimatePresence>
@@ -265,7 +265,7 @@ const AlbumDetailPage = () => {
                 </div>
             )}
 
-            {/* 6. Modals */}
+            {}
             <AlbumModals
                 showActionModal={showActionModal}
                 setShowActionModal={setShowActionModal}

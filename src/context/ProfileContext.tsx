@@ -29,7 +29,7 @@ interface ProfileData {
     };
 }
 
-// Estrikti pou done paginated yo
+
 interface PaginatedProfiles {
     data: ProfileData[];
     meta: {
@@ -42,11 +42,11 @@ interface PaginatedProfiles {
 interface ProfileContextType {
     profile: ProfileData | null;
     loading: boolean;
-    // --- Nouvo Pwopriyete yo ---
+    
     allProfiles: ProfileData[];
     profilesMeta: PaginatedProfiles['meta'] | null;
     fetchAllProfiles: (page?: number, limit?: number) => Promise<void>;
-    // --------------------------
+    
     refreshProfile: () => Promise<void>;
     updateProfile: (data: any | FormData) => Promise<boolean>;
     becomeArtist: (data: { stageName: string; bio?: string; location?: string; socialLinks?: any }) => Promise<boolean>;
@@ -59,7 +59,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Nouvo states pou lis jeneral la
+    
     const [allProfiles, setAllProfiles] = useState<ProfileData[]>([]);
     const [profilesMeta, setProfilesMeta] = useState<PaginatedProfiles['meta'] | null>(null);
 
@@ -80,14 +80,14 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
-    // Fonksyon pou rale tout pwofil yo ak pagination
+    
     const fetchAllProfiles = async (page = 1, limit = 10) => {
         try {
             const { data } = await api.get<PaginatedProfiles>(`/profiles`, {
                 params: { page, limit }
             });
 
-            // Si se paj 1 nou ranplase lis la, si se paj > 1 nou ajoute nouvo yo
+            
             setAllProfiles(prev => (page === 1 ? data.data : [...prev, ...data.data]));
 
             setProfilesMeta(data.meta);
@@ -123,10 +123,10 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }): Promise<boolean> => {
         try {
             setLoading(true);
-            // Nou rele wout nou te kreye nan NestJS la
+            
             const { data } = await api.post('/profiles/become-artist', artistData);
 
-            // Nou mete ajou pwofil lokal la ak nouvo done yo (isArtist ap vin true)
+            
             setProfile(data);
 
             toast.success("Felisitasyon! Ou se yon atis ofisyèl kounye a.");

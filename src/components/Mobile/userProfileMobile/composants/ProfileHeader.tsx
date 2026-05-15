@@ -19,12 +19,12 @@ export const ProfileHeader = ({
     getPlatformIcon, navigate, imgRef, setIsAlbumModalOpen
 }: ProfileHeaderProps) => {
     
-    // Fonksyon pou netwaye non kle sosyal yo (ex: instagram -> INSTAGRAM)
+    
     const formatKey = (key: string) => key.replace(/([A-Z])/g, ' $1').trim().toUpperCase();
 
     return (
         <>
-            {/* --- STICKY NAVIGATION --- */}
+            {}
             <motion.nav
                 style={{ backgroundColor: bgColor || '#09090b', opacity: navOpacity }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center justify-between px-6 backdrop-blur-md border-b border-white/5"
@@ -50,7 +50,7 @@ export const ProfileHeader = ({
                 </div>
             </motion.nav>
 
-            {/* --- HERO BANNER --- */}
+            {}
             <div className="relative h-72 w-full overflow-hidden">
                 <motion.img 
                     ref={imgRef} 
@@ -58,15 +58,15 @@ export const ProfileHeader = ({
                     className="absolute inset-0 w-full h-full object-cover shadow-inner" 
                     alt="banner" 
                 />
-                {/* Gradient Overlay pou pi bon lizibilite */}
+                {}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#09090b]/40 to-[#09090b]" />
             </div>
 
-            {/* --- PROFILE CONTENT --- */}
+            {}
             <main className="relative z-10 -mt-20 px-6">
                 <motion.div style={{ scale: headerScale }} className="flex flex-col">
                     
-                    {/* Avatar & Verification */}
+                    {}
                     <div className="relative w-32 h-32 mb-5 group">
                         <div className="w-full h-full rounded-3xl overflow-hidden border-[4px] border-[#09090b] bg-zinc-800 shadow-2xl rotate-3 group-hover:rotate-0 transition-transform duration-400">
                             <img 
@@ -82,7 +82,7 @@ export const ProfileHeader = ({
                         )}
                     </div>
 
-                    {/* Name & Badge */}
+                    {}
                     <div className="flex items-end gap-3 mb-1">
                         <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none text-white">
                             {profile?.user?.name}
@@ -97,7 +97,7 @@ export const ProfileHeader = ({
                         @{profile?.username || 'username'}
                     </p>
 
-                    {/* Info Chips (Location & Socials) */}
+                    {}
                     <div className="flex flex-wrap items-center gap-2 mb-6">
                         {profile?.location && (
                             <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-300 backdrop-blur-sm">
@@ -106,7 +106,7 @@ export const ProfileHeader = ({
                             </div>
                         )}
 
-                        {/* Dinamik Social Links */}
+                        {}
                         {socialLinks && Object.entries(socialLinks).map(([key, url]) => (
                             url && (
                                 <motion.a
@@ -128,7 +128,7 @@ export const ProfileHeader = ({
                         ))}
                     </div>
 
-                    {/* Bio Section */}
+                    {}
                     <div className="relative mb-8">
                         <div className="absolute left-0 top-0 w-1 h-full bg-orange-400/30 rounded-full" />
                         <p className="pl-4 text-sm text-zinc-400 leading-relaxed italic font-medium">
@@ -136,7 +136,7 @@ export const ProfileHeader = ({
                         </p>
                     </div>
 
-                    {/* Action Buttons */}
+                    {}
                     <div className="grid grid-cols-1 gap-3 ">
                         <motion.button
                             whileTap={{ scale: 0.98 }}
@@ -160,7 +160,7 @@ export const ProfileHeader = ({
                 </motion.div>
             </main>
 
-            {/* Custom CSS pou animasyon spin lan si w vle */}
+            {}
             <style>{`
                 .animate-spin-slow {
                     animation: spin 6s linear infinite;

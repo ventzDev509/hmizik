@@ -7,40 +7,40 @@ import { useTracks } from '../../../context/TrackContext';
 import { useAlbum } from '../../../context/AlbumContext';
 
 const AddMusicMobile: React.FC = () => {
-    // Hooks Context
+    
     const { uploadTrack, uploading: isUploadingSingle } = useTracks();
     const { addTrack, isUploading: isUploadingAlbum, uploadProgress } = useAlbum();
     
-    // Hooks Navigasyon
+    
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     
-    // Detekte mòd operasyon
+    
     const albumId = searchParams.get('albumId');
     const isAddingToAlbum = Boolean(albumId);
 
-    // States lokal pou fichye
+    
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [duration, setDuration] = useState<number>(0);
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const [isProcessingAudio, setIsProcessingAudio] = useState(false);
 
-    // State pou fòm
+    
     const [formData, setFormData] = useState({
         title: '',
         genre: 'Konpa',
         description: '',
     });
 
-    // Refs
+    
     const audioInputRef = useRef<HTMLInputElement>(null);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
-    // Compute uploading status
+    
     const combinedUploading = isUploadingSingle || isUploadingAlbum;
 
-    // Kalkile longè mizik la (Analyzing Buffer)
+    
     const getAudioDuration = (file: File): Promise<number> => {
         setIsProcessingAudio(true);
         return new Promise((resolve) => {
@@ -129,7 +129,7 @@ const AddMusicMobile: React.FC = () => {
         <div className="min-h-screen bg-[#121212] text-white font-sans pb-32">
             <Toaster position="top-center" reverseOrder={false} />
 
-            {/* --- OVERLAY UPLOAD PROGRESS VIZYALIZÈ --- */}
+            {}
             <AnimatePresence>
                 {combinedUploading && (
                     <motion.div
@@ -155,7 +155,7 @@ const AddMusicMobile: React.FC = () => {
                                 <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">H-MIZIK Cloud Storage</p>
                             </div>
 
-                            {/* PROGRESS BAR */}
+                            {}
                             <div className="relative w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                 <motion.div
                                     className="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-600 to-orange-400"
@@ -169,7 +169,7 @@ const AddMusicMobile: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* HEADER */}
+            {}
             <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 sticky top-0 bg-[#121212]/95 backdrop-blur-md z-40">
                 <div onClick={() => navigate(-1)} className="p-2 bg-zinc-900 rounded-lg cursor-pointer">
                     <X className="text-zinc-400" size={18} />
@@ -177,11 +177,11 @@ const AddMusicMobile: React.FC = () => {
                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 italic">
                     {isAddingToAlbum ? "Add to Album" : "Upload Single"}
                 </h2>
-                <div className="w-10"></div> {/* Spacer */}
+                <div className="w-10"></div> {}
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-8 max-w-md mx-auto">
-                {/* COVER PICKER */}
+                {}
                 <div className="flex flex-col items-center">
                     <motion.div
                         whileTap={{ scale: 0.95 }}
@@ -205,7 +205,7 @@ const AddMusicMobile: React.FC = () => {
                     <input type="file" ref={coverInputRef} onChange={handleCoverChange} accept="image/*" className="hidden" />
                 </div>
 
-                {/* AUDIO SELECTOR SECTION */}
+                {}
                 <div className="space-y-3">
                     <div
                         onClick={() => !isProcessingAudio && audioInputRef.current?.click()}
@@ -234,7 +234,7 @@ const AddMusicMobile: React.FC = () => {
                     </div>
                 </div>
 
-                {/* FIELDS */}
+                {}
                 <div className="space-y-5 bg-zinc-900/30 p-6 rounded-[3rem] border border-white/5">
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 ml-2 italic">Song Title</label>

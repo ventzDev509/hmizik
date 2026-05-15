@@ -15,16 +15,16 @@ const BottomMenu: React.FC = () => {
         <div className=" w-full text-white font-sans">
 
 
-            {/* --- ZÒN KI FIKSE ANBA A --- */}
+            {}
             <div className="fixed bottom-0 left-0 right-0 z-[100]">
 
-                {/* 2. MINI PLAYER (Floating & Compact) */}
+                {}
                 <div className="">
                     <BottomMPlayerMobile />
 
                 </div>
 
-                {/* 3. CLASSIC BOTTOM MENU (Glas Transparan san background dèyè ikon) */}
+                {}
                 <nav className="bg-black/90  border-t border-white/10 pt-4 pb-5 px-2">
                     <div className="flex justify-center items-center max-w-lg gap-16 mx-auto">
                         <NavItem
@@ -66,7 +66,7 @@ const BottomMenu: React.FC = () => {
     );
 };
 
-// --- NavItem san okenn background, sèlman transparan ---
+
 const NavItem = ({ label, icon: Icon, active, onClick }: any) => (
     <div
         onClick={onClick}

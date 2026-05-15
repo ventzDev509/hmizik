@@ -28,12 +28,12 @@ const TrackItem: React.FC<TrackItemProps> = ({
     return (
         <div className={`flex items-center gap-4 p-3 rounded-2xl transition active:bg-white/10 ${isActive ? 'bg-white/5' : ''}`}>
 
-            {/* Nimewo oswa Equalizer */}
+            {}
             <div className="text-xs text-zinc-600 w-5 flex justify-center font-bold">
                 {isActive && isPlaying ? <Equalizer /> : <span>{index + 1}</span>}
             </div>
 
-            {/* Foto Mizik la */}
+            {}
             <div className="w-12 h-12 relative flex-shrink-0 cursor-pointer" onClick={!isEditMode ? onPlay : undefined}>
                 <img src={trackImage} className="w-full h-full object-cover rounded-lg shadow-lg" alt={track.title} />
                 {isActive && (
@@ -43,7 +43,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
                 )}
             </div>
 
-            {/* Enfòmasyon Tit */}
+            {}
             <div className="flex-1 overflow-hidden cursor-pointer" onClick={!isEditMode ? onPlay : undefined}>
                 <h4 className={`text-sm font-black truncate italic uppercase tracking-tight ${isActive ? 'text-orange-500' : 'text-zinc-100'}`}>
                     {track.title}
@@ -51,7 +51,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
                 <p className="text-[10px] text-zinc-500 font-bold uppercase line-clamp-1">{albumTitle}</p>
             </div>
 
-            {/* Bouton Aksyon yo */}
+            {}
             <div className="flex items-center gap-4">
                 {isEditMode ? (
                     <motion.button

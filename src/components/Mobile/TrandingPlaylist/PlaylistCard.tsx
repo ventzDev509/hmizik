@@ -24,10 +24,10 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const { incrementTrackPlay } = usePlaylists();
   const navigate = useNavigate();
   
-  // 2. Aksè ak eta Player la
+  
   const { currentSong, isPlaying } = useAudio();
 
-  // 3. Verifikasyon si yon mizik nan playlist sa a ap jwe kounye a
+  
   const isThisPlaylistPlaying = isPlaying && 
     playlist.tracks?.some(track => track.id === currentSong?.id);
 
@@ -62,7 +62,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       onClick={() => navigate(`/playlist/${playlist.id}`)}
     >
 
-      {/* GRID DINAMIK */}
+      {}
       <div className={`relative aspect-square rounded-xl overflow-hidden mb-4 shadow-2xl bg-zinc-800 grid gap-[1px] ${getGridClass()}`}>
         {count > 0 ? (
           tracksToShow.map((track, index) => (
@@ -88,14 +88,14 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
           </div>
         )}
 
-        {/* 4. ENDIKATÈ ANIMASYON (Equalizer) */}
+        {}
         {isThisPlaylistPlaying && (
           <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center">
               <Equalizer/>
           </div>
         )}
 
-        {/* Play Button Overlay (Kache si l ap jwe deja) */}
+        {}
         {!isThisPlaylistPlaying && (
           <div
             className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
@@ -110,7 +110,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         )}
       </div>
 
-      {/* TEXT INFO */}
+      {}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <h3 className={`text-[11px] font-black uppercase italic tracking-tight truncate ${isThisPlaylistPlaying ? "text-orange-500" : "text-white"}`}>

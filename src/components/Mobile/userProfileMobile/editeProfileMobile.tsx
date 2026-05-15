@@ -3,12 +3,12 @@ import { Camera, MapPin, Loader2, Instagram, Youtube, Music2, Facebook, Info } f
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 
-// Assets & Menu
+
 import userImg from "../../../assets/OIP.webp";
 import banner from "../../../assets/banner.jpg";
 import BottomMenu from '../menu/BottomMenu';
 
-// Contexts & Utils
+
 import { useProfile } from '../../../context/ProfileContext';
 import { compressImage } from '../../utils/compressor';
 
@@ -16,7 +16,7 @@ const EditProfileMobile: React.FC = () => {
     const { profile, loading, updateProfile } = useProfile();
     const [isSaving, setIsSaving] = useState(false);
 
-    // 1. Nou ajoute "location" ak "socialLinks" kòm objè
+    
     const [formData, setFormData] = useState({
         name: "",
         bio: "",
@@ -54,7 +54,7 @@ const EditProfileMobile: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Jere rezo sosyal yo separeman
+    
     const handleSocialChange = (platform: string, value: string) => {
         setFormData(prev => ({
             ...prev,
@@ -118,7 +118,7 @@ const EditProfileMobile: React.FC = () => {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="fixed inset-0 bg-[#121212] flex flex-col z-[9999]"
             >
-                {/* --- HEADER --- */}
+                {}
                 <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-[#121212]/80 backdrop-blur-md sticky top-0 z-50">
                     <button onClick={() => window.history.back()} className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Anile</button>
                     <h2 className="text-xs font-black uppercase tracking-[0.2em] text-white italic">Edite Pwofil</h2>
@@ -132,7 +132,7 @@ const EditProfileMobile: React.FC = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto pb-32">
-                    {/* --- BANNER --- */}
+                    {}
                     <div className="relative h-48 bg-zinc-900">
                         <img src={formData.bannerUrl} className="w-full h-full object-cover opacity-50" alt="Banner" />
                         <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer">
@@ -141,7 +141,7 @@ const EditProfileMobile: React.FC = () => {
                         </label>
                     </div>
 
-                    {/* --- AVATAR --- */}
+                    {}
                     <div className="px-6 -mt-16 mb-10 flex flex-col items-center">
                         <div className="relative w-32 h-32 rounded-full border-[6px] border-[#121212] bg-zinc-800 overflow-hidden group shadow-2xl">
                             <img src={formData.avatarUrl} className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" />
@@ -152,10 +152,10 @@ const EditProfileMobile: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* --- FÒM NAN --- */}
+                    {}
                     <div className="px-6 space-y-10">
                         
-                        {/* Enfòmasyon Debaz */}
+                        {}
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                 <Info size={14} /> Enfòmasyon Pèsonèl
@@ -189,7 +189,7 @@ const EditProfileMobile: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Rezo Sosyal (Look Atis) */}
+                        {}
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em]">Rezo Sosyal</h3>
                             
@@ -231,7 +231,7 @@ const EditProfileMobile: React.FC = () => {
     );
 };
 
-// Ti Konpozan pou Input Sosyal yo pou kòd la pi pwòp
+
 const SocialInput = ({ icon, placeholder, value, onChange }: any) => (
     <div className="relative group">
         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-orange-500 transition-colors">

@@ -44,25 +44,25 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
         if (tracks.length === 0) fetchTracks(1);
     }, []);
 
-    // Nan PlayerPage.tsx
-    // 1. Modifye useMemo a pou l pi solid
+    
+    
     const currentSong = useMemo(() => {
         if (audioCurrentSong) return audioCurrentSong;
 
-        // Si nou pa jwenn li nan context, chèche l nan tracks yo
+        
         const trackFromList = tracks.find(t => t.id === songId);
         return trackFromList;
     }, [audioCurrentSong, tracks, songId]);
 
-    // 2. Ajoute yon useEffect pou "AUTO-PLAY" apre refresh
-    const { playSong } = useAudio(); // Asire w ou rale playSong nan useAudio()
+    
+    const { playSong } = useAudio(); 
 
     useEffect(() => {
-        // Si nou gen yon ID nan URL men anyen pa ap jwe nan context la
+        
         if (songId && !audioCurrentSong && tracks.length > 0) {
             const songToPlay = tracks.find(t => t.id === songId);
             if (songToPlay) {
-                playSong(songToPlay, tracks); // Sa ap deklannche lojik playSong nou te ranje a
+                playSong(songToPlay, tracks); 
             }
         }
     }, [songId, audioCurrentSong, tracks, playSong]);
@@ -168,12 +168,12 @@ const PlayerPage: React.FC<PlayerProps> = ({ onClose }) => {
                         ref={imgRef}
                         src={currentSong.coverUrl || "/default-cover.png"}
                         alt={currentSong.title}
-                        // Sa enpòtan pou useImageColors ka li data a san erè sekirite
+                        
                         crossOrigin="anonymous"
                         className="w-full h-full object-cover rounded-lg pointer-events-none"
-                        // Si imaj la chanje (egz: lòt chante), nou asire nou ke koulè a re-kalkile
+                        
                         onLoad={() => {
-                            // Si useImageColors bezwen yon ti pouse, onLoad la ap deklannche rann lan
+                            
                         }}
                     />
                 </motion.div>

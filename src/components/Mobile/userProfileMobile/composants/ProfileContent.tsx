@@ -30,7 +30,7 @@ export const ProfileContent = ({
     const { deleteTrack } = useTracks();
     const [deletingAlbumId, setDeletingAlbumId] = useState<string | null>(null);
 
-    // Fonksyon pou fòmate tan (segond an minit:segond)
+    
     const formatDuration = (seconds: number | undefined | null) => {
         if (!seconds) return "0:00";
         const mins = Math.floor(seconds / 60);
@@ -38,7 +38,7 @@ export const ProfileContent = ({
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // Jesyon efasman album ak loader
+    
     const handleDeleteAlbum = async (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
         if (window.confirm("Èske w sèten w vle efase album sa a nèt ak tout mizik ki ladan l?")) {
@@ -55,7 +55,7 @@ export const ProfileContent = ({
 
     return (
         <div className="mt-10">
-            {/* TABS SELECTION */}
+            {}
             <div className="sticky top-14 z-40 bg-[#121212] border-b flex border-white/5">
                 {['uploads', 'playlists', 'likes'].map((tab) => (
                     <button
@@ -75,11 +75,11 @@ export const ProfileContent = ({
                 ))}
             </div>
 
-            {/* LIST KONTNI */}
+            {}
             <div className="py-8 pb-32">
                 <AnimatePresence mode="wait">
 
-                    {/* TAB: MIZIK (UPLOADS) */}
+                    {}
                     {activeTab === 'uploads' ? (
                         <div className="">
 
@@ -90,7 +90,7 @@ export const ProfileContent = ({
 
                     ) :
 
-                        /* TAB: ALBUM YO (PLAYLISTS) */
+                        
                         activeTab === 'playlists' ? (
                             <motion.div
                                 key="albums"
@@ -99,7 +99,7 @@ export const ProfileContent = ({
                                 exit={{ opacity: 0 }}
                                 className="grid grid-cols-2 gap-4"
                             >
-                                {/* Bouton Kreye Album */}
+                                {}
                                 <motion.div
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setIsAlbumModalOpen(true)}
@@ -111,7 +111,7 @@ export const ProfileContent = ({
                                     <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Nouvo Album</p>
                                 </motion.div>
 
-                                {/* Lis Album yo */}
+                                {}
                                 {albums?.map((album) => (
                                     <motion.div
                                         key={album.id}
@@ -126,7 +126,7 @@ export const ProfileContent = ({
                                                 alt={album.title}
                                             />
 
-                                            {/* Bouton Delete sou Album nan */}
+                                            {}
                                             <div className="absolute top-4 right-4 z-20">
                                                 <motion.button
                                                     whileTap={{ scale: 0.8 }}
@@ -163,7 +163,7 @@ export const ProfileContent = ({
                                 className="space-y-3"
                             >
                                 {tracksLoading ? (
-                                    // Loader pandan mizik yo ap chaje
+                                    
                                     <div className="flex flex-col items-center justify-center py-20 gap-4">
                                         <Loader2 className="text-orange-500 animate-spin" size={32} />
                                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Chajman mizik yo...</p>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // Nou ajoute useState ak useEffect
+import React, { useState, useEffect } from "react"; 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css"
 import Home from "./components/Home/Home";
@@ -27,7 +27,7 @@ import api from "./api/axios";
 import BecomeArtist from "./components/Mobile/BecomeArtist/BecomeArtist";
 import ConfirmEmail from "./components/Mobile/ConfirmEmail/ConfirmEmail";
 function App() {
-  // 1. Nou kreye yon eta pou detekte si moun lan online
+  
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
 
   useEffect(() => {
@@ -48,13 +48,13 @@ function App() {
       try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-          // Rale Token an
+          
           const token = await getToken(messaging, {
             vapidKey: "BK6mtK2hIrhmuNNd7JqltgQ3Vzqpakgf73Yf5lyqn_hc2U5759oJy2mbEIuEPjtq86GTE1B5CC5dLtuvSPYjvuE"
           });
 
           if (token) {
-            // Sove Token nan nan DB (Supabase via NestJS)
+            
             await api.post('/notifications/update-token', { token });
             console.log("Push Token sove ak siksè!", token);
           }
@@ -76,7 +76,7 @@ function App() {
           {!isOnline && isMobile ? (
             <OfflineMusic isRedirected={true} />
           ) : (
-            !isMobile ? <Home /> : ""
+            isMobile ? <HomeMobile /> : ""
           )}
         </>
       ),
@@ -144,7 +144,7 @@ function App() {
     },
     {
       path: "/confirm", element: <>
-        <div className=""><>{isMobile ? <ConfirmEmail /> : ""}</></div>
+        <div className=""><>{isMobile ? <ConfirmEmail /> : <ConfirmEmail />}</></div>
       </>, withBottomNav: true
     },
 
@@ -181,7 +181,7 @@ function App() {
             path={path}
             element={
               <div className={`${withBottomNav ? " pb-20" : ""}`}>
-                {/* 3. Si li offline epi l ap eseye ale nan yon lòt paj ki pa "/", nou ka fòse l wè OfflineMusic tou */}
+                {}
                 {!isOnline && isMobile && path !== "/" ? (
                   <OfflineMusic isRedirected={true} />
                 ) : (

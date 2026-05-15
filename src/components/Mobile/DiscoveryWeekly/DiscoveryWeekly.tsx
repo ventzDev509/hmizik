@@ -25,7 +25,7 @@ const DiscoveryWeekly: React.FC = () => {
     }, []);
 
     const handleShowMore = () => {
-        setVisibleCount(prev => prev + 5); // Ajoute 5 chak fwa
+        setVisibleCount(prev => prev + 5); 
     };
 
     if (loading) return <div className="p-6 text-zinc-500 italic animate-pulse">N ap prepare lis ou a...</div>;
@@ -45,7 +45,7 @@ const DiscoveryWeekly: React.FC = () => {
                 </div>
             </div>
 
-            {/* Lis Mizik yo */}
+            {}
             <div className="flex flex-col gap-1">
                 <AnimatePresence>
                     {tracks.slice(0, visibleCount).map((track: any, index: number) => (
@@ -62,7 +62,7 @@ const DiscoveryWeekly: React.FC = () => {
                 </AnimatePresence>
             </div>
 
-            {/* Bouton Afiche Plis */}
+            {}
             {visibleCount < tracks.length && (
                 <button
                     onClick={handleShowMore}

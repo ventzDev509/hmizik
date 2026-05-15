@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import api from '../api/axios';
 
-// 1. Interface pou yon Mizik
+
 interface Track {
     id: string;
     title: string;
@@ -56,7 +56,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [searchResults, setSearchResults] = useState<Track[]>([]);
     const [hasMore, setHasMore] = useState(true);
 
-    // 1. UPLOAD MIZIK
+    
     const uploadTrack = async (formData: FormData) => {
         setUploading(true);
         try {
@@ -75,7 +75,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 2. FETCH TOUT MIZIK (FEED JENERAL)
+    
     const fetchTracks = async (page: number) => {
         setLoading(true);
         try {
@@ -91,7 +91,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 3. FETCH MIZIK YON ITILIZATÈ
+    
     const fetchUserTracks = async (userId: string, page: number) => {
         setLoading(true);
         try {
@@ -106,7 +106,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 4. FETCH TRENDING (Sa k ap jwe plis)
+    
     const fetchTrending = async (limit: number = 10) => {
         try {
             const { data } = await api.get(`/tracks/trending?limit=${limit}`);
@@ -116,7 +116,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 5. SEARCH MIZIK
+    
     const searchTracks = async (query: string) => {
         if (!query.trim()) {
             setSearchResults([]);
@@ -133,7 +133,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // 6. MOUTE KANTITE PLAYS (AK LOG KONPLÈ POU DEBUG)
+    
     const incrementPlay = async (trackId: string) => {
         if (!trackId) {
             console.warn("H-MIZIK DEBUG: trackId pa defini!");
@@ -143,12 +143,12 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         console.log(`%c H-MIZIK DEBUG: Tantativ Play pou ID: ${trackId} `, 'background: #222; color: #bada55');
 
         try {
-            // Rele Back-end la (Asire w se POST epi URL la kòrèk)
+            
             const response = await api.post(`/tracks/${trackId}/play`);
 
             console.log("H-MIZIK DEBUG: Repons Sèvè:", response.status, response.data);
 
-            // Si sèvè a reponn byen, nou update UI a
+            
             const updatePlayCount = (list: Track[]) =>
                 list.map(t => t.id === trackId ? { ...t, playCount: (t.playCount || 0) + 1 } : t);
 
@@ -160,7 +160,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             console.error("%c H-MIZIK ERROR: incrementPlay echwe! ", 'background: #ff0000; color: #ffffff');
 
             if (error.response) {
-                // Sèvè a reponn ak erè (ex: 404, 500, 401)
+                
                 console.error("Detay Erè (Server):", error.response.data);
                 console.error("Status kòd:", error.response.status);
 
@@ -168,7 +168,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     toast.error("Endpoint '/play' la pa egziste nan Back-end lan.");
                 }
             } else if (error.request) {
-                // Request pati men sèvè a pa reponn
+                
                 console.error("Erè Rezo (Network Error): Sèvè a pa reponn.");
                 toast.error("Pwoblèm koneksyon ak sèvè a.");
             } else {
@@ -179,18 +179,18 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 
     const deleteTrack = async (trackId: string) => {
-        // Yon ti konfimasyon rapid anvan nou efase
+        
         if (!window.confirm("Èske ou sèten ou vle efase mizik sa a nèt sou H-MIZIK?")) return;
 
         setLoading(true);
         try {
-            // Nou rele Backend la (Route nou te kreye a)
+            
             const response = await api.delete(`/tracks/remove/${trackId}`);
 
             if (response.status === 200 || response.status === 204) {
                 toast.success("Mizik la efase ak siksè!");
 
-                // UPDATE UI: Nou retire mizik la nan tout lis yo san nou pa bezwen reload paj la
+                
                 const filterList = (list: Track[]) => list.filter(t => t.id !== trackId);
 
                 setTracks(prev => filterList(prev));
@@ -199,7 +199,7 @@ export const TrackProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
         } catch (error: any) {
             console.error("H-MIZIK DELETE ERROR:", error);
-            // const message = error.response?.data?.message || "Nou pa ka efase mizik sa a.";
+            
 
         } finally {
             setLoading(false);

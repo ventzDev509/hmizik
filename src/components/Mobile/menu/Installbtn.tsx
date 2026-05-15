@@ -7,9 +7,9 @@ const InstallButton = () => {
 
   useEffect(() => {
     const handler = (e: any) => {
-      // Anpeche Chrome montre èd memwa pa defo a
+      
       e.preventDefault();
-      // Sove evènman an pou n itilize l pita
+      
       setDeferredPrompt(e);
       setIsReady(true);
       console.log('✅ PWA Install Prompt ready');
@@ -23,14 +23,14 @@ const InstallButton = () => {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
 
-    // Montre èd memwa enstalasyon an
+    
     deferredPrompt.prompt();
 
-    // Tann itilizatè a reponn
+    
     const { outcome } = await deferredPrompt.userChoice;
     console.log(`User response: ${outcome}`);
 
-    // Netwaye pou l pa parèt de fwa
+    
     setDeferredPrompt(null);
     setIsReady(false);
   };

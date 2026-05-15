@@ -3,7 +3,7 @@ import api from '../api/axios';
 
 interface FollowContextType {
     followingIds: Set<string>;
-    followersCounts: Record<string, number>; // { artistId: count }
+    followersCounts: Record<string, number>; 
     toggleFollow: (artistId: string) => Promise<void>;
     isFollowing: (artistId: string) => boolean;
     updateFollowersCount: (artistId: string, count: number) => void;
@@ -21,7 +21,7 @@ export const FollowProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return followingIds.has(artistId);
     }, [followingIds]);
 
-    // Fonksyon pou mete chif la ajou manyèlman si n sot fè yon fetch
+    
     const updateFollowersCount = useCallback((artistId: string, count: number) => {
         setFollowersCounts(prev => ({ ...prev, [artistId]: count }));
     }, []);
@@ -31,7 +31,7 @@ export const FollowProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         const wasFollowing = followingIds.has(artistId);
         
-        // 1. Optimistic Update (Toggling ID)
+        
         setFollowingIds(prev => {
             const newSet = new Set(prev);
             if (wasFollowing) newSet.delete(artistId);
@@ -39,7 +39,7 @@ export const FollowProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             return newSet;
         });
 
-        // 2. Optimistic Update (Chanje chif la imedyatman nan UI a)
+        
         setFollowersCounts(prev => ({
             ...prev,
             [artistId]: (prev[artistId] || 0) + (wasFollowing ? -1 : 1)
@@ -47,15 +47,15 @@ export const FollowProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         try {
             const response = await api.post(`/follow/${artistId}`);
-            // Nou ka pwofite mande backend lan voye nouvo count lan tou nan response la
-            // Si backend la voye l, nou senkronize l
+            
+            
             if (response.data.newCount !== undefined) {
                 updateFollowersCount(artistId, response.data.newCount);
             }
         } catch (error) {
             console.error("Erè nan toggle follow:", error);
             
-            // Rollback si sa echwe
+            
             setFollowingIds(prev => {
                 const newSet = new Set(prev);
                 if (wasFollowing) newSet.add(artistId);

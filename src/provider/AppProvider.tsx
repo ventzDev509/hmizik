@@ -3,12 +3,12 @@ import { useLocation } from 'react-router-dom';
 import OfflineMusic from '../components/Mobile/OfflineMusic/OfflineMusic';
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
-    // Nou kòmanse ak 'true' pa default pou evite "flash" offline a
+    
     const [isOnline, setIsOnline] = useState(true); 
     const location = useLocation();
 
     useEffect(() => {
-        // Nou mete valè reyèl la apre konponan an fin "mount"
+        
         setIsOnline(navigator.onLine);
 
         const goOnline = () => setIsOnline(true);
@@ -23,7 +23,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         };
     }, []);
 
-    // SI LI ONLINE, NOU PA JANM MONTRE PAJ OFFLINE LAN
+    
     if (!isOnline && location.pathname !== '/telechaje') {
         return <OfflineMusic isRedirected={true} />;
     }

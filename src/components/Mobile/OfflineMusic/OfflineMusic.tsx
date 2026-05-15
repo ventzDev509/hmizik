@@ -11,7 +11,7 @@ export const OfflineImage = ({ url, className, fallback, ...props }: any) => {
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
 
-    // Si pa gen URL oswa si gen yon erè chajman, montre fallback la
+    
     if (!url || error) return fallback;
 
     return (
@@ -19,8 +19,8 @@ export const OfflineImage = ({ url, className, fallback, ...props }: any) => {
             <img
                 src={url}
                 {...props}
-                crossOrigin="anonymous" // Trè enpòtan pou Supabase offline
-                loading="eager" // Chaje l vit piske li nan kach
+                crossOrigin="anonymous" 
+                loading="eager" 
                 className={`
           w-full h-full object-cover
           transition-opacity duration-500
@@ -30,7 +30,7 @@ export const OfflineImage = ({ url, className, fallback, ...props }: any) => {
                 onError={() => setError(true)}
             />
 
-            {/* Shimmer loading animasyon */}
+            {}
             {!loaded && !error && (
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
             )}
@@ -38,22 +38,22 @@ export const OfflineImage = ({ url, className, fallback, ...props }: any) => {
     );
 };
 
-// --- PAJ OFFLINE PRENSIPAL LA ---
-// ... (enpòtasyon yo rete menm jan)
+
+
 
 const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
     const allCachedUrls = useOfflineTracks();
     const { playSong, currentSong } = useAudio();
     const navigate = useNavigate();
 
-    // 1. Nou rekipere metadata yo an premye
+    
     const offlineData = JSON.parse(localStorage.getItem('offline_metadata') || '{}');
 
-    // 2. FILTRAJ KI PI STRIK: 
-    // Nou tcheke si se yon track EPIDOT si li gen metadata ki sove nan localStorage
+    
+    
     const musicTracks = allCachedUrls.filter(url => {
         const isTrack = url.includes('/tracks/');
-        const hasInfo = !!offlineData[url]; // Sèlman si nou gen tit/imaj pou li
+        const hasInfo = !!offlineData[url]; 
         return isTrack && hasInfo;
     });
 
@@ -103,7 +103,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#4a1d05] via-[#1a0b02] to-[#121212] text-zinc-100 font-sans relative">
-            {/* Header ... */}
+            {}
             <div className="sticky top-0 z-50 px-4 py-4 flex items-center justify-between backdrop-blur-xl bg-black/10">
                 <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full active:scale-90 transition-all border border-white/5">
                     <ChevronLeft size={24} />
@@ -118,7 +118,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
             </div>
 
             <div className="px-5 pt-10">
-                {/* Visual Header ... */}
+                {}
                 <div className="relative mx-auto w-44 h-44 flex items-center justify-center">
                     <div className="relative w-40 h-40 flex items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-orange-500 to-orange-700 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 z-10">
                         <Download size={70} className="text-white animate-bounce-slow" />
@@ -140,7 +140,7 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                     </button>
                 </div>
 
-                {/* Song List */}
+                {}
                 <div className="space-y-2 pb-44 relative z-10">
                     {musicTracks.length === 0 ? (
                         <div className="text-center py-20 opacity-30 italic bg-black/20 rounded-3xl border border-dashed border-white/5">
@@ -149,14 +149,14 @@ const OfflineMusic = ({ isRedirected = false }: { isRedirected?: boolean }) => {
                     ) : (
                         musicTracks.map((url, index) => {
                             const metadata = offlineData[url];
-                            // Sekirite: Si metadata a ta manke malgre filtraj la
+                            
                             if (!metadata) return null;
 
                             const isPlaying = currentSong?.audioUrl === url;
 
                             return (
                                 <div
-                                    key={url} // Itilize URL kòm kle pito
+                                    key={url} 
                                     className={`flex items-center gap-4 p-3 rounded-2xl transition-all group border ${isPlaying ? 'bg-orange-500/10 border-orange-500/20' : 'bg-black/20 border-white/5'
                                         } backdrop-blur-sm active:bg-white/10`}
                                     onClick={() => handlePlayTrack(index)}

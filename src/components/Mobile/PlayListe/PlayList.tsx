@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Konpozan nou dekoupe yo
+
 import PlaylistHeader from './components/PlaylistHeader';
 import PlaylistControls from './components/PlaylistControls';
 import SuggestionItem from './components/SuggestionItem';
 import PlaylistModals from './components/PlaylistModals';
 import BottomMenu from '../menu/BottomMenu';
 
-// Hooks ak Contexts
+
 import { useImageColors } from "../../utils/GetColor";
 import { useTracks } from '../../../context/TrackContext';
 import { useAudio } from '../../../provider/PlayerContext';
@@ -28,14 +28,14 @@ const PlaylistPage = () => {
         isBuffering, addToQueue
     } = useAudio();
 
-    // States
+    
     const [showActionModal, setShowActionModal] = useState(false);
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [selectedSongForActions, setSelectedSongForActions] = useState<any>(null);
     const [isAddingToQueue, setIsAddingToQueue] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
-    // Lojik pou jwenn mizik la ak sijesyon yo
+    
     const selectedTrack = useMemo(() => tracks.find(t => t.id === id), [tracks, id]);
 
     const suggestions = useMemo(() => {
@@ -45,7 +45,7 @@ const PlaylistPage = () => {
             .slice(0, 15);
     }, [tracks, selectedTrack]);
 
-    // Koulè ak Animasyon
+    
     const { bgColor, imgRef } = useImageColors(selectedTrack?.coverUrl || "");
     const { scrollY } = useScroll();
     const imgOpacity = useTransform(scrollY, [0, 200], [1, 0]);
@@ -84,7 +84,7 @@ const PlaylistPage = () => {
     return (
         <div className="bg-[#121212] text-white font-sans relative overflow-x-hidden min-h-screen">
 
-            {/* 1. NAVBAR STICKY */}
+            {}
             <motion.nav
                 style={{ backgroundColor: bgColor, opacity: navOpacity }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4 gap-4 pointer-events-none"
@@ -100,12 +100,12 @@ const PlaylistPage = () => {
                 </div>
             </motion.nav>
 
-            {/* Background Gradient */}
+            {}
             <div className="absolute top-0 left-0 right-0 h-[50vh] z-0"
                 style={{ background: `linear-gradient(to bottom, ${bgColor || '#333'} 0%, #121212 100%)` }} />
 
             <main className="relative z-10 pt-10">
-                {/* 2. Header (Foto + Tit) */}
+                {}
                 <PlaylistHeader
                     track={selectedTrack}
                     imgOpacity={imgOpacity}
@@ -113,7 +113,7 @@ const PlaylistPage = () => {
                     imgRef={imgRef}
                 />
 
-                {/* 3. Controls (Play/Like/Download Sticky) */}
+                {}
                 <PlaylistControls
                     track={selectedTrack}
                     isScrolled={isScrolled}
@@ -128,7 +128,7 @@ const PlaylistPage = () => {
                     }}
                 />
 
-                {/* 4. Lis Sijesyon yo */}
+                {}
                 <div className="px-4 mt-8 space-y-1 pb-40">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic mb-6 px-2 opacity-60">
                         Menm jan ak sa
@@ -157,7 +157,7 @@ const PlaylistPage = () => {
 
             <BottomMenu />
 
-            {/* 5. Modals */}
+            {}
             <PlaylistModals
                 showAction={showActionModal}
                 setShowAction={setShowActionModal}

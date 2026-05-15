@@ -23,7 +23,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
 
     const TARIF_HTG = artistProfile?.customTarif ?? 0.20;
     const SEUIL_PEMAN = artistProfile?.payoutThreshold ?? 2500;
-    // 1. KALKIL STATS JENERAL
+    
     const stats = useMemo(() => {
         const totalPlays = tracks.reduce((acc, track) => acc + (track.playCount || 0), 0);
         const totalEarningsHTG = totalPlays * TARIF_HTG;
@@ -39,7 +39,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
         };
     }, [tracks]);
 
-    // 2. LIS TOP 5 MIZIK
+    
     const topTracks = useMemo(() => {
         return [...tracks]
             .sort((a, b) => (b.playCount || 0) - (a.playCount || 0))
@@ -74,7 +74,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8 pb-10"
         >
-            {/* HEADER */}
+            {}
             <div className="flex flex-col gap-1">
                 <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">
                     Statistik Atis
@@ -87,7 +87,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 </div>
             </div>
 
-            {/* GRID KAT STATS */}
+            {}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
                     icon={<Headphones className="text-orange-500" size={20} />}
@@ -115,7 +115,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 />
             </div>
 
-            {/* PROGRESS BAR POU PEMAN */}
+            {}
             <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03] backdrop-blur-sm">
                 <div className="flex justify-between items-end mb-5 text-left">
                     <div>
@@ -142,9 +142,9 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 </p>
             </div>
 
-            {/* TOP TRACKS & VIL YO */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* LIS TOP 5 REYÈL */}
+                {}
                 <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03]">
                     <h3 className="text-sm font-black uppercase italic flex items-center gap-2 text-white mb-8">
                         <BarChart3 size={18} className="text-orange-500" />
@@ -170,7 +170,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                     </div>
                 </div>
 
-                {/* VIL YO REYÈL */}
+                {}
                 <div className="space-y-4">
                     <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/[0.03]">
                         <h4 className="text-[10px] font-black uppercase text-zinc-500 mb-6 flex items-center gap-2 text-left">
@@ -194,7 +194,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                         </div>
                     </div>
 
-                    {/* KONSÈY DINAMIK */}
+                    {}
                     <div className="bg-orange-600/5 rounded-[2.5rem] p-8 border border-orange-600/10 flex flex-col justify-center text-left">
                         <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-4">
                             <Lightbulb size={20} className="text-black" />
@@ -208,18 +208,18 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
                 </div>
             </div>
 
-            {/* BOUTON PEMAN */}
+            {}
            <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     className="bg-gradient-to-br from-orange-500 to-orange-400 rounded-[2.5rem] p-8 text-black relative overflow-hidden border border-white/20"
 >
-    {/* --- DEKORASYON BACKGROUND --- */}
+    {}
     <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16 blur-3xl" />
     <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-2xl" />
     
     <div className="relative z-10">
-        {/* Badge estati */}
+        {}
         <div className="flex items-center gap-2 mb-6">
             <div className="bg-black/10 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 border border-black/5">
                 <div className={`w-2 h-2 rounded-full animate-pulse ${stats.totalEarningsHTG >= SEUIL_PEMAN ? 'bg-green-600' : 'bg-black/40'}`} />
@@ -236,7 +236,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
             )}
         </div>
 
-        {/* Tit prensipal */}
+        {}
         <div className="space-y-1">
             <h3 className="text-3xl font-black uppercase italic leading-[0.9] tracking-tighter">
                 Fè kòb ak <span className="text-white drop-shadow-sm">vwa ou</span>.
@@ -246,7 +246,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
             </h3>
         </div>
 
-        {/* Deskripsyon ak Progrè */}
+        {}
         <div className="mt-6 space-y-4">
             <p className="text-[11px] font-bold leading-relaxed opacity-80 max-w-[260px]">
                 {stats.totalEarningsHTG >= SEUIL_PEMAN 
@@ -257,7 +257,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
            
         </div>
 
-        {/* Bouton Aksyon */}
+        {}
         <motion.button
             whileHover={stats.totalEarningsHTG >= SEUIL_PEMAN ? { scale: 1.02 } : {}}
             whileTap={stats.totalEarningsHTG >= SEUIL_PEMAN ? { scale: 0.98 } : {}}
@@ -274,7 +274,7 @@ export const ArtistAnalytics = ({ tracks }: AnalyticsProps) => {
         </motion.button>
     </div>
 
-    {/* Ikon dekoratif floating */}
+    {}
     <Wallet 
         size={180} 
         className="absolute -right-10 -bottom-10 opacity-[0.07] -rotate-12 pointer-events-none" 

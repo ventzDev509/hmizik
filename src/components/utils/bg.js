@@ -1,5 +1,5 @@
 
-// *************************bacdrop bg detection***********************
+
 export function addBg() {
 
   var img = document.querySelector(".getColor");
@@ -14,11 +14,11 @@ export function addBg() {
       ctx.drawImage(img, 0, 0);
 
       var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-      var pixelCount = imageData.length / 6; // 4 components: red, green, blue, and alpha
+      var pixelCount = imageData.length / 6; 
 
       var colorMap = {};
 
-      // Iterate through each pixel
+      
       for (var i = 0; i < pixelCount; i++) {
         var r = imageData[i * 4];
         var g = imageData[i * 4 + 1];
@@ -43,15 +43,15 @@ export function addBg() {
         }
       }
 
-      // Sort colors by frequency
+      
       var colors = Object.keys(colorMap).sort(function (a, b) {
         return colorMap[b] - colorMap[a];
       });
 
-      // Get the dominant colors
+      
       colors = colors.slice(0, numColors);
 
-      // Set the background color of the div
+      
 
       if (colors.length > 0) {
         let div = document.querySelectorAll(".item-bg");

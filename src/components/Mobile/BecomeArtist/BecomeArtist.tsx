@@ -14,7 +14,7 @@ export default function BecomeArtist() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
-  // Form states
+  
   const [stageName, setStageName] = useState(""); 
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
@@ -30,16 +30,16 @@ export default function BecomeArtist() {
     setLoading(true);
 
     try {
-      // Rele fonksyon context la ki kontakte backend lan
+      
       const success = await becomeArtist({
         stageName,
         bio,
         location,
-        socialLinks // Prisma ap sere sa kòm JSON
+        socialLinks 
       });
 
       if (success) {
-        setStep(2); // Montre siksè si tout bagay pase byen
+        setStep(2); 
       }
     } catch (error) {
       console.error("Erè submit:", error);
@@ -72,10 +72,10 @@ export default function BecomeArtist() {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white p-6 font-sans relative overflow-hidden pb-20">
-      {/* Glow Effect nan Background */}
+      {}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-400/5 blur-[120px] rounded-full" />
 
-      {/* Header */}
+      {}
       <div className="relative z-10 flex items-center justify-between mb-12">
         <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-zinc-900/50 border border-white/5 rounded-full hover:bg-zinc-800 transition-colors">
           <ArrowLeft size={18} />
@@ -98,7 +98,7 @@ export default function BecomeArtist() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           
-          {/* SECTION 1: Enfòmasyon Debaz */}
+          {}
           <div className="space-y-6">
             <h3 className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2">Enfòmasyon Debaz</h3>
             
@@ -139,7 +139,7 @@ export default function BecomeArtist() {
             </div>
           </div>
 
-          {/* SECTION 2: Rezo Sosyal */}
+          {}
           <div className="space-y-6 pt-4">
             <h3 className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2">Rezo Sosyal (Opsyonèl)</h3>
             
@@ -179,7 +179,7 @@ export default function BecomeArtist() {
             </div>
           </div>
 
-          {/* BOUTON SUBMIT PWO */}
+          {}
           <div className="pt-8">
             <button 
               type="submit" 
@@ -189,7 +189,7 @@ export default function BecomeArtist() {
               }}
               className="relative w-full group overflow-hidden bg-orange-400 rounded-2xl  p-[1px] transition-all disabled:opacity-30 active:scale-[0.98]"
             >
-              {/* Spinning Border Effect */}
+              {}
               <div className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#fb923c_0%,#18181b_50%,#fb923c_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
               
               <div className="relative flex items-center justify-center gap-3 bg-[#121212] rounded-[15px] py-5 transition-all group-hover:bg-transparent">

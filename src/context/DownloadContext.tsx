@@ -48,7 +48,7 @@ export const DownloadProvider = ({ children }: { children: React.ReactNode }) =>
                         [song.id]: { ...prev[song.id], progress: Math.round(p) }
                     }));
                 }
-                // Si useOfflineDownload ou a sipòte AbortSignal, pase controller.signal la isit la
+                
             );
 
             toast.success(`${song.title} fini!`);
@@ -70,7 +70,7 @@ export const DownloadProvider = ({ children }: { children: React.ReactNode }) =>
     const cancelDownload = (trackId: string) => {
         const task = activeDownloads[trackId];
         if (task) {
-            task.abortController.abort(); // Sa ap sispann request la
+            task.abortController.abort(); 
             setActiveDownloads(prev => {
                 const newState = { ...prev };
                 delete newState[trackId];

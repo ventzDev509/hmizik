@@ -16,13 +16,13 @@ export default function RightPanel({ music, onClose }: RightPanelProps) {
           transition={{ duration: 0.3 }}
           className="w-[350px] bg-neutral-900 text-white p-4 rounded-xl shadow-xl h-screen overflow-y-scroll"
         >
-          {/* Header */}
+          {}
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">À propos</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white">✖</button>
           </div>
 
-          {/* Image */}
+          {}
           <img
           crossOrigin="anonymous"
             src={music?.cover}
@@ -30,7 +30,7 @@ export default function RightPanel({ music, onClose }: RightPanelProps) {
             className="w-full h-48 object-cover rounded-lg mb-4"
           />
 
-          {/* Infos */}
+          {}
           <h3 className="text-2xl font-bold mb-2">{music?.title}</h3>
           <p className="text-gray-400 mb-4">{music?.subtitle}</p>
           

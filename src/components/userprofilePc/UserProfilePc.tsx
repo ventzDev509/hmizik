@@ -23,7 +23,7 @@ const UserProfilePC = () => {
     return (
         <div className=" bg-[#0b0b0b] text-white font-sans">
             
-            {/* 1. BIG HEADER BANNER */}
+            {}
             <div className="relative h-[350px] w-full overflow-hidden">
                 <motion.img 
                     src={banner} 
@@ -38,7 +38,7 @@ const UserProfilePC = () => {
                     }}
                 />
                 
-                {/* 2. PROFILE HERO AREA (Desktop Layout) */}
+                {}
                 <div className="absolute bottom-0 left-0 right-0 z-20 px-12 pb-10 flex items-end gap-8">
                     <div className="relative group">
                         <div className="w-48 h-48 rounded-full border-[6px] border-[#0b0b0b] overflow-hidden shadow-2xl bg-zinc-800">
@@ -73,10 +73,10 @@ const UserProfilePC = () => {
                 </div>
             </div>
 
-            {/* 3. MAIN CONTENT (Two Columns) */}
+            {}
             <main className="px-12 py-10 grid grid-cols-12 gap-12">
                 
-                {/* LEFT COLUMN: Stats & Info */}
+                {}
                 <div className="col-span-4 space-y-8">
                     <section className="bg-zinc-900/40 p-6 rounded-3xl border border-white/5">
                         <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 mb-6">About</h3>
@@ -106,7 +106,7 @@ const UserProfilePC = () => {
                     </section>
                 </div>
 
-                {/* RIGHT COLUMN: Recently Played & Tabs */}
+                {}
                 <div className="col-span-8">
                     <h3 className="text-xl font-black mb-6">Recently Played</h3>
                     <div className="grid grid-cols-4 gap-6 mb-12">
@@ -130,7 +130,7 @@ const UserProfilePC = () => {
                         ))}
                     </div>
 
-                    {/* TABS */}
+                    {}
                     <div className="flex border-b border-zinc-800 mb-6">
                         {['uploads', 're-ups', 'favorites'].map((tab) => (
                             <button
@@ -145,7 +145,7 @@ const UserProfilePC = () => {
                         ))}
                     </div>
 
-                    {/* TAB CONTENT LIST */}
+                    {}
                     <div className="space-y-2">
                         {[1, 2, 3].map((i) => (
                             <div key={i} className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-xl transition group">

@@ -14,7 +14,7 @@ export const usePWA = () => {
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    // Verifikasyon pou Edge/Chrome
+    
     if (window.hasOwnProperty('BeforeInstallPromptEvent')) {
        console.log("Navigatè a sipòte evènman an!");
     }

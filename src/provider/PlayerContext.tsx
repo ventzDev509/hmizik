@@ -40,11 +40,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const { incrementPlay } = useTracks();
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    // States pou Queue ak Playlist
+    
     const [queue, setQueue] = useState<Song[]>([]);
     const [originalPlaylist, setOriginalPlaylist] = useState<Song[]>([]);
 
-    // States pou jwè a
+    
     const [currentSong, setCurrentSong] = useState<Song | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
@@ -121,15 +121,15 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // --- SÈL FONKSYON PLAYSONG LAN ---
+    
    const playSong = async (song: Song, playlist: Song[] = []) => {
     const audio = audioRef.current;
     if (!audio) return;
 
     try {
-        // 1. Netwaye ansyen eta ak ansyen event listeners
+        
         audio.pause();
-        audio.ontimeupdate = null; // Retire ansyen siveyans si te gen youn
+        audio.ontimeupdate = null; 
         audio.removeAttribute('src');
         audio.load();
 
@@ -137,17 +137,17 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsBuffering(true);
         setHasCountedPlay(false);
 
-        // 2. Mizajou Done yo
+        
         setCurrentSong(song);
         if (playlist.length > 0) setOriginalPlaylist(playlist);
         updateMediaSession(song);
 
-        // 3. Konfigirasyon Audio
+        
         audio.src = song.audioUrl;
         audio.crossOrigin = "anonymous";
         audio.preload = "auto";
 
-        // 4. JWE
+        
         const startPlay = async () => {
             try {
                 await audio.play();
@@ -155,17 +155,17 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setIsBuffering(false);
                 localStorage.setItem("lastTrackId", song.id);
 
-                // --- LOJIK FEEDBACK 20 SEGONE ---
+                
                 let feedbackSent = false;
                 audio.ontimeupdate = () => {
                     if (audio.currentTime >= 20 && !feedbackSent) {
                         sendFeedback(song.id, 1);
                         feedbackSent = true; 
-                        audio.ontimeupdate = null; // Nou sispann siveye yon fwa li voye
+                        audio.ontimeupdate = null; 
                         console.log("Feedback 1 voye apre 20 segonn");
                     }
                 };
-                // -------------------------------
+                
 
             } catch (err) {
                 console.warn("Autoplay blocked:", err);
@@ -211,7 +211,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const next = () => {
-        // 1. Tcheke Queue an premye
+        
         if (queue.length > 0) {
             const nextInQueue = queue[0];
             setQueue(prev => prev.slice(1));
@@ -222,7 +222,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             sendFeedback(currentSong?.id, -1);
         }
 
-        // 2. Sinon, playlist nòmal
+        
         if (originalPlaylist.length === 0) return;
 
         let currentIndex = originalPlaylist.findIndex(s => s.id === currentSong?.id);

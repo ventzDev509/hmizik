@@ -55,7 +55,7 @@ const SearchPageMobile: React.FC = () => {
                 <h1 className="text-3xl font-black italic uppercase tracking-tighter">Chèche</h1>
             </header>
 
-            {/* 1. BAR RECHÈCH */}
+            {}
             <div className="sticky top-4 z-50 mb-6">
                 <div className="relative group">
                     <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-900" size={20} />
@@ -73,7 +73,7 @@ const SearchPageMobile: React.FC = () => {
                     )}
                 </div>
 
-                {/* 2. FILTRE YO */}
+                {}
                 <AnimatePresence>
                     {query && (
                         <motion.div
@@ -101,7 +101,7 @@ const SearchPageMobile: React.FC = () => {
                 </AnimatePresence>
             </div>
 
-            {/* 3. KONTNI DINAMIK */}
+            {}
             {!query ? (
                 <div className="space-y-8">
                     {recentSearches.length > 0 && (
@@ -152,7 +152,7 @@ const SearchPageMobile: React.FC = () => {
                         </div>
                     ) : (
                         <>
-                            {/* ATIS */}
+                            {}
                             {(activeFilter === 'all' || activeFilter === 'artists') && results.artists.length > 0 && (
                                 <section>
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Atis</h3>
@@ -175,7 +175,7 @@ const SearchPageMobile: React.FC = () => {
                                 </section>
                             )}
 
-                            {/* MIZIK */}
+                            {}
                             {(activeFilter === 'all' || activeFilter === 'tracks') && results.tracks.length > 0 && (
                                 <section>
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Mizik</h3>
@@ -193,7 +193,7 @@ const SearchPageMobile: React.FC = () => {
                                 </section>
                             )}
 
-                            {/* ALBÒM */}
+                            {}
                             {(activeFilter === 'all' || activeFilter === 'albums') && results.albums.length > 0 && (
                                 <section>
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Albòm</h3>
@@ -211,7 +211,7 @@ const SearchPageMobile: React.FC = () => {
                                 </section>
                             )}
 
-                            {/* PLAYLIS */}
+                            {}
                             {(activeFilter === 'all' || activeFilter === 'playlists') && results.playlists?.length > 0 && (
                                 <section className="mt-8">
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Playlis</h3>

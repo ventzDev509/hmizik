@@ -9,7 +9,7 @@ function CardTwo() {
         <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div onClick={()=>navigate("/song")} key={i} className="min-w-[155px] bg-[#1f1e1e] rounded-md  snap-start group cursor-pointer">
-              {/* CONTAINER IMAJ LA */}
+              {}
               <div className="relative w-full aspect-square mb-3 overflow-hidden rounded-md shadow-[0_8px_16px_rgba(0,0,0,0.4)]">
                 <img
                 crossOrigin="anonymous"
@@ -18,10 +18,10 @@ function CardTwo() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 
-                {/* OVERLAY NWA (pou wave la ka parèt byen) */}
+                {}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
 
-                {/* --- ANIMASYON WAVE (Sèlman sou premye a oswa lè w hover) --- */}
+                {}
                 <div className="absolute  bottom-3 right-3 flex items-end gap-[2px] h-4">
                   <div className="w-[3px] bg-green-500 animate-[wave_0.6s_ease-in-out_infinite]" style={{ height: '60%' }}></div>
                   <div className="w-[3px] bg-green-500 animate-[wave_0.9s_ease-in-out_infinite]" style={{ height: '100%' }}></div>
@@ -30,7 +30,7 @@ function CardTwo() {
                 </div>
               </div>
 
-              {/* TÈKS YO */}
+              {}
               <h3 className="text-[13px] px-2 font-bold truncate text-white/90 group-hover:text-green-500 transition-colors">
                 Daily Mix {i}
               </h3>
@@ -42,7 +42,7 @@ function CardTwo() {
         </div>
       </section>
 
-      {/* STYLES POU ANIMASYON WAVE LA */}
+      {}
       <style>{`
         @keyframes wave {
           0%, 100% { height: 30%; }

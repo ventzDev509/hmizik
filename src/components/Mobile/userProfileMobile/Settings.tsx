@@ -35,7 +35,7 @@ const SettingItem: React.FC<SettingItemProps> = ({ icon, title, subtitle, onClic
 
 const SettingsPage: React.FC = () => {
     return (
-        /* Animasyon Slide soti adwat */
+        
         <motion.div 
             initial={{ x: "100%" }} 
             animate={{ x: 0 }} 
@@ -43,7 +43,7 @@ const SettingsPage: React.FC = () => {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[500] bg-[#121212] text-white overflow-y-auto no-scrollbar"
         >
-            {/* TOP NAVIGATION */}
+            {}
             <div className="sticky top-0 z-50 bg-[#121212]/90 backdrop-blur-xl h-16 flex items-center px-4 border-b border-white/5">
                 <div className="p-2 hover:bg-white/5 rounded-full transition active:scale-90">
                     <ChevronLeft size={24} />
@@ -52,7 +52,7 @@ const SettingsPage: React.FC = () => {
             </div>
 
             <div className="mt-4 pb-20">
-                {/* 1. ACCOUNT */}
+                {}
                 <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -66,7 +66,7 @@ const SettingsPage: React.FC = () => {
                     <SettingItem icon={<Globe size={20}/>} title="Language" subtitle="Haitian Creole (Kreyòl)" />
                 </motion.div>
 
-                {/* 2. PREFERENCES */}
+                {}
                 <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -80,7 +80,7 @@ const SettingsPage: React.FC = () => {
                     <SettingItem icon={<CloudOff size={20}/>} title="Offline Mode" subtitle="Manage your downloaded music" />
                 </motion.div>
 
-                {/* 3. MORE */}
+                {}
                 <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ const SettingsPage: React.FC = () => {
                     <SettingItem icon={<LogOut size={20}/>} title="Logout" danger={true} />
                 </motion.div>
 
-                {/* VERSION FOOTER */}
+                {}
                 <div className="mt-12 text-center pb-10">
                     <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Made with ❤️ in Haiti</p>
                     <p className="text-[9px] text-zinc-700 mt-2 italic">© 2026 H-Mizik Inc.</p>

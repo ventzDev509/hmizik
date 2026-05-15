@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import DiscoveryWeekly from "../DiscoveryWeekly/DiscoveryWeekly";
 import ArtistBanner from "../banner/Banner";
 import PlaylistCard from "../TrandingPlaylist/PlaylistCard";
-// 1. Enpòte Context Playlist la
+
 import { usePlaylists } from "../../../context/PlaylistContext";
 
 function Main() {
@@ -19,17 +19,17 @@ function Main() {
   const { albums, getAlbums, loading: albumLoading } = useAlbum();
   const { fetchRecommendations, recommendedTracks } = useRecommendation();
   
-  // 2. Rekipere done playlist yo
+  
   const { trendingPlaylists, getTrendingPlaylists, loading: playlistLoading } = usePlaylists();
 
   useEffect(() => {
     getAlbums();
     fetchRecommendations();
-    // 3. Chaje playlist yo lè paj la louvri
+    
     getTrendingPlaylists();
   }, []);
 
-  // Konbine loading yo
+  
   const isLoading = albumLoading || playlistLoading;
 
   if (isLoading) return <Loader2 className="animate-spin text-orange-500 mx-auto mt-10" />;
@@ -37,7 +37,7 @@ function Main() {
   return (
     <div className="bg-[#121212] min-h-screen overflow-y-scroll text-white font-sans relative overflow-x-hidden">
 
-      {/* Header Gradient */}
+      {}
       <div
         className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-b from-[#1e1e1e] to-[#121212] pointer-events-none"
         style={{ zIndex: 0 }}
@@ -60,7 +60,7 @@ function Main() {
           <CardOne />
         </section>
 
-        {/* PLAYLIST SECTION (Mwen mete l isit la pou l bay paj la plis fòs) */}
+        {}
         <section className="mt-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">
@@ -117,7 +117,7 @@ function Main() {
           </div>
         </section>
 
-        {/* Footer & PWA */}
+        {}
         <div className="mt-16 px-1 text-[#b3b3b3] text-sm space-y-6 border-t border-white/5 pt-8">
           <h2 className="text-white font-bold text-lg italic">
             H-MIZIK <span className="text-orange-500 text-xs">BETA</span>

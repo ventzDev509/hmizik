@@ -27,7 +27,7 @@ interface ThemeState {
 
 const initialState: ThemeState = {
   colors: {
-    primary: "text-green-500",     // Tailwind class
+    primary: "text-green-500",     
     secondary: "text-gray-900",
     accent: "text-white",
     background: "bg-gray-900",
@@ -39,9 +39,9 @@ const initialState: ThemeState = {
   },
   font: "'Inter', sans-serif",
   sizes: {
-    title: "text-4xl",      // H1
-    subtitle: "text-2xl",   // H2
-    p: "text-base",         // paragraph
+    title: "text-4xl",      
+    subtitle: "text-2xl",   
+    p: "text-base",         
   },
 };
 

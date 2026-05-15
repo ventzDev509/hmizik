@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import api from '../api/axios'; // Enpòte instance axios ou te kreye ak interceptor a
+import api from '../api/axios'; 
 
-// 1. Defini fòm done n ap manipile yo
+
 interface User {
     id: string;
     email: string;
@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // 2. Tcheke otomatikman si user a konekte (Check Auth)
+    
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem('h_mizik_token');
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkAuth();
     }, []);
 
-    // 3. FONKSYON LOGIN 
+    
     const login = async (credentials: any) => {
 
         try {
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    // 4. FONKSYON REGISTER 
+    
     const register = async (formData: any) => {
         try {
             const { data } = await api.post('/users/register', formData);
@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    // 5. FONKSYON MAGIC 
+    
     const magicLink = async (email: string) => {
         try {
             await api.post('/users/magic-register', { email });
@@ -95,13 +95,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    // 6. FONKSYON GOOGLE (Redireksyon dirèk)
+    
     const loginWithGoogle = () => {
-        // window.location.href = 'http://localhost:3000/users/google';
+        
         window.location.href = 'https://hmizikbackend-1.onrender.com/users/google';
     };
 
-    // 7. FONKSYON LOGOUT
+    
     const logout = () => {
         localStorage.removeItem('h_mizik_token');
         setUser(null);

@@ -29,7 +29,7 @@ export default function BottomPlayer() {
         toggleRepeat
     } = useAudio();
 
-    // Nou kreye yon eta lokal pou "drag" la pou bare a pa "stutter" lè w ap deplase l
+    
     const [isDragging, setIsDragging] = useState(false);
     const [localProgress, setLocalProgress] = useState(0);
 
@@ -51,7 +51,7 @@ export default function BottomPlayer() {
     return (
         <div className="fixed z-[300] bottom-0 left-0 right-0 bg-[#000]/95 backdrop-blur-md border-t border-white/5 text-white flex items-center justify-between px-4 py-3 shadow-2xl h-20">
             
-            {/* 1. SEKSYON ENFÒMASYON */}
+            {}
             <div className="flex items-center gap-4 w-[30%] min-w-[180px]">
                 <div className="relative h-14 w-14 flex-shrink-0 group overflow-hidden rounded-md shadow-md">
                     <img 
@@ -70,7 +70,7 @@ export default function BottomPlayer() {
                 </div>
             </div>
 
-            {/* 2. SEKSYON KONTWÒL (SANT) */}
+            {}
             <div className="flex flex-col items-center w-[40%] max-w-[700px]">
                 <div className="flex items-center gap-6 mb-2">
                     <button 
@@ -104,7 +104,7 @@ export default function BottomPlayer() {
                     </button>
                 </div>
 
-                {/* PROGRESS BAR */}
+                {}
                 <div className="flex items-center gap-3 w-full group h-6">
                     <span className="text-[11px] text-gray-500 min-w-[35px] text-right font-mono">
                         {formatTime(currentTime)}
@@ -121,18 +121,18 @@ export default function BottomPlayer() {
                             onChange={handleSeekChange}
                             className="absolute w-full h-full opacity-0 z-20 cursor-pointer"
                         />
-                        {/* Background Track */}
+                        {}
                         <div className="w-full h-[4px] bg-white/20 rounded-full overflow-hidden">
-                            {/* Progrès */}
+                            {}
                             <div 
                                 className="h-full bg-white group-hover:bg-green-500 transition-colors duration-200 relative"
                                 style={{ width: `${progress}%` }}
                             >
-                                {/* Efè briyan sou pwent lan */}
+                                {}
                                 <div className="absolute right-0 top-0 h-full w-[2px] bg-white shadow-[0_0_10px_white]" />
                             </div>
                         </div>
-                        {/* Handle (Pwen an) */}
+                        {}
                         <div 
                             className="absolute h-3 w-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
                             style={{ left: `calc(${progress}% - 6px)` }}
@@ -145,7 +145,7 @@ export default function BottomPlayer() {
                 </div>
             </div>
 
-            {/* 3. VOLUME SEKSYON */}
+            {}
             <div className="flex items-center gap-3 w-[30%] justify-end group/vol">
                 <FiVolume2 className={`${volume === 0 ? 'text-red-500' : 'text-gray-400'} group-hover/vol:text-white transition-colors`} size={20} />
                 <div className="relative w-28 flex items-center h-6">

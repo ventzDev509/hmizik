@@ -137,12 +137,12 @@ const PlaylistDetailPage = () => {
     return (
         <div className="min-h-screen text-white relative pb-40 overflow-x-hidden select-none" style={{ backgroundColor: themeColor }}>
             
-            {/* OVERLAY AJISTE (PA TROP WO) */}
+            {}
             <div className="absolute top-0 inset-x-0 bottom-0 bg-gradient-to-b from-black/0 via-black/60 to-[#121212] z-0 pointer-events-none" />
 
             <motion.nav 
                 initial={false}
-                // NAVBAR PRAN BGCOLOR LÈ LI SCROLL
+                
                 animate={{ backgroundColor: isScrolled ? themeColor : 'rgba(0,0,0,0)' }}
                 className="fixed top-0 left-0 right-0 h-16 z-[100] flex items-center px-4  transition-colors duration-300"
             >
@@ -183,7 +183,7 @@ const PlaylistDetailPage = () => {
                         </div>
                     </div>
 
-                    {/* BOUTON PLAY VIN ORANJ AK TÈKS/IKÒN NWA */}
+                    {}
                     <motion.div 
                         whileTap={{ scale: 0.9 }}
                         onClick={() => isThisPlaylistActive ? togglePlay() : playlist?.tracks?.[0] && playSong(playlist.tracks[0], playlist.tracks)}

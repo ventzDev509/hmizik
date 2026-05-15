@@ -37,12 +37,12 @@ export default function Sidebar({ playlists = [], onSelect = () => {} }: Sidebar
    
     className="w-[300px] h-[100vh]  rounded-xl bg-gradient-to-b from-[#121212] to-[#0f0f0f] hidden md:flex flex-col text-gray-200">
       <div className="px-3 py-6">
-        {/* Logo / Titre */}
+        {}
         <div className="flex items-center gap-2 mb-6">
           <h5 className={`text-xl font-semibold ${colors.text}`}>H-musique</h5>
         </div>
 
-        {/* Navigation principale */}
+        {}
         <nav className="space-y-2">
           {mainNav.map((item) => (
             <div
@@ -55,7 +55,7 @@ export default function Sidebar({ playlists = [], onSelect = () => {} }: Sidebar
           ))}
         </nav>
 
-        {/* Actions rapides */}
+        {}
         <div className="mt-6 border-t flex flex-col gap-2 border-white/6 pt-4">
           {quickActions.map((act) => (
             <div
@@ -68,7 +68,7 @@ export default function Sidebar({ playlists = [], onSelect = () => {} }: Sidebar
           ))}
         </div>
 
-        {/* Playlists */}
+        {}
         <div className="mt-6 flex items-center justify-between text-xs font-medium">
           <span className={`${colors.primary}`}>Playlists</span>
           <div className="flex items-center gap-1 hover:text-white">

@@ -3,7 +3,7 @@ import { useTracks } from "../../../context/TrackContext";
 import { Play, Loader2, Pause } from "lucide-react"; 
 import { useEffect } from "react";
 import { useAudio } from "../../../provider/PlayerContext"; 
-import { motion, AnimatePresence } from "framer-motion"; // Ajoute sa yo
+import { motion, AnimatePresence } from "framer-motion"; 
 
 function CardOne() {
     const navigate = useNavigate();
@@ -41,7 +41,7 @@ function CardOne() {
                                     }`}
                                 />
 
-                                {/* OVERLAY ANIMATION */}
+                                {}
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <AnimatePresence mode="wait">
                                         {isThisTrackBuffering ? (
@@ -76,7 +76,7 @@ function CardOne() {
                                                 )}
                                             </motion.div>
                                         ) : (
-                                            /* Ikon Play ki parèt sèlman lè w hover sou lòt kat yo */
+                                            
                                             <motion.div 
                                                 className="opacity-0 group-hover:opacity-100 hidden md:flex w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full items-center justify-center"
                                                 whileHover={{ scale: 1.1 }}

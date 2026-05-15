@@ -25,10 +25,10 @@ const AlbumModals: React.FC<AlbumModalsProps> = ({
 
     return (
         <AnimatePresence>
-            {/* 1. MODAL AKSYON (Bottom Sheet) */}
+            {}
             {showActionModal && (
                 <div className="fixed inset-0 z-[200] flex items-end justify-center">
-                    {/* Overlay */}
+                    {}
                     <motion.div 
                         initial={{ opacity: 0 }} 
                         animate={{ opacity: 1 }} 
@@ -37,7 +37,7 @@ const AlbumModals: React.FC<AlbumModalsProps> = ({
                         className="absolute inset-0 bg-black/80 backdrop-blur-md" 
                     />
                     
-                    {/* Content */}
+                    {}
                     <motion.div 
                         initial={{ y: "100%" }} 
                         animate={{ y: 0 }} 
@@ -91,7 +91,7 @@ const AlbumModals: React.FC<AlbumModalsProps> = ({
                 </div>
             )}
 
-            {/* 2. MODAL PLAYLIST */}
+            {}
             {showPlaylistModal && (
                 <AddToPlaylistModal 
                     trackId={selectedTrack.id} 

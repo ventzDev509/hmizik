@@ -11,31 +11,31 @@ const DownloadButton = ({ audioUrl, coverUrl, title, trackId }: any) => {
     const currentTask = activeDownloads[trackId];
     const isDownloading = !!currentTask;
 
-    // Tcheke si track la deja offline depi nan kòmansman
+    
     useEffect(() => {
         const checkCach = async () => {
             const saved = await isOffline(audioUrl);
             setIsSaved(saved);
         };
         checkCach();
-    }, [audioUrl, isOffline, isDownloading]); // Re-tcheke lè download la fini
+    }, [audioUrl, isOffline, isDownloading]); 
 
     const handleAction = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
 
         if (isDownloading) {
-            // Lojik pou CANCEL
+            
             cancelDownload(trackId);
         } else if (!isSaved) {
-            // Lojik pou START
+            
             startDownload({ id: trackId, audioUrl, coverUrl, title });
         }
     };
 
-    // Kalkil pou Sèk Progress la
+    
     const radius = 16;
-    const circumference = 2 * Math.PI * radius; // ~100.5
+    const circumference = 2 * Math.PI * radius; 
 
     return (
         <button 
@@ -44,7 +44,7 @@ const DownloadButton = ({ audioUrl, coverUrl, title, trackId }: any) => {
         >
             {isDownloading ? (
                 <div className="relative flex items-center justify-center">
-                    {/* Progress Ring Background */}
+                    {}
                     <svg className="absolute w-9 h-9 -rotate-90">
                         <circle
                             cx="18" cy="18"
@@ -54,7 +54,7 @@ const DownloadButton = ({ audioUrl, coverUrl, title, trackId }: any) => {
                             fill="transparent"
                             className="text-white/10"
                         />
-                        {/* Progress k ap avanse a */}
+                        {}
                         <circle
                             cx="18" cy="18"
                             r={radius}
@@ -68,10 +68,10 @@ const DownloadButton = ({ audioUrl, coverUrl, title, trackId }: any) => {
                         />
                     </svg>
                     
-                    {/* Ikòn X pou anile a parèt nan mitan */}
+                    {}
                     <X size={14} className="text-orange-500 z-10 animate-in fade-in zoom-in duration-200" />
                     
-                    {/* Ti pousantaj la anba (opsyonèl) */}
+                    {}
                     <span className="absolute -bottom-6 text-[8px] font-bold text-orange-500">
                         {currentTask.progress}%
                     </span>

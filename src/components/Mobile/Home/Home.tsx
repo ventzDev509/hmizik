@@ -12,7 +12,7 @@ function HomeMobile() {
   
     useEffect(() => {
         const handleUrlToken = async () => {
-            // 1. Nou chèche paramèt yo nan URL la
+            
             const params = new URLSearchParams(window.location.search);
             const tokenFromUrl = params.get('token');
 
@@ -26,10 +26,10 @@ function HomeMobile() {
 
                     toast.success('Koneksyon reyisi!');
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    // window.location.href = '/dashboard';
+                    
                 } catch (error) {
                     console.error("Token an pa valid:", error);
-                    // localStorage.removeItem('h_mizik_token');
+                    
                 }
             }
         };
@@ -45,7 +45,7 @@ function HomeMobile() {
          
         </div>
 
-        {/* <BottomMPlayerMobile /> */}
+        {}
         <BottomMenu />
     </>
 

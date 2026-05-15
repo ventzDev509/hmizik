@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import api from '../api/axios'; // Enpòte axios instans ou a
+import api from '../api/axios'; 
 import toast from 'react-hot-toast';
 
 interface LikeContextType {
@@ -24,12 +24,12 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setLoading(true);
             const { data } = await api.get('/likes');
 
-            // Data ap gen fòm sa a: { tracks: [...], albums: [...] }
+            
             const trackIds = data.tracks.map((t: any) => t.id);
             const albumIds = data.albums.map((a: any) => a.id);
 
             setLikedTrackIds(trackIds);
-            setLikedAlbumIds(albumIds); // Asire w ou te kreye state sa a
+            setLikedAlbumIds(albumIds); 
 
         } catch (error) {
             console.error("Erè:", error);
@@ -42,7 +42,7 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchLikes();
     }, [user]);
 
-    // 2. Fonksyon Toggle (Like/Unlike) - Ajoute 'type'
+    
     const toggleLike = async (id: string, type: 'track' | 'album' = 'track') => {
 
         if (!user) {
@@ -50,12 +50,12 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
             return;
         }
 
-        // --- OPTIMISTIC UI UPDATE ---
-        // Si se yon album, ou ka bezwen yon lòt state (ex: likedAlbumIds) 
-        // oswa ou ka jere yo ansanm si ID yo inik.
+        
+        
+        
         const wasLiked = likedTrackIds.includes(id);
 
-        // Mete ajou UI a imedyatman
+        
         if (wasLiked) {
             setLikedTrackIds(prev => prev.filter(item => item !== id));
         } else {
@@ -76,12 +76,12 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         }
     };
-    // Helper pou konnen si yon mizik oswa yon album "liked"
+    
     const isLiked = (id: string, type: 'track' | 'album' = 'track') => {
         if (type === 'track') {
             return likedTrackIds.includes(id);
         }
-        return likedAlbumIds.includes(id); // Asire w ou te kreye state likedAlbumIds la
+        return likedAlbumIds.includes(id); 
     };
 
     return (

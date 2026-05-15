@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import BottomMenu from '../menu/BottomMenu';
 import api from '../../../api/axios';
 
-// Ti fonksyon pou dat an Kreyòl
+
 const formatKreyolDate = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
     if (seconds < 60) return "Kounye a";
@@ -30,16 +30,16 @@ const NotificationPage: React.FC = () => {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                // 1. Rekipere notifikasyon yo
+                
                 const response = await api.get('/notifications');
                 setNotifications(response.data);
 
-                // 2. Si gen notifikasyon ki poko li, nou make yo tout "Read" nan yon sèl kou
+                
                 const hasUnread = response.data.some((n: any) => !n.read);
                 if (hasUnread) {
                     await api.post('/notifications/mark-read');
 
-                    // Ti delay 2 segonn anvan nou retire pwen zoranj yo nan UI a pou itilizatè a wè sa k nèf yo
+                    
                     setTimeout(() => {
                         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
                     }, 2000);
@@ -56,7 +56,7 @@ const NotificationPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#121212] text-white pb-20">
-            {/* HEADER */}
+            {}
             <header className="sticky top-0 z-50 bg-[#121212]/90 backdrop-blur-xl h-16 flex items-center justify-between px-4 border-b border-white/5">
                 <div className="flex items-center gap-4">
                     <div
@@ -69,7 +69,7 @@ const NotificationPage: React.FC = () => {
                 </div>
             </header>
 
-            {/* LIST SECTION */}
+            {}
             <div className="mt-4 px-2">
                 {loading ? (
                     <div className="text-center p-10 opacity-50 font-medium text-sm">
@@ -85,7 +85,7 @@ const NotificationPage: React.FC = () => {
                             className={`relative flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-500 mb-1 
                                 ${!notif.read ? 'bg-orange-500/[0.03] border border-orange-500/10' : 'hover:bg-white/[0.02]'}`}
                         >
-                            {/* Ikon / Imaj Moun nan */}
+                            {}
                             <div className="relative flex-shrink-0">
                                 <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 border border-white/5">
                                     {notif.sender?.profile?.avatar ? (
@@ -101,7 +101,7 @@ const NotificationPage: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Badge ki montre aksyon an */}
+                                {}
                                 <div className={`absolute -right-1 -bottom-1 w-6 h-6 rounded-full border-2 border-[#121212] flex items-center justify-center
                                     ${notif.type === 'FOLLOW' ? 'bg-blue-500' : 'bg-orange-500'}`}
                                 >
@@ -109,7 +109,7 @@ const NotificationPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Kontni Tèks Dinamik */}
+                            {}
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm leading-tight text-zinc-300">
                                     <span className="font-bold text-white mr-1">
@@ -124,7 +124,7 @@ const NotificationPage: React.FC = () => {
                                 </span>
                             </div>
 
-                            {/* Pwen zoranj si notifikasyon an poko li */}
+                            {}
                             {!notif.read && (
                                 <motion.div
                                     layoutId={`dot-${notif.id}`}

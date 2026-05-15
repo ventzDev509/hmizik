@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
-/* 1. KONFIGIRASYON RASIN (Force Black Everywhere) */
+
 :root {
   background-color: #121212;
 }
 
 html, body {
-  /* Sa asire ke menm anba jès yo, se nwa ki genyen */
+  
   background-color: #121212 !important;
-  /* Sa fòse sistèm nan konprann app a se nwa li ye */
+  
   color-scheme: dark; 
-  /* height: 100%; */
-  /* overflow: hidden; */
+  
+  
 }
 
 img {
   transition: opacity 0.3s ease-in-out;
-  /* Sa anpeche imaj la parèt an blan anvan li chaje */
+  
   background-color: #121212; 
 }
 
@@ -27,28 +27,28 @@ img:not([src]) {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* min-height: 100vh; */
+  
   min-height: -webkit-fill-available;
   background-color: inherit;
-  /* Nou kite l an hidden pou desktop si nesesè, men auto pou mobil */
+  
   overflow-x: hidden;
 }
 
-/* 2. FIX POU DESKTOP (> 600px) */
+
 @media (min-width: 600px) {
   body {
     overflow-y: hidden;
   }
 }
 
-/* 3. SCROLLBAR (Hidden but functional) */
+
 ::-webkit-scrollbar {
   width: 0px;
   height: 0px;
   display: none;
 }
 
-/* 4. ELEMENT RESET & TOUCH UI */
+
 button,
 div,
 a,
@@ -74,12 +74,12 @@ button {
 button:disabled {
   cursor: not-allowed;
   filter: grayscale(0);
-  /* Anpeche chanjman koulè defo */
+  
 }
 
-/* 5. COMPONENTS & UTILITIES */
 
-/* Bouton prensipal H-Mizik */
+
+
 .btn-primary {
   @apply bg-orange-500 text-white font-black uppercase text-xs rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 px-6 py-3;
 }
@@ -88,12 +88,12 @@ button:disabled {
   @apply bg-transparent text-zinc-500 font-bold py-4 hover:text-zinc-300 transition-colors;
 }
 
-/* Klas pou vè polie (Glassmorphism) nan Nav yo */
+
 .glass-nav {
   @apply backdrop-blur-xl bg-black/20 border-white/5;
 }
 
-/* Pou imaj yo pa parèt twò blèm */
+
 img {
   filter: saturate(1.1);
   object-fit: cover;
@@ -103,7 +103,7 @@ img {
   background-color: #3a1707;
 }
 
-/* 6. ANIMASYON EQUALIZER (Pou paj Offline a) */
+
 @keyframes eq-1 {
 
   0%,

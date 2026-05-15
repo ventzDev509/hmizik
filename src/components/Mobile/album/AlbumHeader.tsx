@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'; // Ajoute useEffect
+import React, { useRef, useEffect } from 'react'; 
 import { motion } from 'framer-motion';
 import { UploadCloud } from 'lucide-react';
 
@@ -12,34 +12,34 @@ interface AlbumHeaderProps {
     imgRef: React.RefObject<HTMLImageElement | null>;
     imgOpacity: any; 
     imgScale: any;
-    bgColor: string; // Ajoute sa nan interface la
+    bgColor: string; 
 }
 
 const AlbumHeader: React.FC<AlbumHeaderProps> = ({
     album, isEditMode, editedTitle, setEditedTitle, 
     previewUrl, onFileChange, imgRef, imgOpacity, imgScale,
-    bgColor // Resevwa li isit la
+    bgColor 
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Lojik pou chanje theme-color la
+    
     useEffect(() => {
         if (bgColor) {
-            // Chèche si meta tag la egziste deja
+            
             let metaThemeColor = document.querySelector('meta[name="theme-color"]');
             
             if (!metaThemeColor) {
-                // Si l pa egziste, kreye l
+                
                 metaThemeColor = document.createElement('meta');
                 metaThemeColor.setAttribute('name', 'theme-color');
                 document.head.appendChild(metaThemeColor);
             }
             
-            // Mete koulè a
+            
             metaThemeColor.setAttribute('content', bgColor);
         }
 
-        // Si w vle remete koulè nwa a lè w kite paj la (Cleanup)
+        
         return () => {
             const metaThemeColor = document.querySelector('meta[name="theme-color"]');
             if (metaThemeColor) {
@@ -53,7 +53,7 @@ const AlbumHeader: React.FC<AlbumHeaderProps> = ({
             style={{ opacity: imgOpacity, scale: imgScale }} 
             className="flex flex-col items-center px-6 pb-6 pt-6 text-center"
         >
-            {/* ZÒN FOTO A (menm jan an...) */}
+            {}
             <div className="w-56 h-56 mb-8 shadow-2xl relative group">
                 <img 
                     ref={imgRef} 
@@ -80,7 +80,7 @@ const AlbumHeader: React.FC<AlbumHeaderProps> = ({
                 )}
             </div>
             
-            {/* ZÒN TIT LA (menm jan an...) */}
+            {}
             <div className="w-full px-4">
                 {isEditMode ? (
                     <input
