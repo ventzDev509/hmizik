@@ -1,91 +1,59 @@
-import { useEffect, useRef, useState } from "react";
-import ColorThief from "colorthief";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+// @ts-ignore
+import ColorThief from 'colorthief/dist/color-thief-node';
 
-interface CardRadioProps {
-  image: string;
+interface RadioCardProps {
+  imageUrl: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }
 
-export default function CardRadio({ image, title, subtitle }: CardRadioProps) {
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const [bgColor, setBgColor] = useState<string>("#2c2c2c");
-  const [textColor, setTextColor] = useState<string>("white");
-const navigate=useNavigate()
+const RadioCard = ({ imageUrl, title, subtitle }: RadioCardProps) => {
+  const [dominantColor, setDominantColor] = useState<string>('rgb(44, 44, 44)');
+
   useEffect(() => {
-    const img = imgRef.current;
-    if (!img || !image) return;
+    if (!imageUrl) return;
 
-    img.crossOrigin = "anonymous";
-
-    const handleLoad = () => {
+    const extractColor = async () => {
       try {
-        const colorThief = new ColorThief();
-        const palette = colorThief.getPalette(img, 5); 
-        if (!palette) return;
+        // @ts-ignore
+        const ColorThiefConstructor = ColorThief.default || ColorThief;
+        const thief = new ColorThiefConstructor();
 
+        // Nou pran koulè a dirèkteman nan URL la
+        const rgbPalette = await thief.getColor(imageUrl);
+
+        // 2. Ranje TS7031: Nou bay 'r', 'g', 'b' tip nimewo eksplisitman
+        const [r, g, b]: [number, number, number] = rgbPalette;
+
+        setDominantColor(`rgb(${r}, ${g}, ${b})`);
+        console.log(`🎨 Koulè RadioCard detekte: rgb(${r}, ${g}, ${b})`);
         
-        let warmest = palette[0];
-        let maxRed = 0;
-        palette.forEach(([r, g, b]) => {
-          const redScore = r - (g + b) / 1 ; 
-          if (redScore > maxRed) {
-            maxRed = redScore;
-            warmest = [r, g, b];
-          }
-        });
-
-        const rgb = `rgb(${warmest[0]}, ${warmest[1]}, ${warmest[2]})`;
-        setBgColor(rgb);
-
-        
-        const luminance =
-          (0.299 * warmest[0] + 0.587 * warmest[1] + 0.114 * warmest[2]) / 255;
-        setTextColor(luminance > 0.6 ? "black" : "white");
       } catch (err) {
-        console.error("ColorThief error:", err);
+        console.error("Erè ColorThief nan RadioCard:", err);
       }
     };
 
-    img.addEventListener("load", handleLoad);
-    return () => img.removeEventListener("load", handleLoad);
-  }, [image]);
+    extractColor();
+  }, [imageUrl]);
 
   return (
-    <div
-      className="flex flex-col  gap-4 overflow-x-auto rounded-lg overflow-hidden p-4 flex-shrink-0 w-48 cursor-pointer transition-transform"
-      style={{ backgroundColor: bgColor }}
-      onClick={()=>navigate("/artiste")}
+    <div 
+      style={{ backgroundColor: dominantColor }}
+      className="p-4 rounded-2xl border border-white/5 transition-all duration-500 ease-in-out"
     >
-      {}
-      <div className={`flex justify-between items-center text-xs mb-1`} style={{ color: textColor }}>
-        <span>🎵</span>
-        <span className="uppercase tracking-widest font-semibold">Radio</span>
+      <div className="aspect-square w-full overflow-hidden rounded-xl bg-zinc-800 mb-4">
+        <img 
+          src={imageUrl} 
+          alt={title} 
+          className="w-full h-full object-cover"
+          crossOrigin="anonymous"
+        />
       </div>
-
-      {}
-      <img
-      crossOrigin="anonymous"
-        ref={imgRef}
-        src={image}
-        alt={title}
-        className="w-32 h-32 object-cover rounded-full mx-auto shadow"
-      />
-
-      {}
-      <h3
-        className="text-lg font-bold mt-1 truncate"
-        style={{ color: textColor }}
-      >
-        {title}
-      </h3>
-      <p
-        className="text-sm truncate"
-        style={{ color: textColor === "white" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}
-      >
-        {subtitle}
-      </p>
+      <h3 className="text-white font-bold truncate">{title}</h3>
+      {subtitle && <p className="text-zinc-400 text-xs truncate">{subtitle}</p>}
     </div>
   );
-}
+};
+
+export default RadioCard;
