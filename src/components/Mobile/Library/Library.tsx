@@ -118,7 +118,7 @@ const LibraryPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold text-black text-xs">V</div>
-                        <h2 className="text-2xl font-black italic tracking-tighter uppercase">Libreri w</h2>
+                        <h2 className="text-2xl mm font-black italic tracking-tighter uppercase">Libreri w</h2>
                     </div>
                     <div className="flex items-center gap-5">
                         <Search size={22} className="text-zinc-400" />
