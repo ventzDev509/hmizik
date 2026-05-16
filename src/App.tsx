@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react"; 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css"
-import Home from "./components/Home/Home";
 import PlayList from "./components/playList/PlayList";
 import { isMobile } from 'react-device-detect';
 import HomeMobile from "./components/Mobile/Home/Home";
 import PlaylistPage from "./components/Mobile/PlayListe/PlayList";
 import ArtistPageMobile from "./components/Mobile/artistPage/ArtistPageMobile";
-import ArtistePage from "./components/Artiste/ArtistePage";
 import UserProfile from "./components/Mobile/userProfileMobile/UserProfileMobile";
-import UserProfilePC from "./components/userprofilePc/UserProfilePc";
 import EditProfileMobile from "./components/Mobile/userProfileMobile/editeProfileMobile";
 import SettingsPage from "./components/Mobile/userProfileMobile/Settings";
 import SearchPageMobile from "./components/Mobile/SearchPageMobile/SearchPageMobile";
