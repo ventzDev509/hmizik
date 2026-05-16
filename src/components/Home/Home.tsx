@@ -4,7 +4,6 @@ import BottomPlayer from "../Player/BottomPlayer";
 
 import Navbar from "../menu/NavBar";
 import Card from "../cards/Card";
-import CardRadio from "../cards/RadioCard";
 import { useState } from "react";
 import RightPanel from "../cards/RightPanel";
 import { motion } from "framer-motion";
@@ -67,7 +66,7 @@ export default function Home() {
                     <div className="flex gap-4 overflow-x-auto pl-8 scrollbar-hide">
                         {radios.map((r: any) => (
                             <div key={r.id} onClick={() => setSelectedMusic(r)}>
-                                <CardRadio image={r.cover} title={r.title} subtitle={r.artist} />
+                                {/* <CardRadio image={r.cover} title={r.title} subtitle={r.artist} /> */}
                             </div>
                         ))}
                     </div>
