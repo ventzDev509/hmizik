@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search as SearchIcon, Mic, X, Clock, ChevronRight, Verified, Play } from 'lucide-react';
+import { Search as SearchIcon, Mic, X, Clock, ChevronRight, Verified, Play, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '../../../context/SearchContext';
 import BottomMenu from '../menu/BottomMenu';
-import { Disc, Music, Mic2, Radio, Heart, Flame } from 'lucide-react';
+import { Disc, Music, Mic2, Radio, Heart } from 'lucide-react';
 
 const getAvatarColor = (name: string) => {
     const colors = [
@@ -29,7 +29,8 @@ const SearchPageMobile: React.FC = () => {
     const navigate = useNavigate();
     const {
         query, setQuery, results, loading, searchGlobal,
-        clearSearch, recentSearches, addRecentSearch, removeRecentSearch
+        clearSearch, recentSearches, addRecentSearch, removeRecentSearch,
+        trendingSearches, logSearchToBackend // <--- Nou rale logSearchToBackend la kounye a
     } = useSearch();
 
     const [activeFilter, setActiveFilter] = useState('all');
@@ -43,9 +44,18 @@ const SearchPageMobile: React.FC = () => {
         return () => clearTimeout(timeout);
     }, [query, searchGlobal]);
 
+    // 1. LÈ YO KLIME SOU YON ATIS, ALBÒM OUBYEN PLAYLIS
     const handleSelectResult = (type: string, id: string, name: string) => {
         addRecentSearch(name);
+        logSearchToBackend(query); // Sove mo final ki nan input lan (Eg: "baky") nan database la
         navigate(`/${type}/${id}`);
+    };
+
+    // 2. LÈ YO KLIME SOU YON MO NAN TRENDING LAN
+    const handleSelectTrending = (term: string) => {
+        addRecentSearch(term);
+        logSearchToBackend(term);  // Sove l ankò nan DB pou chif popilarite l ka monte
+        setQuery(term);
     };
 
     return (
@@ -55,7 +65,7 @@ const SearchPageMobile: React.FC = () => {
                 <h1 className="text-3xl font-black italic uppercase tracking-tighter">Chèche</h1>
             </header>
 
-            {}
+            {/* INPUT SEARCH */}
             <div className="sticky top-4 z-50 mb-6">
                 <div className="relative group">
                     <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-900" size={20} />
@@ -73,7 +83,7 @@ const SearchPageMobile: React.FC = () => {
                     )}
                 </div>
 
-                {}
+                {/* FILTRE YO */}
                 <AnimatePresence>
                     {query && (
                         <motion.div
@@ -101,9 +111,10 @@ const SearchPageMobile: React.FC = () => {
                 </AnimatePresence>
             </div>
 
-            {}
+            {/* KÒ PAJ LA */}
             {!query ? (
                 <div className="space-y-8">
+                    {/* DÈNYE RECHÈCH */}
                     {recentSearches.length > 0 && (
                         <section>
                             <h2 className="text-sm font-black uppercase tracking-widest mb-4 text-zinc-400">Dènye rechèch</h2>
@@ -114,13 +125,35 @@ const SearchPageMobile: React.FC = () => {
                                             <Clock size={18} className="text-zinc-500" />
                                             <span className="font-bold text-zinc-300">{term}</span>
                                         </div>
-                                        <X size={18} className="text-zinc-600" onClick={() => removeRecentSearch(term)} />
+                                        <X size={18} className="text-zinc-600 active:scale-75 cursor-pointer" onClick={() => removeRecentSearch(term)} />
                                     </div>
                                 ))}
                             </div>
                         </section>
                     )}
 
+                    {/* TRENDING SEARCHES */}
+                    {trendingSearches.length > 0 && (
+                        <section>
+                            <h2 className="text-sm font-black uppercase tracking-widest mb-4 text-zinc-400 flex items-center gap-2">
+                                <Flame size={16} className="text-orange-500 animate-pulse" />
+                                Rechèch popilè
+                            </h2>
+                            <div className="flex flex-wrap gap-2">
+                                {trendingSearches.map((term) => (
+                                    <button
+                                        key={term}
+                                        onClick={() => handleSelectTrending(term)}
+                                        className="px-4 py-2 bg-zinc-900 border border-white/[0.04] hover:border-orange-600 rounded-full text-xs font-bold text-zinc-300 transition-all active:scale-95"
+                                    >
+                                        {term}
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* KATEGORI YO */}
                     <section>
                         <h2 className="text-sm font-black uppercase tracking-widest mb-4 text-zinc-400">Dekouvri tout</h2>
                         <div className="grid grid-cols-2 gap-4">
@@ -152,7 +185,7 @@ const SearchPageMobile: React.FC = () => {
                         </div>
                     ) : (
                         <>
-                            {}
+                            {/* REZILTAT ATIS */}
                             {(activeFilter === 'all' || activeFilter === 'artists') && results.artists.length > 0 && (
                                 <section>
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Atis</h3>
@@ -161,7 +194,6 @@ const SearchPageMobile: React.FC = () => {
                                             <div key={art.id} onClick={() => handleSelectResult('atis', art?.userId, art.username)} className="flex items-center gap-4 active:bg-white/5 p-2 rounded-2xl transition">
                                                 <img src={art.avatarUrl} className="w-14 h-14 rounded-full object-cover border border-white/10" alt="" />
                                                 <div className="flex-1">
-                                                    { art?.profile?.id}{console.log(art)}
                                                     <div className="flex items-center gap-1">
                                                         <p className="font-bold">{art.username}</p>
                                                         {art.verified && <Verified size={14} className="text-blue-400 fill-blue-400" />}
@@ -175,13 +207,21 @@ const SearchPageMobile: React.FC = () => {
                                 </section>
                             )}
 
-                            {}
+                            {/* REZILTAT MIZIK */}
                             {(activeFilter === 'all' || activeFilter === 'tracks') && results.tracks.length > 0 && (
                                 <section>
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Mizik</h3>
                                     <div className="space-y-1">
                                         {results.tracks.map(track => (
-                                            <div key={track.id} onClick={()=>navigate(`/song?id=${track?.id}`)} className="flex items-center gap-4 active:bg-white/5 p-2 rounded-xl transition">
+                                            <div 
+                                                key={track.id} 
+                                                onClick={() => { 
+                                                    addRecentSearch(track.title); 
+                                                    logSearchToBackend(query); // <--- Sere mo ki nan input lan tou lè moun lan chwazi koute chante a
+                                                    navigate(`/song?id=${track?.id}`); 
+                                                }} 
+                                                className="flex items-center gap-4 active:bg-white/5 p-2 rounded-xl transition"
+                                            >
                                                 <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover" alt="" />
                                                 <div className="flex-1 truncate">
                                                     <p className="font-bold truncate text-sm">{track.title}</p>
@@ -193,7 +233,7 @@ const SearchPageMobile: React.FC = () => {
                                 </section>
                             )}
 
-                            {}
+                            {/* REZILTAT ALBÒM */}
                             {(activeFilter === 'all' || activeFilter === 'albums') && results.albums.length > 0 && (
                                 <section>
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Albòm</h3>
@@ -211,7 +251,7 @@ const SearchPageMobile: React.FC = () => {
                                 </section>
                             )}
 
-                            {}
+                            {/* REZILTAT PLAYLIS */}
                             {(activeFilter === 'all' || activeFilter === 'playlists') && results.playlists?.length > 0 && (
                                 <section className="mt-8">
                                     <h3 className="text-xs font-black text-orange-500 uppercase tracking-widest mb-4">Playlis</h3>

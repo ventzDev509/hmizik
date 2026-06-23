@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  
+
   baseURL: 'https://hmizikbackend-1.onrender.com',
+  // baseURL: 'http://localhost:3000',
 });
 
 
@@ -25,7 +26,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('h_mizik_token');
-      
+
     }
     return Promise.reject(error);
   }

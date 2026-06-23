@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import api from '../api/axios';
-
 
 interface SearchResults {
     tracks: any[];
@@ -15,9 +14,11 @@ interface SearchContextType {
     loading: boolean;
     error: string | null;
     recentSearches: string[];
-    
+    trendingSearches: string[]; 
     
     searchGlobal: (q: string) => Promise<void>;
+    fetchTrendingSearches: () => Promise<void>; 
+    logSearchToBackend: (term: string) => Promise<void>; // <--- NOUVO
     setQuery: (q: string) => void;
     clearSearch: () => void;
     addRecentSearch: (term: string) => void;
@@ -37,14 +38,28 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
-    
+    const [trendingSearches, setTrendingSearches] = useState<string[]>([]); 
+
     const [recentSearches, setRecentSearches] = useState<string[]>(() => {
         const saved = localStorage.getItem('h_mizik_recent_searches');
         return saved ? JSON.parse(saved) : [];
     });
 
-    
+    // Rale top searches yo nan backend
+    const fetchTrendingSearches = useCallback(async () => {
+        try {
+            const { data } = await api.get('/search/trending');
+            setTrendingSearches(data || []);
+        } catch (err) {
+            console.error("Erè lè n ap rale trending searches:", err);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchTrendingSearches();
+    }, [fetchTrendingSearches]);
+
+    // RECHÈCH GLOBAL: Kounye a li jis rale done, li pa sove anyen nan DB pandan moun nan ap tape
     const searchGlobal = useCallback(async (q: string) => {
         if (!q.trim() || q.length < 2) {
             setResults({ tracks: [], artists: [], albums: [], playlists: [] });
@@ -68,6 +83,17 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     }, []);
 
+    // NOUVO: Sove mo final la sèlman lè itilizatè a klike sou yon rezilta
+    const logSearchToBackend = useCallback(async (term: string) => {
+        if (!term.trim() || term.length < 2) return;
+        try {
+            await api.post('/search/log', { query: term });
+            fetchTrendingSearches(); // Refreshe trending searches yo otomatikman apre sa
+        } catch (err) {
+            console.error("Erè nan anrejistreman mo rechèch la:", err);
+        }
+    }, [fetchTrendingSearches]);
+
     const setQuery = (q: string) => {
         setQueryState(q);
     };
@@ -78,7 +104,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setError(null);
     };
 
-    
     const addRecentSearch = (term: string) => {
         if (!term.trim()) return;
         setRecentSearches(prev => {
@@ -109,7 +134,10 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             loading,
             error,
             recentSearches,
+            trendingSearches, 
             searchGlobal,
+            fetchTrendingSearches, 
+            logSearchToBackend, // <--- Pase l nan valè Context la la
             setQuery,
             clearSearch,
             addRecentSearch,

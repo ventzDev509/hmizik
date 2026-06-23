@@ -99,6 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loginWithGoogle = () => {
         
         window.location.href = 'https://hmizikbackend-1.onrender.com/users/google';
+        // window.location.href = 'http://localhost:3000/users/google';
     };
 
     
